@@ -233,6 +233,7 @@ fun LiveMapScreen(
             BottomNavigationBar(
                 onNavigateToHome = onNavigateToHome,
                 onNavigateToRouteOptions = onNavigateToRouteOptions,
+                onNavigateToMap = { /* Already on map */ },
                 onNavigateToProfile = onNavigateToProfile,
                 currentScreen = "map"
             )

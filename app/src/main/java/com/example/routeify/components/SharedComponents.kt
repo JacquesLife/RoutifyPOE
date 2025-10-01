@@ -3,6 +3,8 @@ package com.example.routeify.components
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -61,25 +63,25 @@ fun BottomNavigationBar(
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             BottomNavItem(
-                icon = androidx.compose.material.icons.Icons.Default.Home,
+                icon = Icons.Default.Home,
                 label = "Home",
                 isSelected = currentScreen == "home",
                 onClick = onNavigateToHome
             )
             BottomNavItem(
-                icon = androidx.compose.material.icons.Icons.Default.Route,
+                icon = Icons.Default.Route,
                 label = "Routes",
                 isSelected = currentScreen == "routes",
                 onClick = onNavigateToRouteOptions
             )
             BottomNavItem(
-                icon = androidx.compose.material.icons.Icons.Default.Map,
+                icon = Icons.Default.Map,
                 label = "Map",
                 isSelected = currentScreen == "map",
                 onClick = onNavigateToMap
             )
             BottomNavItem(
-                icon = androidx.compose.material.icons.Icons.Default.Person,
+                icon = Icons.Default.Person,
                 label = "Profile",
                 isSelected = currentScreen == "profile",
                 onClick = onNavigateToProfile

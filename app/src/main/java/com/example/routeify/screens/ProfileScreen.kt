@@ -276,6 +276,7 @@ fun ProfileScreen(
             onNavigateToHome = onNavigateToHome,
             onNavigateToRouteOptions = onNavigateToRouteOptions,
             onNavigateToMap = onNavigateToMap,
+            onNavigateToProfile = { /* Already on profile */ },
             currentScreen = "profile"
         )
     }

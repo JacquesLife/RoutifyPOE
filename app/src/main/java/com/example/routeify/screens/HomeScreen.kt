@@ -205,6 +205,7 @@ fun HomeScreen(
         Spacer(modifier = Modifier.weight(1f))
         
         BottomNavigationBar(
+            onNavigateToHome = { /* Already on home */ },
             onNavigateToRouteOptions = onNavigateToRouteOptions,
             onNavigateToMap = onNavigateToMap,
             onNavigateToProfile = onNavigateToProfile,
