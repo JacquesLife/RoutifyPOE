@@ -24,6 +24,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.routeify.components.BottomNavigationBar
 import com.example.routeify.ui.theme.*
 
 data class RecentDestination(
@@ -206,7 +207,8 @@ fun HomeScreen(
         BottomNavigationBar(
             onNavigateToRouteOptions = onNavigateToRouteOptions,
             onNavigateToMap = onNavigateToMap,
-            onNavigateToProfile = onNavigateToProfile
+            onNavigateToProfile = onNavigateToProfile,
+            currentScreen = "home"
         )
     }
 }
@@ -270,81 +272,6 @@ fun RecentDestinationItem(
     }
 }
 
-@Composable
-fun BottomNavigationBar(
-    onNavigateToRouteOptions: () -> Unit = {},
-    onNavigateToMap: () -> Unit = {},
-    onNavigateToProfile: () -> Unit = {}
-) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.White
-        ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 8.dp
-        ),
-        shape = RoundedCornerShape(topStart = 0.dp, topEnd = 0.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 16.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            BottomNavItem(
-                icon = Icons.Default.Home,
-                label = "Home",
-                isSelected = true,
-                onClick = { /* Already on home */ }
-            )
-            BottomNavItem(
-                icon = Icons.Default.Route,
-                label = "Routes",
-                isSelected = false,
-                onClick = onNavigateToRouteOptions
-            )
-            BottomNavItem(
-                icon = Icons.Default.Map,
-                label = "Map",
-                isSelected = false,
-                onClick = onNavigateToMap
-            )
-            BottomNavItem(
-                icon = Icons.Default.Person,
-                label = "Profile",
-                isSelected = false,
-                onClick = onNavigateToProfile
-            )
-        }
-    }
-}
-
-@Composable
-fun BottomNavItem(
-    icon: ImageVector,
-    label: String,
-    isSelected: Boolean,
-    onClick: () -> Unit = {}
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.clickable { onClick() }
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = label,
-            tint = if (isSelected) RouteifyBlue else TextSecondary,
-            modifier = Modifier.size(24.dp)
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            text = label,
-            fontSize = 12.sp,
-            color = if (isSelected) RouteifyBlue else TextSecondary
-        )
-    }
-}
 
 @Preview(showBackground = true)
 @Composable

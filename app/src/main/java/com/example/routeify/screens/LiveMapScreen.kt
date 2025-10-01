@@ -28,6 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import com.example.routeify.components.BottomNavigationBar
 import com.example.routeify.ui.theme.*
 
 data class MapPin(
@@ -226,45 +227,15 @@ fun LiveMapScreen(
         }
         
         // Bottom Navigation
-        Card(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
-            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-            shape = RoundedCornerShape(topStart = 0.dp, topEnd = 0.dp)
+        Box(
+            modifier = Modifier.align(Alignment.BottomCenter)
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 16.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                BottomNavItem(
-                    icon = Icons.Default.Home,
-                    label = "Home",
-                    isSelected = false,
-                    onClick = onNavigateToHome
-                )
-                BottomNavItem(
-                    icon = Icons.Default.Route,
-                    label = "Routes",
-                    isSelected = false,
-                    onClick = onNavigateToRouteOptions
-                )
-                BottomNavItem(
-                    icon = Icons.Default.Map,
-                    label = "Map",
-                    isSelected = true,
-                    onClick = { /* Already on map */ }
-                )
-                BottomNavItem(
-                    icon = Icons.Default.Person,
-                    label = "Profile",
-                    isSelected = false,
-                    onClick = onNavigateToProfile
-                )
-            }
+            BottomNavigationBar(
+                onNavigateToHome = onNavigateToHome,
+                onNavigateToRouteOptions = onNavigateToRouteOptions,
+                onNavigateToProfile = onNavigateToProfile,
+                currentScreen = "map"
+            )
         }
     }
 }
@@ -444,31 +415,6 @@ fun FilterButton(
     }
 }
 
-@Composable
-fun BottomNavItem(
-    icon: ImageVector,
-    label: String,
-    isSelected: Boolean,
-    onClick: () -> Unit = {}
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.clickable { onClick() }
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = label,
-            tint = if (isSelected) RouteifyBlue else TextSecondary,
-            modifier = Modifier.size(24.dp)
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            text = label,
-            fontSize = 12.sp,
-            color = if (isSelected) RouteifyBlue else TextSecondary
-        )
-    }
-}
 
 fun getPinIcon(type: TransportType): ImageVector {
     return when (type) {
