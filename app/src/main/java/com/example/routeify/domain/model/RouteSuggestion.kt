@@ -1,4 +1,4 @@
-package com.example.routeify.domain.smartsuggestions.model
+package com.example.routeify.domain.model
 
 data class RouteSuggestion(
     val routeId: String,

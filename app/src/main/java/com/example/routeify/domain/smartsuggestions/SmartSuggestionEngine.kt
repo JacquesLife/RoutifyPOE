@@ -1,6 +1,6 @@
 package com.example.routeify.domain.smartsuggestions
 
-import com.example.routeify.domain.smartsuggestions.model.RouteSuggestion
+import com.example.routeify.domain.model.RouteSuggestion
 
 class SmartSuggestionEngine{
 
