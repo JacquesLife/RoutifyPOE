@@ -33,54 +33,65 @@ fun SplashScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(
-                brush = Brush.verticalGradient(
+                brush = Brush.radialGradient(
                     colors = listOf(
                         GradientStart,
-                        GradientMiddle,
+                        Color(0xFF3B82F6), // Blue-600 equivalent
                         GradientEnd
-                    )
+                    ),
+                    radius = 1000f
                 )
             ),
         contentAlignment = Alignment.Center
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.padding(32.dp)
         ) {
-            // Logo Circle
-            Box(
-                modifier = Modifier
-                    .size(120.dp)
-                    .clip(CircleShape)
-                    .background(Color.White),
-                contentAlignment = Alignment.Center
+            // Logo Circle with shadow effect
+            Card(
+                modifier = Modifier.size(96.dp), // 24 * 4 = 96dp (w-24 h-24)
+                shape = CircleShape,
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(defaultElevation = 24.dp) // shadow-2xl
             ) {
-                Icon(
-                    imageVector = Icons.Default.Navigation,
-                    contentDescription = "Routeify Logo",
-                    modifier = Modifier.size(60.dp),
-                    tint = RouteifyBlue
-                )
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Navigation,
+                        contentDescription = "Routeify Logo",
+                        modifier = Modifier.size(48.dp), // w-12 h-12
+                        tint = Color(0xFF2563EB) // text-blue-600
+                    )
+                }
             }
             
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(32.dp)) // space-y-8
             
-            // App Name
-            Text(
-                text = "Routeify",
-                fontSize = 32.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
-            )
-            
-            Spacer(modifier = Modifier.height(8.dp))
-            
-            // Tagline
-            Text(
-                text = "Smarter Public Transport",
-                fontSize = 16.sp,
-                color = Color.White.copy(alpha = 0.9f)
-            )
+            // Text content
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // App Name
+                Text(
+                    text = "Routeify",
+                    fontSize = 24.sp, // text-2xl
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
+                
+                Spacer(modifier = Modifier.height(8.dp)) // mb-2
+                
+                // Tagline
+                Text(
+                    text = "Smarter Public Transport",
+                    fontSize = 18.sp, // text-lg
+                    color = Color.White.copy(alpha = 0.9f) // text-white/90
+                )
+            }
         }
     }
 }

@@ -7,6 +7,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -18,6 +20,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -32,7 +35,9 @@ data class RecentDestination(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    onNavigateToRouteOptions: () -> Unit
+    onNavigateToRouteOptions: () -> Unit,
+    onNavigateToMap: () -> Unit = {},
+    onNavigateToProfile: () -> Unit = {}
 ) {
     var searchText by remember { mutableStateOf("") }
     
@@ -43,6 +48,23 @@ fun HomeScreen(
         RecentDestination("Cape Town International Airport", "Airport", Icons.Default.Flight),
         RecentDestination("Table Mountain", "Tourist Attraction", Icons.Default.Landscape)
     )
+    
+    fun handleSearch() {
+        if (searchText.trim().isNotEmpty()) {
+            // Navigate to route options with search query
+            onNavigateToRouteOptions()
+        }
+    }
+    
+    fun handleDestinationSelect(destination: String) {
+        // Navigate to route options with selected destination
+        onNavigateToRouteOptions()
+    }
+    
+    fun handleUseMyLocation() {
+        // Navigate to route options with current location
+        onNavigateToRouteOptions()
+    }
 
     Column(
         modifier = Modifier
@@ -95,44 +117,60 @@ fun HomeScreen(
                 }
                 
                 // Search Bar
-                OutlinedTextField(
-                    value = searchText,
-                    onValueChange = { searchText = it },
-                    placeholder = { 
-                        Text(
-                            "Where to?",
-                            color = TextSecondary
-                        ) 
-                    },
-                    leadingIcon = {
-                        Icon(
-                            Icons.Default.Search,
-                            contentDescription = "Search",
-                            tint = TextSecondary
-                        )
-                    },
-                    trailingIcon = {
-                        IconButton(
-                            onClick = { /* TODO: Open location picker */ }
-                        ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    OutlinedTextField(
+                        value = searchText,
+                        onValueChange = { searchText = it },
+                        placeholder = { 
+                            Text(
+                                "Where to?",
+                                color = TextSecondary
+                            ) 
+                        },
+                        leadingIcon = {
                             Icon(
-                                Icons.Default.MyLocation,
-                                contentDescription = "Current Location",
-                                tint = RouteifyBlue
+                                Icons.Default.Search,
+                                contentDescription = "Search",
+                                tint = TextSecondary
                             )
-                        }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(12.dp)),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedContainerColor = Color.White,
-                        unfocusedContainerColor = Color.White,
-                        focusedBorderColor = Color.Transparent,
-                        unfocusedBorderColor = Color.Transparent
-                    ),
-                    singleLine = true
-                )
+                        },
+                        modifier = Modifier
+                            .weight(1f)
+                            .clip(RoundedCornerShape(12.dp)),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedContainerColor = Color.White,
+                            unfocusedContainerColor = Color.White,
+                            focusedBorderColor = Color.Transparent,
+                            unfocusedBorderColor = Color.Transparent
+                        ),
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Search
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onSearch = { handleSearch() }
+                        )
+                    )
+                    
+                    // Location Button
+                    IconButton(
+                        onClick = { handleUseMyLocation() },
+                        modifier = Modifier
+                            .size(48.dp)
+                            .clip(CircleShape)
+                            .background(Color.White)
+                    ) {
+                        Icon(
+                            Icons.Default.MyLocation,
+                            contentDescription = "Use My Location",
+                            tint = RouteifyBlue,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                }
             }
         }
         
@@ -156,7 +194,7 @@ fun HomeScreen(
                 items(recentDestinations) { destination ->
                     RecentDestinationItem(
                         destination = destination,
-                        onClick = { onNavigateToRouteOptions() }
+                        onClick = { handleDestinationSelect(destination.name) }
                     )
                 }
             }
@@ -165,7 +203,11 @@ fun HomeScreen(
         // Bottom Navigation Placeholder
         Spacer(modifier = Modifier.weight(1f))
         
-        BottomNavigationBar()
+        BottomNavigationBar(
+            onNavigateToRouteOptions = onNavigateToRouteOptions,
+            onNavigateToMap = onNavigateToMap,
+            onNavigateToProfile = onNavigateToProfile
+        )
     }
 }
 
@@ -229,7 +271,11 @@ fun RecentDestinationItem(
 }
 
 @Composable
-fun BottomNavigationBar() {
+fun BottomNavigationBar(
+    onNavigateToRouteOptions: () -> Unit = {},
+    onNavigateToMap: () -> Unit = {},
+    onNavigateToProfile: () -> Unit = {}
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
@@ -249,22 +295,26 @@ fun BottomNavigationBar() {
             BottomNavItem(
                 icon = Icons.Default.Home,
                 label = "Home",
-                isSelected = true
+                isSelected = true,
+                onClick = { /* Already on home */ }
             )
             BottomNavItem(
                 icon = Icons.Default.Route,
                 label = "Routes",
-                isSelected = false
+                isSelected = false,
+                onClick = onNavigateToRouteOptions
             )
             BottomNavItem(
                 icon = Icons.Default.Map,
                 label = "Map",
-                isSelected = false
+                isSelected = false,
+                onClick = onNavigateToMap
             )
             BottomNavItem(
                 icon = Icons.Default.Person,
                 label = "Profile",
-                isSelected = false
+                isSelected = false,
+                onClick = onNavigateToProfile
             )
         }
     }
@@ -274,10 +324,12 @@ fun BottomNavigationBar() {
 fun BottomNavItem(
     icon: ImageVector,
     label: String,
-    isSelected: Boolean
+    isSelected: Boolean,
+    onClick: () -> Unit = {}
 ) {
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.clickable { onClick() }
     ) {
         Icon(
             imageVector = icon,
