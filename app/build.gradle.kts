@@ -65,9 +65,18 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.room.external.antlr)
 
+    // ViewModel
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
+
     // Google Maps
     implementation(libs.google.play.services.maps)
     implementation(libs.google.maps.compose)
+    implementation(libs.google.maps.utils)
+
+    // Networking for real Cape Town data
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter.gson)
+    implementation(libs.gson)
 
     // Add this line for Material Icons Extended
     implementation("androidx.compose.material:material-icons-extended:1.7.5")
