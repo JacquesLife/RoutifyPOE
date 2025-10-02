@@ -16,6 +16,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.routeify.ui.components.AppNavigationDrawer
 import com.example.routeify.ui.screens.HomeScreen
+import com.example.routeify.ui.screens.SplashScreen
 import com.example.routeify.ui.screens.ProfileScreen
 import com.example.routeify.ui.screens.SettingsScreen
 import com.example.routeify.ui.theme.RouteifyTheme
@@ -87,9 +88,17 @@ fun MainApp() {
         ) { paddingValues ->
             NavHost(
                 navController = navController,
-                startDestination = "home",
+                startDestination = "splash",
                 modifier = Modifier.padding(paddingValues)
             ) {
+                composable("splash") {
+                    SplashScreen {
+                        navController.navigate("home") {
+                            popUpTo("splash") { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    }
+                }
                 composable("home") { HomeScreen() }
                 composable("profile") { ProfileScreen() }
                 composable("settings") { SettingsScreen() }
