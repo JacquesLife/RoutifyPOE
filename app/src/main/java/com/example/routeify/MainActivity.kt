@@ -16,6 +16,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.routeify.ui.components.AppNavigationDrawer
 import com.example.routeify.ui.screens.HomeScreen
+import com.example.routeify.ui.screens.MapScreen
 import com.example.routeify.ui.screens.ProfileScreen
 import com.example.routeify.ui.screens.SettingsScreen
 import com.example.routeify.ui.theme.RouteifyTheme
@@ -90,7 +91,14 @@ fun MainApp() {
                 startDestination = "home",
                 modifier = Modifier.padding(paddingValues)
             ) {
-                composable("home") { HomeScreen() }
+                composable("home") { 
+                    HomeScreen(
+                        onNavigateToMap = {
+                            navController.navigate("map")
+                        }
+                    )
+                }
+                composable("map") { MapScreen() }
                 composable("profile") { ProfileScreen() }
                 composable("settings") { SettingsScreen() }
                 composable("favorites") {
@@ -120,6 +128,7 @@ fun ScreenPlaceholder(title: String) {
 fun getCurrentTitle(route: String): String {
     return when (route) {
         "home" -> "Routeify"
+        "map" -> "Transport Map"
         "profile" -> "Profile"
         "settings" -> "Settings"
         "favorites" -> "Favorites"

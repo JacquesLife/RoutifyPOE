@@ -3,80 +3,123 @@ package com.example.routeify.ui.screens
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.GoogleMap
-import com.google.maps.android.compose.rememberCameraPositionState
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(
+    onNavigateToMap: () -> Unit = {}
+) {
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top
     ) {
-        // Header
+        // Welcome Section
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(vertical = 16.dp),
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.primaryContainer
             )
         ) {
             Column(
-                modifier = Modifier.padding(16.dp),
+                modifier = Modifier.padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Cape Town Transport",
-                    style = MaterialTheme.typography.titleLarge,
+                    text = "Welcome to Routeify!",
+                    style = MaterialTheme.typography.headlineMedium,
                     color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
+                Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Find your route",
-                    style = MaterialTheme.typography.bodyMedium,
+                    text = "Your Cape Town transport companion",
+                    style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             }
         }
 
-        // Google Map
-        val capeTabCity = LatLng(-33.9249, 18.4241) // Cape Town coordinates
-        val cameraPositionState = rememberCameraPositionState {
-            position = CameraPosition.fromLatLngZoom(capeTabCity, 12f)
-        }
+        Spacer(modifier = Modifier.height(24.dp))
 
-        GoogleMap(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .padding(horizontal = 16.dp),
-            cameraPositionState = cameraPositionState
+        // Quick Actions
+        Text(
+            text = "Quick Actions",
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.align(Alignment.Start)
         )
 
-        // Quick Actions at the bottom
-        Row(
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Action Buttons
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                QuickActionCard(
+                    title = "View Map",
+                    icon = Icons.Default.Map,
+                    onClick = onNavigateToMap
+                )
+                QuickActionCard(
+                    title = "Search Routes",
+                    icon = Icons.Default.Search,
+                    onClick = { /* Handle search */ }
+                )
+            }
+            
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                QuickActionCard(
+                    title = "Favorites",
+                    icon = Icons.Default.Favorite,
+                    onClick = { /* Handle favorites */ }
+                )
+                QuickActionCard(
+                    title = "Live Updates",
+                    icon = Icons.Default.Search, // We'll replace this with a better icon later
+                    onClick = { /* Handle live updates */ }
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Recent Activity Card
+        Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly
+                .padding(vertical = 8.dp)
         ) {
-            QuickActionCard(
-                title = "Search Routes",
-                icon = Icons.Default.Search,
-                onClick = { /* Handle search */ }
-            )
-            QuickActionCard(
-                title = "Favorites",
-                icon = Icons.Default.Favorite,
-                onClick = { /* Handle favorites */ }
-            )
+            Column(
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text(
+                    text = "Recent Activity",
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "No recent activity yet. Start by exploring the map!",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
     }
 }

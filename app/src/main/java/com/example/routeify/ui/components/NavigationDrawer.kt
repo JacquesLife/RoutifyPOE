@@ -27,6 +27,7 @@ fun AppNavigationDrawer(
 ) {
     val items = listOf(
         NavigationItem("Home", Icons.Default.Home, "home"),
+        NavigationItem("Map", Icons.Default.Map, "map"),
         NavigationItem("Profile", Icons.Default.Person, "profile"),
         NavigationItem("Settings", Icons.Default.Settings, "settings"),
         NavigationItem("Favorites", Icons.Default.Favorite, "favorites"),
