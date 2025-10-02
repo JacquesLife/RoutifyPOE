@@ -17,6 +17,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.routeify.ui.components.AppNavigationDrawer
 import com.example.routeify.ui.screens.HomeScreen
 import com.example.routeify.ui.screens.SplashScreen
+import com.example.routeify.ui.screens.MapScreen
 import com.example.routeify.ui.screens.ProfileScreen
 import com.example.routeify.ui.screens.SettingsScreen
 import com.example.routeify.ui.theme.RouteifyTheme
@@ -129,6 +130,7 @@ fun ScreenPlaceholder(title: String) {
 fun getCurrentTitle(route: String): String {
     return when (route) {
         "home" -> "Routeify"
+        "map" -> "Transport Map"
         "profile" -> "Profile"
         "settings" -> "Settings"
         "favorites" -> "Favorites"

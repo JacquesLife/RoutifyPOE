@@ -1,7 +1,16 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+}
+
+// Load local.properties
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(localPropertiesFile.inputStream())
 }
 
 android {
@@ -16,6 +25,9 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        
+        // Add Google Maps API key from local.properties
+        manifestPlaceholders["GOOGLE_MAPS_API_KEY"] = localProperties.getProperty("GOOGLE_MAPS_API_KEY", "")
     }
 
     buildTypes {
@@ -52,6 +64,10 @@ dependencies {
     implementation(libs.androidx.datastore.core)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.room.external.antlr)
+
+    // Google Maps
+    implementation(libs.google.play.services.maps)
+    implementation(libs.google.maps.compose)
 
     // Add this line for Material Icons Extended
     implementation("androidx.compose.material:material-icons-extended:1.7.5")
