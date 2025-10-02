@@ -1,99 +1,164 @@
 package com.example.routeify.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Logout
+import androidx.compose.material.icons.filled.Route
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.routeify.ui.theme.RouteifyBlue500
+import com.example.routeify.ui.theme.RouteifyGreen500
 
 @Composable
 fun ProfileScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Profile Picture
-        Icon(
-            imageVector = Icons.Default.AccountCircle,
-            contentDescription = "Profile Picture",
-            modifier = Modifier.size(120.dp),
-            tint = MaterialTheme.colorScheme.primary
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Name
-        Text(
-            text = "John Doe",
-            style = MaterialTheme.typography.headlineMedium
-        )
-
-        // Email
-        Text(
-            text = "john.doe@example.com",
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        // Profile Info Cards
-        ProfileInfoCard(
-            icon = Icons.Default.Email,
-            label = "Email",
-            value = "john.doe@example.com"
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        ProfileInfoCard(
-            icon = Icons.Default.Phone,
-            label = "Phone",
-            value = "+1 234 567 8900"
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        ProfileInfoCard(
-            icon = Icons.Default.LocationOn,
-            label = "Location",
-            value = "Cape Town, South Africa"
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // Edit Profile Button
-        Button(
-            onClick = { /* Handle edit profile */ },
-            modifier = Modifier.fillMaxWidth()
+        // Gradient header with profile summary
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    Brush.horizontalGradient(colors = listOf(RouteifyBlue500, RouteifyGreen500))
+                )
+                .padding(horizontal = 16.dp, vertical = 20.dp)
         ) {
-            Icon(
-                imageVector = Icons.Default.Edit,
-                contentDescription = null,
-                modifier = Modifier.size(18.dp)
+            Column {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Surface(shape = CircleShape, color = Color.White.copy(alpha = 0.25f)) {
+                        Box(
+                            modifier = Modifier
+                                .size(48.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "JD",
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Column {
+                        Text("RudolphRedNose", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
+                        Text("North.pole@gmail.com", color = Color.White.copy(alpha = 0.9f), fontSize = 12.sp)
+                    }
+                }
+            }
+        }
+
+        Column(modifier = Modifier.padding(16.dp)) {
+            SectionTitle("Saved Routes")
+
+            RouteCard(
+                title = "Home to Work",
+                subtitle = "Rondebosch to Claremont",
+                leading = Icons.Default.Route
             )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text("Edit Profile")
+            RouteCard(
+                title = "University Route",
+                subtitle = "UCT Main Campus",
+                leading = Icons.Default.Star
+            )
+            RouteCard(
+                title = "Weekend Shopping",
+                subtitle = "V&A Waterfront",
+                leading = Icons.Default.LocationOn
+            )
+
+            SectionTitle("Preferences")
+
+            PreferenceSwitch(
+                title = "Push Notifications",
+                subtitle = "Get alerts for delays and updates",
+                icon = Icons.Default.Notifications
+            )
+            PreferenceSwitch(
+                title = "Dark Mode",
+                subtitle = "Switch to dark theme",
+                icon = Icons.Default.DarkMode
+            )
+            PreferenceSwitch(
+                title = "Accessibility",
+                subtitle = "High contrast and large text",
+                icon = Icons.Default.Star
+            )
+
+            SectionTitle("Account")
+            Card(
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                ListItem(
+                    leadingContent = {
+                        Icon(Icons.Default.Logout, contentDescription = null, tint = MaterialTheme.colorScheme.error)
+                    },
+                    headlineContent = {
+                        Text("Logout", color = MaterialTheme.colorScheme.error)
+                    }
+                )
+            }
         }
     }
 }
 
 @Composable
-fun ProfileInfoCard(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    label: String,
-    value: String
-) {
+private fun SectionTitle(text: String) {
+    Spacer(modifier = Modifier.height(8.dp))
+    Text(text = text, style = MaterialTheme.typography.titleMedium)
+    Spacer(modifier = Modifier.height(8.dp))
+}
+
+@Composable
+private fun RouteCard(title: String, subtitle: String, leading: androidx.compose.ui.graphics.vector.ImageVector) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 12.dp),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        ListItem(
+            leadingContent = {
+                Surface(shape = CircleShape, color = MaterialTheme.colorScheme.secondaryContainer) {
+                    Box(modifier = Modifier.size(36.dp), contentAlignment = Alignment.Center) {
+                        Icon(leading, contentDescription = null, tint = MaterialTheme.colorScheme.onSecondaryContainer)
+                    }
+                }
+            },
+            headlineContent = { Text(title) },
+            supportingContent = { Text(subtitle) },
+            trailingContent = {
+                Icon(Icons.Default.ArrowForward, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
         )
+    }
+}
+
+@Composable
+private fun PreferenceSwitch(title: String, subtitle: String, icon: androidx.compose.ui.graphics.vector.ImageVector) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 12.dp),
+        shape = RoundedCornerShape(16.dp)
     ) {
         Row(
             modifier = Modifier
@@ -101,23 +166,17 @@ fun ProfileInfoCard(
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = label,
-                tint = MaterialTheme.colorScheme.primary
-            )
-            Spacer(modifier = Modifier.width(16.dp))
-            Column {
-                Text(
-                    text = label,
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Text(
-                    text = value,
-                    style = MaterialTheme.typography.bodyLarge
-                )
+            Surface(shape = CircleShape, color = MaterialTheme.colorScheme.secondaryContainer) {
+                Box(modifier = Modifier.size(36.dp), contentAlignment = Alignment.Center) {
+                    Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.onSecondaryContainer)
+                }
             }
+            Spacer(modifier = Modifier.width(16.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(title, style = MaterialTheme.typography.bodyLarge)
+                Text(subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+            Switch(checked = false, onCheckedChange = { })
         }
     }
 }
