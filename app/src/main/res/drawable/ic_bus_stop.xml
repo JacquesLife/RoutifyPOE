@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    
+    <!-- Bus stop sign background -->
+    <path
+        android:fillColor="#2196F3"
+        android:pathData="M12,2C13.1,2 14,2.9 14,4V6H18V8H14V20C14,21.1 13.1,22 12,22C10.9,22 10,21.1 10,20V8H6V6H10V4C10,2.9 10.9,2 12,2Z" />
+    
+    <!-- Bus icon -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M17,5H7C5.9,5 5,5.9 5,7V15C5,16.1 5.9,17 7,17H8L9,19H15L16,17H17C18.1,17 19,16.1 19,15V7C19,5.9 18.1,5 17,5ZM7,15V7H17V15H7ZM8,8H10V10H8V8ZM14,8H16V10H14V8ZM8,12H16V14H8V12Z" />
+</vector>

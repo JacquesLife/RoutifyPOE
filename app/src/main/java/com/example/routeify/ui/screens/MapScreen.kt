@@ -5,20 +5,17 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.routeify.data.model.BusStopManager
-import com.example.routeify.data.model.StopType
 import com.example.routeify.ui.viewmodel.MapViewModel
-import com.example.routeify.utils.MapIconUtils
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.example.routeify.utils.BusStopClusterItem
+import com.example.routeify.utils.ClusterManagerEffect
+import com.example.routeify.utils.rememberClusterManager
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
-import com.google.maps.android.compose.Marker
-import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.MapEffect
 import com.google.maps.android.compose.rememberCameraPositionState
 
 @Composable
@@ -30,7 +27,7 @@ fun MapScreen() {
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        // Header
+        // Header Card
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -49,20 +46,20 @@ fun MapScreen() {
                     color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
                 Text(
-                    text = if (uiState.isLoading) "Loading real MyCiTi data..." else "Live MyCiTi bus stops",
+                    text = if (uiState.isLoading) "Loading real MyCiTi data..." else "Live MyCiTi bus stops with clustering",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             }
         }
 
-        // Smart Google Map with real Cape Town data
+        // Map with clustering
         val capeTabCity = LatLng(-33.9249, 18.4241) // Cape Town coordinates
         val cameraPositionState = rememberCameraPositionState {
-            position = CameraPosition.fromLatLngZoom(capeTabCity, 11f) // Start zoomed out
+            position = CameraPosition.fromLatLngZoom(capeTabCity, 11f)
         }
 
-        // Track current zoom level and load real data accordingly
+        // Track current zoom level and load data accordingly
         val currentZoom by remember { derivedStateOf { cameraPositionState.position.zoom } }
         
         // Load data when zoom level changes
@@ -89,40 +86,34 @@ fun MapScreen() {
             Spacer(modifier = Modifier.height(8.dp))
         }
 
+        // Create cluster items from bus stops
+        val clusterItems = remember(uiState.busStops) {
+            uiState.busStops.map { busStop ->
+                BusStopClusterItem(busStop)
+            }
+        }
+
+        // Track the GoogleMap instance
+        var map by remember { mutableStateOf<com.google.android.gms.maps.GoogleMap?>(null) }
+        val clusterManager = rememberClusterManager(map)
+
         GoogleMap(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
                 .padding(horizontal = 16.dp, vertical = 8.dp),
-            cameraPositionState = cameraPositionState
+            cameraPositionState = cameraPositionState,
+            onMapLoaded = {
+                // Map is ready, clustering will be set up via clusterManager
+            }
         ) {
-            // Add markers for real Cape Town bus stops
-            uiState.busStops.forEach { busStop ->
-                val markerIcon = MapIconUtils.getTransportIcon(context, busStop.stopType)
-                
-                Marker(
-                    state = MarkerState(
-                        position = LatLng(busStop.latitude, busStop.longitude)
-                    ),
-                    title = busStop.name,
-                    snippet = buildString {
-                        if (busStop.area != null) appendLine("Area: ${busStop.area}")
-                        if (busStop.routes.isNotEmpty()) {
-                            appendLine("Routes: ${busStop.routes.joinToString(", ")}")
-                        }
-                        if (busStop.direction != null) appendLine("Direction: ${busStop.direction}")
-                        if (busStop.description != null) appendLine("Type: ${busStop.description}")
-                        appendLine("Status: ${busStop.status}")
-                        when (busStop.stopType) {
-                            StopType.MAJOR_HUB -> appendLine("🚇 Major Transport Hub")
-                            StopType.RAILWAY -> appendLine("🚊 Railway Station") 
-                            StopType.REGULAR -> appendLine("🚌 Bus Stop")
-                        }
-                    },
-                    icon = markerIcon
-                )
+            MapEffect(Unit) { googleMap ->
+                map = googleMap
             }
         }
+        
+        // Update cluster items when data changes
+        ClusterManagerEffect(clusterManager, clusterItems)
 
         // Bottom info card
         Card(
@@ -137,7 +128,7 @@ fun MapScreen() {
                 modifier = Modifier.padding(16.dp)
             ) {
                 Text(
-                    text = "Real MyCiTi Data",
+                    text = "Real MyCiTi Data with Clustering",
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSecondaryContainer
                 )
@@ -148,15 +139,16 @@ fun MapScreen() {
                             appendLine("⏳ Loading official Cape Town data...")
                         } else {
                             appendLine("📍 Showing ${uiState.busStops.size} real MyCiTi stops")
-                            appendLine("🔴 Zoom: ${String.format("%.1f", currentZoom)}")
+                            appendLine("🔍 Zoom: ${String.format("%.1f", currentZoom)}")
                             when {
-                                currentZoom < 12f -> appendLine("� Zoom in to see more stops")
-                                currentZoom < 15f -> appendLine("🟠 Medium detail view")
-                                else -> appendLine("🟢 High detail view")
+                                currentZoom < 12f -> appendLine("🔵 Zoom in to see more stops")
+                                currentZoom < 15f -> appendLine("🟠 Medium detail view with clustering")
+                                else -> appendLine("🟢 High detail view with clustering")
                             }
                         }
                         appendLine("• Data from City of Cape Town")
-                        appendLine("• 🔴 = Major Hub, 🟢 = Railway, 🔵 = Bus Stop")
+                        appendLine("• 🔵 = Clustered stops, tap to expand")
+                        appendLine("• Custom icons for different stop types")
                     },
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSecondaryContainer
