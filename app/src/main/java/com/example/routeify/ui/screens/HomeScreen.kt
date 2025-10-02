@@ -1,99 +1,119 @@
 package com.example.routeify.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.Bell
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Logout
+import androidx.compose.material.icons.filled.Route
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.routeify.ui.theme.RouteifyBlue500
+import com.example.routeify.ui.theme.RouteifyGreen500
 
 @Composable
 fun HomeScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top
     ) {
-        // Welcome Section
-        Card(
+        // Gradient header with profile summary
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 16.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer
-            )
+                .background(
+                    Brush.horizontalGradient(colors = listOf(RouteifyBlue500, RouteifyGreen500))
+                )
+                .padding(horizontal = 16.dp, vertical = 20.dp)
         ) {
-            Column(
-                modifier = Modifier.padding(24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = "Welcome to Routeify!",
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "Your journey starts here",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                )
+            Column {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Surface(shape = CircleShape, color = Color.White.copy(alpha = 0.25f)) {
+                        Box(
+                            modifier = Modifier
+                                .size(48.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "JD",
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Column {
+                        Text("RudolphRedNose", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
+                        Text("North.pole@gmail.com", color = Color.White.copy(alpha = 0.9f), fontSize = 12.sp)
+                    }
+                }
             }
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Column(modifier = Modifier.padding(16.dp)) {
+            SectionTitle("Saved Routes")
 
-        // Quick Actions
-        Text(
-            text = "Quick Actions",
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.align(Alignment.Start)
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Action Buttons
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            QuickActionCard(
-                title = "Search Routes",
-                icon = Icons.Default.Search,
-                onClick = { /* Handle search */ }
+            RouteCard(
+                title = "Home to Work",
+                subtitle = "Rondebosch to Claremont",
+                leading = Icons.Default.Route
             )
-            QuickActionCard(
-                title = "Favorites",
-                icon = Icons.Default.Favorite,
-                onClick = { /* Handle favorites */ }
+            RouteCard(
+                title = "University Route",
+                subtitle = "UCT Main Campus",
+                leading = Icons.Default.Star
             )
-        }
+            RouteCard(
+                title = "Weekend Shopping",
+                subtitle = "V&A Waterfront",
+                leading = Icons.Default.LocationOn
+            )
 
-        Spacer(modifier = Modifier.height(16.dp))
+            SectionTitle("Preferences")
 
-        // Recent Activity Card
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp)
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp)
+            PreferenceSwitch(
+                title = "Push Notifications",
+                subtitle = "Get alerts for delays and updates",
+                icon = Icons.Default.Bell
+            )
+            PreferenceSwitch(
+                title = "Dark Mode",
+                subtitle = "Switch to dark theme",
+                icon = Icons.Default.DarkMode
+            )
+            PreferenceSwitch(
+                title = "Accessibility",
+                subtitle = "High contrast and large text",
+                icon = Icons.Default.Star
+            )
+
+            SectionTitle("Account")
+            Card(
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Text(
-                    text = "Recent Activity",
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "No recent activity yet",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                ListItem(
+                    leadingContent = {
+                        Icon(Icons.Default.Logout, contentDescription = null, tint = MaterialTheme.colorScheme.error)
+                    },
+                    headlineContent = {
+                        Text("Logout", color = MaterialTheme.colorScheme.error)
+                    }
                 )
             }
         }
@@ -101,39 +121,62 @@ fun HomeScreen() {
 }
 
 @Composable
-fun QuickActionCard(
-    title: String,
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    onClick: () -> Unit
-) {
+private fun SectionTitle(text: String) {
+    Spacer(modifier = Modifier.height(8.dp))
+    Text(text = text, style = MaterialTheme.typography.titleMedium)
+    Spacer(modifier = Modifier.height(8.dp))
+}
+
+@Composable
+private fun RouteCard(title: String, subtitle: String, leading: androidx.compose.ui.graphics.vector.ImageVector) {
     Card(
-        onClick = onClick,
         modifier = Modifier
-            .width(160.dp)
-            .height(120.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.secondaryContainer
-        )
+            .fillMaxWidth()
+            .padding(bottom = 12.dp),
+        shape = RoundedCornerShape(16.dp)
     ) {
-        Column(
+        ListItem(
+            leadingContent = {
+                Surface(shape = CircleShape, color = MaterialTheme.colorScheme.secondaryContainer) {
+                    Box(modifier = Modifier.size(36.dp), contentAlignment = Alignment.Center) {
+                        Icon(leading, contentDescription = null, tint = MaterialTheme.colorScheme.onSecondaryContainer)
+                    }
+                }
+            },
+            headlineContent = { Text(title) },
+            supportingContent = { Text(subtitle) },
+            trailingContent = {
+                Icon(Icons.Default.ArrowForward, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+        )
+    }
+}
+
+@Composable
+private fun PreferenceSwitch(title: String, subtitle: String, icon: androidx.compose.ui.graphics.vector.ImageVector) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 12.dp),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Row(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
                 .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = title,
-                modifier = Modifier.size(48.dp),
-                tint = MaterialTheme.colorScheme.onSecondaryContainer
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = title,
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSecondaryContainer
-            )
+            Surface(shape = CircleShape, color = MaterialTheme.colorScheme.secondaryContainer) {
+                Box(modifier = Modifier.size(36.dp), contentAlignment = Alignment.Center) {
+                    Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.onSecondaryContainer)
+                }
+            }
+            Spacer(modifier = Modifier.width(16.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(title, style = MaterialTheme.typography.bodyLarge)
+                Text(subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+            Switch(checked = false, onCheckedChange = { })
         }
     }
 }
