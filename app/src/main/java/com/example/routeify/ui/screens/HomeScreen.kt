@@ -6,60 +6,65 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.rememberCameraPositionState
 
 @Composable
 fun HomeScreen() {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top
+        modifier = Modifier.fillMaxSize()
     ) {
-        // Welcome Section
+        // Header
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 16.dp),
+                .padding(16.dp),
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.primaryContainer
             )
         ) {
             Column(
-                modifier = Modifier.padding(24.dp),
+                modifier = Modifier.padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Welcome to Routeify!",
-                    style = MaterialTheme.typography.headlineMedium,
+                    text = "Cape Town Transport",
+                    style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
-                Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Your journey starts here",
-                    style = MaterialTheme.typography.bodyLarge,
+                    text = "Find your route",
+                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        // Google Map
+        val capeTabCity = LatLng(-33.9249, 18.4241) // Cape Town coordinates
+        val cameraPositionState = rememberCameraPositionState {
+            position = CameraPosition.fromLatLngZoom(capeTabCity, 12f)
+        }
 
-        // Quick Actions
-        Text(
-            text = "Quick Actions",
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.align(Alignment.Start)
+        GoogleMap(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+                .padding(horizontal = 16.dp),
+            cameraPositionState = cameraPositionState
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Action Buttons
+        // Quick Actions at the bottom
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             QuickActionCard(
@@ -72,30 +77,6 @@ fun HomeScreen() {
                 icon = Icons.Default.Favorite,
                 onClick = { /* Handle favorites */ }
             )
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Recent Activity Card
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp)
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp)
-            ) {
-                Text(
-                    text = "Recent Activity",
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "No recent activity yet",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
         }
     }
 }

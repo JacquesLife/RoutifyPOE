@@ -24,6 +24,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Routeify">
+        
+        <!-- Google Maps API Key -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCTI2wPv4BtAtEBUYRrzvP1z2oc_XL51Gk" />
+            
         <activity
             android:name=".MainActivity"
             android:exported="true"
