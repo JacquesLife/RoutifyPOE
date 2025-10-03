@@ -10,10 +10,6 @@ import kotlinx.coroutines.withContext
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-/**
- * Repository using Google Places API for transit data
- * MUCH simpler than Cape Town Open Data API
- */
 class GoogleTransitRepository {
     
     private val api: GoogleTransitApi by lazy {
@@ -26,10 +22,7 @@ class GoogleTransitRepository {
     
     // Use the same API key as Google Maps (they're both Google Maps Platform)
     private val apiKey = com.example.routeify.BuildConfig.GOOGLE_PLACES_API_KEY
-    
-    /**
-     * Get transit stops near Cape Town - MUCH simpler than current implementation!
-     */
+
     suspend fun getTransitStops(
         centerLat: Double = -33.9249,
         centerLng: Double = 18.4241,
@@ -117,9 +110,7 @@ class GoogleTransitRepository {
         }
     }
     
-    /**
-     * Determine stop type from Google Places API types
-     */
+
     private fun determineStopType(types: List<String>): TransitStopType {
         return when {
             types.contains("bus_station") -> TransitStopType.BUS_STATION
@@ -132,28 +123,3 @@ class GoogleTransitRepository {
     }
 
 }
-
-/**
- * Migration plan comparison:
- * 
- * BEFORE (Cape Town API):
- * - Multiple API endpoints (96, 235, 233)
- * - Complex coordinate conversion
- * - Manual data processing
- * - Custom caching logic
- * - 500+ lines of code
- * 
- * AFTER (Google API):
- * - Single API endpoint
- * - Standard lat/lng coordinates
- * - Automatic data processing
- * - Google handles caching
- * - ~100 lines of code
- * 
- * Benefits:
- * - 80% less code
- * - More reliable (Google infrastructure)
- * - Real-time data
- * - Global compatibility
- * - Better search capabilities
- */

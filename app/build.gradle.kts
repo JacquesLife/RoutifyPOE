@@ -77,7 +77,7 @@ dependencies {
     implementation(libs.google.maps.compose)
     implementation(libs.google.maps.utils)
 
-    // Networking for real Cape Town data
+    // Networking for Google APIs
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.gson)
     implementation(libs.gson)

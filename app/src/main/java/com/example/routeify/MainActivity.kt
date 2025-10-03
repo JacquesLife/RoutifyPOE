@@ -20,6 +20,7 @@ import com.example.routeify.ui.screens.SplashScreen
 import com.example.routeify.ui.screens.MapScreen
 import com.example.routeify.ui.screens.ProfileScreen
 import com.example.routeify.ui.screens.SettingsScreen
+import com.example.routeify.presentation.screen.GoogleFeaturesScreen
 import com.example.routeify.ui.theme.RouteifyTheme
 
 import kotlinx.coroutines.launch
@@ -105,6 +106,7 @@ fun MainApp() {
                 composable("profile") { ProfileScreen() }
                 composable("map") { MapScreen() }
                 composable("settings") { SettingsScreen() }
+                composable("google-features") { GoogleFeaturesScreen() }
                 composable("favorites") {
                     ScreenPlaceholder("Favorites")
                 }
