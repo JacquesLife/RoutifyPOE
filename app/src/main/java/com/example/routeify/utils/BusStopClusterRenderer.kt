@@ -12,7 +12,7 @@ import com.google.maps.android.clustering.view.DefaultClusterRenderer
  * Custom cluster renderer for bus stops with custom icons
  */
 class BusStopClusterRenderer(
-    private val context: Context,
+    context: Context,
     map: GoogleMap,
     clusterManager: ClusterManager<BusStopClusterItem>
 ) : DefaultClusterRenderer<BusStopClusterItem>(context, map, clusterManager) {
@@ -24,7 +24,7 @@ class BusStopClusterRenderer(
         super.onBeforeClusterItemRendered(item, markerOptions)
         
         // Set custom icon based on stop type
-        val icon: BitmapDescriptor = MapIconUtils.getTransportIcon(context, item.getBusStop().stopType)
+        val icon: BitmapDescriptor = MapIconUtils.getTransportIcon(item.getTransitStop().stopType)
         markerOptions.icon(icon)
         
         // Set title and snippet for info window
@@ -39,7 +39,7 @@ class BusStopClusterRenderer(
         super.onClusterItemUpdated(item, marker)
         
         // Update icon if needed
-        val icon: BitmapDescriptor = MapIconUtils.getTransportIcon(context, item.getBusStop().stopType)
+        val icon: BitmapDescriptor = MapIconUtils.getTransportIcon(item.getTransitStop().stopType)
         marker.setIcon(icon)
     }
     

@@ -28,6 +28,9 @@ android {
         
         // Add Google Maps API key from local.properties
         manifestPlaceholders["GOOGLE_MAPS_API_KEY"] = localProperties.getProperty("GOOGLE_MAPS_API_KEY", "")
+        
+        // Use the same API key for Places API (they're both Google Maps Platform)
+        buildConfigField("String", "GOOGLE_PLACES_API_KEY", "\"${localProperties.getProperty("GOOGLE_MAPS_API_KEY", "")}\"")
     }
 
     buildTypes {
@@ -48,6 +51,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 

@@ -8,7 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.routeify.data.model.StopType
+import com.example.routeify.data.model.TransitStopType
 import com.example.routeify.ui.viewmodel.MapViewModel
 import com.example.routeify.utils.BusStopClusterItem
 import com.example.routeify.utils.ClusterManagerEffect
@@ -18,14 +18,13 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapEffect
 import com.google.maps.android.compose.MapsComposeExperimentalApi
-import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
-import kotlin.math.abs
+
 
 @OptIn(MapsComposeExperimentalApi::class)
 @Composable
 fun MapScreen() {
-    val context = LocalContext.current
+    LocalContext.current
     val viewModel: MapViewModel = viewModel()
     val uiState by viewModel.uiState.collectAsState()
     
@@ -56,15 +55,7 @@ fun MapScreen() {
                     color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
                 
-                // Debug: Force load button
-                if (!uiState.isLoading) {
-                    Button(
-                        onClick = { viewModel.loadBusStopsForZoom(11f) }, // Use default zoom for now
-                        modifier = Modifier.padding(top = 8.dp)
-                    ) {
-                        Text("Force Reload Data")
-                    }
-                }
+
             }
         }
 
@@ -77,13 +68,9 @@ fun MapScreen() {
         // Track current zoom level and load data accordingly
         val currentZoom by remember { derivedStateOf { cameraPositionState.position.zoom } }
         
-        // PERFORMANCE: Load data when zoom level changes (reduced threshold for better responsiveness)
+        // Update zoom level for display purposes
         LaunchedEffect(currentZoom) {
-            val previousZoom = uiState.currentZoom
-            // Load if zoom changed OR if it's the first load (no bus stops)
-            if (abs(currentZoom - previousZoom) > 0.3f || uiState.busStops.isEmpty()) {
-                viewModel.loadBusStopsForZoom(currentZoom)
-            }
+            viewModel.updateZoom(currentZoom)
         }
 
         // Show error message if any
@@ -105,10 +92,10 @@ fun MapScreen() {
             Spacer(modifier = Modifier.height(8.dp))
         }
 
-        // Create cluster items from bus stops
-        val clusterItems = remember(uiState.busStops) {
-            uiState.busStops.map { busStop ->
-                BusStopClusterItem(busStop)
+        // Create cluster items from transit stops
+        val clusterItems = remember(uiState.transitStops) {
+            uiState.transitStops.map { transitStop ->
+                BusStopClusterItem(transitStop)
             }
         }
 
@@ -122,48 +109,11 @@ fun MapScreen() {
                 .weight(1f)
                 .padding(horizontal = 16.dp, vertical = 8.dp),
             cameraPositionState = cameraPositionState,
-            onMapLoaded = {
-                // Initial load when map is ready
-                viewModel.loadBusStopsForZoom(cameraPositionState.position.zoom)
-            }
+
         ) {
             MapEffect(Unit) { googleMap ->
                 map = googleMap
             }
-            
-            // Draw railway lines as polylines
-            if (uiState.railwayLines.isNotEmpty()) {
-                android.util.Log.d("MapScreen", "Drawing ${uiState.railwayLines.size} railway lines")
-                uiState.railwayLines.forEach { railwayLine ->
-                    android.util.Log.d("MapScreen", "Railway line '${railwayLine.name}' has ${railwayLine.paths.size} paths")
-                    railwayLine.paths.forEach { path ->
-                        if (path.isNotEmpty()) {
-                            android.util.Log.d("MapScreen", "Drawing path with ${path.size} points - first point: ${path.first()}")
-                            Polyline(
-                                points = path,
-                                color = androidx.compose.ui.graphics.Color.Magenta, // Bright magenta for maximum visibility
-                                width = 16f, // Very thick line for visibility
-                                clickable = false
-                            )
-                        }
-                    }
-                }
-            } else {
-                android.util.Log.w("MapScreen", "No railway lines to display - uiState.railwayLines is empty")
-            }
-            
-            // TEST: Draw a hardcoded railway line for testing
-            Polyline(
-                points = listOf(
-                    LatLng(-33.9249, 18.4241), // Cape Town Station
-                    LatLng(-33.9569, 18.4683), // Woodstock
-                    LatLng(-33.9707, 18.4847), // Salt River
-                    LatLng(-34.0042, 18.5205)  // Observatory
-                ),
-                color = androidx.compose.ui.graphics.Color.Yellow,
-                width = 8f,
-                clickable = false
-            )
         }
         
         // Update cluster items when data changes
@@ -192,14 +142,20 @@ fun MapScreen() {
                         if (uiState.isLoading) {
                             appendLine("⏳ Optimizing transport data load...")
                         } else {
-                            val busStops = uiState.busStops.count { it.stopType != StopType.RAILWAY }
-                            val railStops = uiState.busStops.count { it.stopType == StopType.RAILWAY }
-                            val railLines = uiState.railwayLines.size
-                            val totalStops = uiState.busStops.size
+                            val totalStops = uiState.transitStops.size
+                            val busStops = uiState.transitStops.count { it.stopType == TransitStopType.BUS_STATION }
+                            val railStops = uiState.transitStops.count { 
+                                it.stopType in listOf(
+                                    TransitStopType.TRAIN_STATION,
+                                    TransitStopType.SUBWAY_STATION,
+                                    TransitStopType.LIGHT_RAIL_STATION
+                                )
+                            }
+                            val transitHubs = uiState.transitStops.count { it.stopType == TransitStopType.TRANSIT_STATION }
                             
-                            appendLine("🚌 $busStops MyCiTi bus stops")
-                            appendLine("🚂 $railStops railway stations")
-                            appendLine("🛤️ $railLines railway lines")
+                            appendLine("🚌 $busStops bus stations")
+                            appendLine("🚂 $railStops rail stations")
+                            appendLine("� $transitHubs transit hubs")
                             appendLine("� Total items: $totalStops")
                             appendLine("�🔍 Zoom: ${String.format("%.1f", currentZoom)}")
                             
@@ -217,8 +173,8 @@ fun MapScreen() {
                                 else -> appendLine("🔴 Maximum detail (80 bus + 30 rail)")
                             }
                         }
-                        appendLine("• Memory-optimized with aggressive caching")
-                        appendLine("• OutOfMemory protection enabled")
+                        appendLine("• Real-time data from Google Places API")
+                        appendLine("• Automatic caching and optimization")
                         appendLine("• 🔵 Clustered points • Tap to expand")
                     },
                     style = MaterialTheme.typography.bodyMedium,

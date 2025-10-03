@@ -1,33 +1,29 @@
 package com.example.routeify.utils
 
-import com.example.routeify.data.model.RealBusStop
+import com.example.routeify.data.model.TransitStop
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.clustering.ClusterItem
 
 /**
- * Cluster item wrapper for bus stops
+ * Cluster item wrapper for transit stops
  */
 data class BusStopClusterItem(
-    private val busStop: RealBusStop
+    private val transitStop: TransitStop
 ) : ClusterItem {
     
     override fun getPosition(): LatLng {
-        return LatLng(busStop.latitude, busStop.longitude)
+        return LatLng(transitStop.latitude, transitStop.longitude)
     }
     
     override fun getTitle(): String? {
-        return busStop.name
+        return transitStop.name
     }
     
     override fun getSnippet(): String? {
         return buildString {
-            if (busStop.area != null) appendLine("Area: ${busStop.area}")
-            if (busStop.routes.isNotEmpty()) {
-                appendLine("Routes: ${busStop.routes.joinToString(", ")}")
-            }
-            if (busStop.direction != null) appendLine("Direction: ${busStop.direction}")
-            if (busStop.description != null) appendLine("Type: ${busStop.description}")
-            appendLine("Status: ${busStop.status}")
+            if (transitStop.vicinity != null) appendLine("Area: ${transitStop.vicinity}")
+            appendLine("Type: ${transitStop.stopType.name.replace("_", " ").lowercase().replaceFirstChar { it.uppercase() }}")
+            if (transitStop.rating != null) appendLine("Rating: ${transitStop.rating}★")
         }.trim()
     }
     
@@ -35,5 +31,5 @@ data class BusStopClusterItem(
         return 0.0f
     }
     
-    fun getBusStop(): RealBusStop = busStop
+    fun getTransitStop(): TransitStop = transitStop
 }
