@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -148,7 +149,7 @@ fun SettingsScreen() {
                     }
                 )
 
-                Divider()
+                HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)
 
                 SettingSwitchItem(
                     icon = Icons.Default.DarkMode,
@@ -228,7 +229,7 @@ fun SettingsScreen() {
             )
         }
 
-                Divider()
+                HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)
 
                 SettingSwitchItem(
                     icon = Icons.Default.Sync,
@@ -261,7 +262,7 @@ fun SettingsScreen() {
                     onClick = { /* Handle language selection */ }
                 )
 
-                Divider()
+                HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)
 
                 SettingNavigationItem(
                     icon = Icons.Default.Storage,
@@ -270,7 +271,7 @@ fun SettingsScreen() {
                     onClick = { /* Handle storage */ }
                 )
 
-                Divider()
+                HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)
 
                 SettingNavigationItem(
                     icon = Icons.Default.Info,

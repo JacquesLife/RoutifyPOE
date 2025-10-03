@@ -33,20 +33,6 @@ interface CapeTownOpenDataApi {
     /**
      * Get bus stops within a specific geographic boundary (viewport-based loading)
      */
-    @GET("96/query") 
-    suspend fun getBusStopsInBounds(
-        @Query("where") where: String = "STOP_STS='Active'",
-        @Query("geometry") geometry: String, // Format: xmin,ymin,xmax,ymax
-        @Query("geometryType") geometryType: String = "esriGeometryEnvelope",
-        @Query("spatialRel") spatialRel: String = "esriSpatialRelIntersects",
-        @Query("outFields") outFields: String = "*",
-        @Query("returnGeometry") returnGeometry: Boolean = true,
-        @Query("f") format: String = "json"
-    ): MyCiTiApiResponse
-    
-    /**
-     * Get major transport hubs only (for low zoom levels)
-     */
     @GET("96/query")
     suspend fun getMajorHubs(
         @Query("where") where: String = "STOP_STS='Active' AND STOP_TYPE='IRT Station'",

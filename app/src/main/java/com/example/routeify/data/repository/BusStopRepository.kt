@@ -36,7 +36,7 @@ class BusStopRepository {
             try {
                 // Check if we can use cached data
                 val now = System.currentTimeMillis()
-                val isCacheValid = (now - lastCacheTime) < cacheValidityMs
+                (now - lastCacheTime) < cacheValidityMs
                 
                 // BALANCED: More visible at normal zoom levels
                 val busStops = when {
@@ -149,7 +149,7 @@ class BusStopRepository {
                 cachedRailStops = railStops
                 lastCacheTime = now
                 railStops
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 cachedRailStops ?: emptyList()
             }
         }
@@ -175,58 +175,8 @@ class BusStopRepository {
                 stop.name.isNotBlank() && 
                 stop.name != "Unknown Stop"
             }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             return emptyList()
-        }
-    }
-    
-    /**
-     * Get stops within map viewport - ultimate performance optimization
-     */
-    suspend fun getBusStopsInViewport(
-        northLat: Double,
-        southLat: Double, 
-        eastLng: Double,
-        westLng: Double
-    ): Result<List<RealBusStop>> {
-        return withContext(Dispatchers.IO) {
-            try {
-                // Convert lat/lng bounds to Web Mercator for the API
-                val geometry = "${westLng * 111319.4908},${southLat * 111319.4908},${eastLng * 111319.4908},${northLat * 111319.4908}"
-                
-                val response = api.getBusStopsInBounds(geometry = geometry)
-                
-                val busStops = response.features.map { feature ->
-                    RealBusStop.fromApiFeature(feature)
-                }
-                
-                Result.success(busStops)
-            } catch (e: Exception) {
-                Result.failure(e)
-            }
-        }
-    }
-    
-    /**
-     * Search for bus stops by name or route
-     */
-    suspend fun searchBusStops(query: String): Result<List<RealBusStop>> {
-        return withContext(Dispatchers.IO) {
-            try {
-                val whereClause = "STOP_STS='Active' AND (STOP_NAME LIKE '%$query%' OR RT_NMBR LIKE '%$query%')"
-                val response = api.getBusStops(
-                    where = whereClause,
-                    resultRecordCount = 50
-                )
-                
-                val busStops = response.features.map { feature ->
-                    RealBusStop.fromApiFeature(feature) 
-                }
-                
-                Result.success(busStops)
-            } catch (e: Exception) {
-                Result.failure(e)
-            }
         }
     }
 }

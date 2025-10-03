@@ -1,7 +1,6 @@
 package com.example.routeify.utils
 
 import android.content.Context
-import com.example.routeify.data.model.StopType
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.Marker

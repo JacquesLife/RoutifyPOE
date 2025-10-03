@@ -1,11 +1,11 @@
 package com.example.routeify.utils
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.Canvas
 import androidx.core.content.ContextCompat
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import androidx.core.graphics.createBitmap
 
 object MapIconUtils {
     
@@ -25,7 +25,7 @@ object MapIconUtils {
             val vectorDrawable = ContextCompat.getDrawable(context, vectorResId)
             val result = vectorDrawable?.let { drawable ->
                 drawable.setBounds(0, 0, 80, 80) // Increased size for better visibility
-                val bitmap = Bitmap.createBitmap(80, 80, Bitmap.Config.ARGB_8888)
+                val bitmap = createBitmap(80, 80)
                 val canvas = Canvas(bitmap)
                 drawable.draw(canvas)
                 BitmapDescriptorFactory.fromBitmap(bitmap)
@@ -76,12 +76,5 @@ object MapIconUtils {
                 }
             }
         }
-    }
-    
-    /**
-     * Clear the icon cache (call this if you need to refresh icons)
-     */
-    fun clearIconCache() {
-        iconCache.clear()
     }
 }

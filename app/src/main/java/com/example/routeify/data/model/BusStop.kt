@@ -111,28 +111,4 @@ object BusStopManager {
             area = "Southern Suburbs"
         )
     )
-    
-    // Function to get stops based on zoom level - SMART LOADING
-    fun getStopsForZoomLevel(zoomLevel: Float): List<BusStop> {
-        return when {
-            zoomLevel < 12f -> majorHubs // Show only major hubs when zoomed out
-            zoomLevel < 15f -> majorHubs + areaStops // Show hubs + area stops at medium zoom
-            else -> majorHubs + areaStops // At high zoom, you'd load nearby stops from API
-        }
-    }
-    
-    // Function to get stops in viewport - PERFORMANCE OPTIMIZATION
-    fun getStopsInBounds(
-        northLat: Double, 
-        southLat: Double, 
-        eastLng: Double, 
-        westLng: Double,
-        zoomLevel: Float
-    ): List<BusStop> {
-        val allStops = getStopsForZoomLevel(zoomLevel)
-        return allStops.filter { stop ->
-            stop.latitude in southLat..northLat && 
-            stop.longitude in westLng..eastLng
-        }
-    }
 }

@@ -1,17 +1,22 @@
 package com.example.routeify
 
 import org.junit.Test
-
 import org.junit.Assert.*
 
 /**
- * Example local unit test, which will execute on the development machine (host).
- *
- * See [testing documentation](http://d.android.com/tools/testing).
+ * Unit tests for Routeify app
  */
-class ExampleUnitTest {
+class RouteifyUnitTest {
+    
     @Test
-    fun addition_isCorrect() {
-        assertEquals(4, 2 + 2)
+    fun busStopDataValidation_isCorrect() {
+        // TODO: Add actual tests for bus stop data validation
+        assertTrue("Placeholder test", true)
+    }
+    
+    @Test  
+    fun routeCalculation_isCorrect() {
+        // TODO: Add tests for route calculation logic
+        assertTrue("Placeholder test", true)
     }
 }

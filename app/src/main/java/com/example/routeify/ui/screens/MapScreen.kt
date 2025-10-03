@@ -17,10 +17,12 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapEffect
+import com.google.maps.android.compose.MapsComposeExperimentalApi
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 import kotlin.math.abs
 
+@OptIn(MapsComposeExperimentalApi::class)
 @Composable
 fun MapScreen() {
     val context = LocalContext.current
@@ -153,10 +155,10 @@ fun MapScreen() {
             // TEST: Draw a hardcoded railway line for testing
             Polyline(
                 points = listOf(
-                    com.google.android.gms.maps.model.LatLng(-33.9249, 18.4241), // Cape Town Station
-                    com.google.android.gms.maps.model.LatLng(-33.9569, 18.4683), // Woodstock
-                    com.google.android.gms.maps.model.LatLng(-33.9707, 18.4847), // Salt River
-                    com.google.android.gms.maps.model.LatLng(-34.0042, 18.5205)  // Observatory
+                    LatLng(-33.9249, 18.4241), // Cape Town Station
+                    LatLng(-33.9569, 18.4683), // Woodstock
+                    LatLng(-33.9707, 18.4847), // Salt River
+                    LatLng(-34.0042, 18.5205)  // Observatory
                 ),
                 color = androidx.compose.ui.graphics.Color.Yellow,
                 width = 8f,
@@ -195,14 +197,14 @@ fun MapScreen() {
                             val railLines = uiState.railwayLines.size
                             val totalStops = uiState.busStops.size
                             
-                            appendLine("🚌 ${busStops} MyCiTi bus stops")
-                            appendLine("🚂 ${railStops} railway stations")
-                            appendLine("🛤️ ${railLines} railway lines")
-                            appendLine("� Total items: ${totalStops}")
+                            appendLine("🚌 $busStops MyCiTi bus stops")
+                            appendLine("🚂 $railStops railway stations")
+                            appendLine("🛤️ $railLines railway lines")
+                            appendLine("� Total items: $totalStops")
                             appendLine("�🔍 Zoom: ${String.format("%.1f", currentZoom)}")
                             
                             // Debug information
-                            if (totalStops == 0 && !uiState.isLoading) {
+                            if (totalStops == 0) {
                                 appendLine("⚠️ No data loaded - check API")
                             }
                             
