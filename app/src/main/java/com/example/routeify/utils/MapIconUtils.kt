@@ -9,20 +9,33 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 
 object MapIconUtils {
     
+    // Cache for bitmap descriptors to improve performance
+    private val iconCache = mutableMapOf<Int, BitmapDescriptor?>()
+    
     /**
      * Convert a vector drawable resource to a BitmapDescriptor for use in Google Maps markers
      */
     fun getBitmapDescriptorFromVector(context: Context, vectorResId: Int): BitmapDescriptor? {
+        // Check cache first
+        if (iconCache.containsKey(vectorResId)) {
+            return iconCache[vectorResId]
+        }
+        
         return try {
             val vectorDrawable = ContextCompat.getDrawable(context, vectorResId)
-            vectorDrawable?.let { drawable ->
-                drawable.setBounds(0, 0, 64, 64) // Size of the marker icon
-                val bitmap = Bitmap.createBitmap(64, 64, Bitmap.Config.ARGB_8888)
+            val result = vectorDrawable?.let { drawable ->
+                drawable.setBounds(0, 0, 80, 80) // Increased size for better visibility
+                val bitmap = Bitmap.createBitmap(80, 80, Bitmap.Config.ARGB_8888)
                 val canvas = Canvas(bitmap)
                 drawable.draw(canvas)
                 BitmapDescriptorFactory.fromBitmap(bitmap)
             }
+            // Cache the result (even if null)
+            iconCache[vectorResId] = result
+            result
         } catch (e: Exception) {
+            android.util.Log.e("MapIconUtils", "Failed to load custom icon $vectorResId: ${e.message}")
+            iconCache[vectorResId] = null
             null // Return null if conversion fails, will fallback to default marker
         }
     }
@@ -33,17 +46,42 @@ object MapIconUtils {
     fun getTransportIcon(context: Context, stopType: com.example.routeify.data.model.StopType): BitmapDescriptor {
         return when (stopType) {
             com.example.routeify.data.model.StopType.MAJOR_HUB -> {
-                getBitmapDescriptorFromVector(context, com.example.routeify.R.drawable.ic_transport_hub)
-                    ?: BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)
+                val customIcon = getBitmapDescriptorFromVector(context, com.example.routeify.R.drawable.ic_transport_hub)
+                if (customIcon != null) {
+                    android.util.Log.d("MapIconUtils", "Using custom hub icon")
+                    customIcon
+                } else {
+                    android.util.Log.w("MapIconUtils", "Fallback to default red marker for hub")
+                    BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)
+                }
             }
             com.example.routeify.data.model.StopType.RAILWAY -> {
-                getBitmapDescriptorFromVector(context, com.example.routeify.R.drawable.ic_train_station)
-                    ?: BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)
+                val customIcon = getBitmapDescriptorFromVector(context, com.example.routeify.R.drawable.ic_train_station)
+                if (customIcon != null) {
+                    android.util.Log.d("MapIconUtils", "Using custom train icon")
+                    customIcon
+                } else {
+                    android.util.Log.w("MapIconUtils", "Fallback to default green marker for railway")
+                    BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)
+                }
             }
             com.example.routeify.data.model.StopType.REGULAR -> {
-                getBitmapDescriptorFromVector(context, com.example.routeify.R.drawable.ic_bus_stop)
-                    ?: BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)
+                val customIcon = getBitmapDescriptorFromVector(context, com.example.routeify.R.drawable.ic_bus_stop)
+                if (customIcon != null) {
+                    android.util.Log.d("MapIconUtils", "Using custom bus stop icon")
+                    customIcon
+                } else {
+                    android.util.Log.w("MapIconUtils", "Fallback to default azure marker for bus stop")
+                    BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)
+                }
             }
         }
+    }
+    
+    /**
+     * Clear the icon cache (call this if you need to refresh icons)
+     */
+    fun clearIconCache() {
+        iconCache.clear()
     }
 }

@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.routeify.data.model.StopType
 import com.example.routeify.ui.viewmodel.MapViewModel
 import com.example.routeify.utils.BusStopClusterItem
 import com.example.routeify.utils.ClusterManagerEffect
@@ -16,7 +17,9 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapEffect
+import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
+import kotlin.math.abs
 
 @Composable
 fun MapScreen() {
@@ -41,15 +44,25 @@ fun MapScreen() {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Cape Town Transport Map",
+                    text = "Cape Town Transport Network",
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
                 Text(
-                    text = if (uiState.isLoading) "Loading real MyCiTi data..." else "Live MyCiTi bus stops with clustering",
+                    text = if (uiState.isLoading) "Loading transport data..." else "Live bus stops & railway stations",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
+                
+                // Debug: Force load button
+                if (!uiState.isLoading) {
+                    Button(
+                        onClick = { viewModel.loadBusStopsForZoom(11f) }, // Use default zoom for now
+                        modifier = Modifier.padding(top = 8.dp)
+                    ) {
+                        Text("Force Reload Data")
+                    }
+                }
             }
         }
 
@@ -62,9 +75,13 @@ fun MapScreen() {
         // Track current zoom level and load data accordingly
         val currentZoom by remember { derivedStateOf { cameraPositionState.position.zoom } }
         
-        // Load data when zoom level changes
+        // PERFORMANCE: Load data when zoom level changes (reduced threshold for better responsiveness)
         LaunchedEffect(currentZoom) {
-            viewModel.loadBusStopsForZoom(currentZoom)
+            val previousZoom = uiState.currentZoom
+            // Load if zoom changed OR if it's the first load (no bus stops)
+            if (abs(currentZoom - previousZoom) > 0.3f || uiState.busStops.isEmpty()) {
+                viewModel.loadBusStopsForZoom(currentZoom)
+            }
         }
 
         // Show error message if any
@@ -104,12 +121,47 @@ fun MapScreen() {
                 .padding(horizontal = 16.dp, vertical = 8.dp),
             cameraPositionState = cameraPositionState,
             onMapLoaded = {
-                // Map is ready, clustering will be set up via clusterManager
+                // Initial load when map is ready
+                viewModel.loadBusStopsForZoom(cameraPositionState.position.zoom)
             }
         ) {
             MapEffect(Unit) { googleMap ->
                 map = googleMap
             }
+            
+            // Draw railway lines as polylines
+            if (uiState.railwayLines.isNotEmpty()) {
+                android.util.Log.d("MapScreen", "Drawing ${uiState.railwayLines.size} railway lines")
+                uiState.railwayLines.forEach { railwayLine ->
+                    android.util.Log.d("MapScreen", "Railway line '${railwayLine.name}' has ${railwayLine.paths.size} paths")
+                    railwayLine.paths.forEach { path ->
+                        if (path.isNotEmpty()) {
+                            android.util.Log.d("MapScreen", "Drawing path with ${path.size} points - first point: ${path.first()}")
+                            Polyline(
+                                points = path,
+                                color = androidx.compose.ui.graphics.Color.Magenta, // Bright magenta for maximum visibility
+                                width = 16f, // Very thick line for visibility
+                                clickable = false
+                            )
+                        }
+                    }
+                }
+            } else {
+                android.util.Log.w("MapScreen", "No railway lines to display - uiState.railwayLines is empty")
+            }
+            
+            // TEST: Draw a hardcoded railway line for testing
+            Polyline(
+                points = listOf(
+                    com.google.android.gms.maps.model.LatLng(-33.9249, 18.4241), // Cape Town Station
+                    com.google.android.gms.maps.model.LatLng(-33.9569, 18.4683), // Woodstock
+                    com.google.android.gms.maps.model.LatLng(-33.9707, 18.4847), // Salt River
+                    com.google.android.gms.maps.model.LatLng(-34.0042, 18.5205)  // Observatory
+                ),
+                color = androidx.compose.ui.graphics.Color.Yellow,
+                width = 8f,
+                clickable = false
+            )
         }
         
         // Update cluster items when data changes
@@ -128,7 +180,7 @@ fun MapScreen() {
                 modifier = Modifier.padding(16.dp)
             ) {
                 Text(
-                    text = "Real MyCiTi Data with Clustering",
+                    text = "Cape Town Transport Network",
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSecondaryContainer
                 )
@@ -136,19 +188,36 @@ fun MapScreen() {
                 Text(
                     text = buildString {
                         if (uiState.isLoading) {
-                            appendLine("⏳ Loading official Cape Town data...")
+                            appendLine("⏳ Optimizing transport data load...")
                         } else {
-                            appendLine("📍 Showing ${uiState.busStops.size} real MyCiTi stops")
-                            appendLine("🔍 Zoom: ${String.format("%.1f", currentZoom)}")
+                            val busStops = uiState.busStops.count { it.stopType != StopType.RAILWAY }
+                            val railStops = uiState.busStops.count { it.stopType == StopType.RAILWAY }
+                            val railLines = uiState.railwayLines.size
+                            val totalStops = uiState.busStops.size
+                            
+                            appendLine("🚌 ${busStops} MyCiTi bus stops")
+                            appendLine("🚂 ${railStops} railway stations")
+                            appendLine("🛤️ ${railLines} railway lines")
+                            appendLine("� Total items: ${totalStops}")
+                            appendLine("�🔍 Zoom: ${String.format("%.1f", currentZoom)}")
+                            
+                            // Debug information
+                            if (totalStops == 0 && !uiState.isLoading) {
+                                appendLine("⚠️ No data loaded - check API")
+                            }
+                            
+                            // Balanced zoom thresholds for better visibility
                             when {
-                                currentZoom < 12f -> appendLine("🔵 Zoom in to see more stops")
-                                currentZoom < 15f -> appendLine("🟠 Medium detail view with clustering")
-                                else -> appendLine("🟢 High detail view with clustering")
+                                currentZoom < 9f -> appendLine("🔵 Major hubs only (20 rail stations)")
+                                currentZoom < 11f -> appendLine("🟡 Default view (25 bus + 15 rail)")
+                                currentZoom < 13f -> appendLine("🟠 Medium detail (40 bus + 20 rail)")
+                                currentZoom < 15f -> appendLine("🟢 High detail (60 bus + 25 rail)")
+                                else -> appendLine("🔴 Maximum detail (80 bus + 30 rail)")
                             }
                         }
-                        appendLine("• Data from City of Cape Town")
-                        appendLine("• 🔵 = Clustered stops, tap to expand")
-                        appendLine("• Custom icons for different stop types")
+                        appendLine("• Memory-optimized with aggressive caching")
+                        appendLine("• OutOfMemory protection enabled")
+                        appendLine("• 🔵 Clustered points • Tap to expand")
                     },
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSecondaryContainer
