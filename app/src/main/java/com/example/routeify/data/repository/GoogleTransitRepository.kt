@@ -1,5 +1,6 @@
 package com.example.routeify.data.repository
 
+import android.location.Location
 import android.util.Log
 import com.example.routeify.data.api.GoogleTransitApi
 import com.example.routeify.data.api.GooglePlace
@@ -30,23 +31,30 @@ class GoogleTransitRepository {
     ): Result<List<TransitStop>> {
         return withContext(Dispatchers.IO) {
             try {
+                // Validate radius (Google Places API max is 50,000 meters)
+                val validRadius = radiusMeters.coerceIn(1, 50000)
+                if (validRadius != radiusMeters) {
+                    Log.w("GoogleTransit", "⚠️ Radius adjusted from $radiusMeters to $validRadius meters")
+                }
+                
                 Log.d("GoogleTransit", "🚀 Starting Google Places API request...")
-                Log.d("GoogleTransit", "📍 Location: $centerLat,$centerLng, Radius: ${radiusMeters}m")
+                Log.d("GoogleTransit", "📍 Location: $centerLat,$centerLng")
+                Log.d("GoogleTransit", "📏 Search Radius: ${validRadius}m (${validRadius/1000.0}km)")
                 Log.d("GoogleTransit", "🔑 API Key available: ${apiKey.take(10)}...")
                 
                 val location = "$centerLat,$centerLng"
                 
                 // Get all types of transit stops with detailed logging
                 Log.d("GoogleTransit", "🚌 Fetching bus stations...")
-                val busStops = api.getNearbyTransitStops(location, radiusMeters, "bus_station", apiKey)
+                val busStops = api.getNearbyTransitStops(location, validRadius, "bus_station", apiKey)
                 Log.d("GoogleTransit", "✅ Bus stations response: ${busStops.results.size} results, status: ${busStops.status}")
                 
                 Log.d("GoogleTransit", "🚇 Fetching subway stations...")
-                val subwayStops = api.getNearbyTransitStops(location, radiusMeters, "subway_station", apiKey)
+                val subwayStops = api.getNearbyTransitStops(location, validRadius, "subway_station", apiKey)
                 Log.d("GoogleTransit", "✅ Subway stations response: ${subwayStops.results.size} results, status: ${subwayStops.status}")
                 
                 Log.d("GoogleTransit", "🚏 Fetching transit stations...")
-                val transitStops = api.getNearbyTransitStops(location, radiusMeters, "transit_station", apiKey)
+                val transitStops = api.getNearbyTransitStops(location, validRadius, "transit_station", apiKey)
                 Log.d("GoogleTransit", "✅ Transit stations response: ${transitStops.results.size} results, status: ${transitStops.status}")
                 
                 // Check for API errors
@@ -58,10 +66,27 @@ class GoogleTransitRepository {
                 }
                 
                 // Combine all stops and convert to TransitStop
-                val allStops = (busStops.results + subwayStops.results + transitStops.results)
+                val allApiResults = (busStops.results + subwayStops.results + transitStops.results)
                     .distinctBy { it.placeId } // Remove duplicates
-                    .map { googlePlace ->
-                        Log.d("GoogleTransit", "📍 Found: ${googlePlace.name} (${googlePlace.types})")
+                
+                Log.d("GoogleTransit", "📊 Total API results before filtering: ${allApiResults.size}")
+                
+                val processedStops = allApiResults.mapNotNull { googlePlace ->
+                    // Calculate distance from center point for verification
+                    val distance = calculateDistance(
+                        centerLat, centerLng,
+                        googlePlace.geometry.location.lat, googlePlace.geometry.location.lng
+                    )
+                    
+                    // Convert distance to meters for comparison
+                    val distanceMeters = (distance * 1000).toInt()
+                    
+                    // Client-side radius filtering as backup
+                    if (distanceMeters <= validRadius) {
+                        Log.d("GoogleTransit", "✅ Including: ${googlePlace.name}")
+                        Log.d("GoogleTransit", "   📏 Distance: ${String.format("%.2f", distance)}km (${distanceMeters}m) - WITHIN radius")
+                        Log.d("GoogleTransit", "   🏷️ Types: ${googlePlace.types}")
+                        
                         TransitStop(
                             id = googlePlace.placeId,
                             name = googlePlace.name,
@@ -71,35 +96,17 @@ class GoogleTransitRepository {
                             vicinity = googlePlace.vicinity,
                             rating = googlePlace.rating
                         )
+                    } else {
+                        Log.d("GoogleTransit", "❌ Excluding: ${googlePlace.name}")
+                        Log.d("GoogleTransit", "   📏 Distance: ${String.format("%.2f", distance)}km (${distanceMeters}m) - OUTSIDE radius (${validRadius}m)")
+                        null
                     }
-                
-                // If no results from API, add some test data to verify the UI works
-                val finalStops = allStops.ifEmpty {
-                    Log.w("GoogleTransit", "⚠️ No stops found from API, adding test data...")
-                    listOf(
-                        TransitStop(
-                            id = "test_1",
-                            name = "Cape Town Station (Test)",
-                            latitude = -33.9249,
-                            longitude = 18.4241,
-                            stopType = TransitStopType.TRAIN_STATION,
-                            vicinity = "Cape Town CBD",
-                            rating = 4.2
-                        ),
-                        TransitStop(
-                            id = "test_2",
-                            name = "Civic Centre Bus Stop (Test)",
-                            latitude = -33.9200,
-                            longitude = 18.4200,
-                            stopType = TransitStopType.BUS_STATION,
-                            vicinity = "Cape Town CBD",
-                            rating = 3.8
-                        )
-                    )
                 }
                 
-                Log.d("GoogleTransit", "🎉 Successfully returning ${finalStops.size} total transit stops")
-                Result.success(finalStops)
+                Log.d("GoogleTransit", "📊 Final filtered results: ${processedStops.size} (from ${allApiResults.size} API results)")
+                
+                Log.d("GoogleTransit", "🎉 Successfully returning ${processedStops.size} total transit stops")
+                Result.success(processedStops)
                 
             } catch (e: Exception) {
                 Log.e("GoogleTransit", "💥 Failed to fetch transit stops", e)
@@ -120,6 +127,16 @@ class GoogleTransitRepository {
             types.contains("transit_station") -> TransitStopType.TRANSIT_STATION
             else -> TransitStopType.BUS_STATION // Default fallback
         }
+    }
+
+    /**
+     * Calculate distance between two points using Android's built-in method
+     * Returns distance in kilometers
+     */
+    private fun calculateDistance(lat1: Double, lng1: Double, lat2: Double, lng2: Double): Double {
+        val results = FloatArray(1)
+        Location.distanceBetween(lat1, lng1, lat2, lng2, results)
+        return (results[0] / 1000.0) // Convert meters to kilometers
     }
 
 }

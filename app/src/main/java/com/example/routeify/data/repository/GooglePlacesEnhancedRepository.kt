@@ -3,8 +3,6 @@ package com.example.routeify.data.repository
 import android.util.Log
 import com.example.routeify.data.api.GooglePlacesExtendedApi
 import com.example.routeify.domain.model.TravelTime
-import com.example.routeify.data.model.TransitStop
-import com.example.routeify.data.model.TransitStopType
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -84,90 +82,17 @@ class GooglePlacesEnhancedRepository {
     }
 
     /**
-     * Search for transit places by text query
-     * Returns sample Cape Town transit stops for demo
+     * Get travel time between a single origin and destination
      */
-    suspend fun searchTransitPlaces(
-        query: String,
-        location: LatLng? = null
-    ): Result<List<TransitStop>> = withContext(Dispatchers.IO) {
-        try {
-            Log.d(TAG, "Searching for transit places: $query")
-            
-            // Return sample Cape Town transit stops
-            val transitStops = listOf(
-                TransitStop(
-                    id = "cape_town_station",
-                    name = "Cape Town Railway Station",
-                    latitude = -33.9175,
-                    longitude = 18.4292,
-                    stopType = TransitStopType.TRAIN_STATION,
-                    vicinity = "Strand Street, Cape Town City Centre",
-                    rating = 4.1
-                ),
-                TransitStop(
-                    id = "civic_centre_station",
-                    name = "Civic Centre Station", 
-                    latitude = -33.9198,
-                    longitude = 18.4234,
-                    stopType = TransitStopType.BUS_STATION,
-                    vicinity = "Hertzog Boulevard, Cape Town",
-                    rating = 3.8
-                ),
-                TransitStop(
-                    id = "waterfront_shuttle",
-                    name = "V&A Waterfront Shuttle Stop",
-                    latitude = -33.9032,
-                    longitude = 18.4168,
-                    stopType = TransitStopType.BUS_STATION,
-                    vicinity = "V&A Waterfront, Cape Town",
-                    rating = 4.3
-                ),
-                TransitStop(
-                    id = "greenmarket_square_stop",
-                    name = "Greenmarket Square Bus Stop",
-                    latitude = -33.9226,
-                    longitude = 18.4193,
-                    stopType = TransitStopType.BUS_STATION,
-                    vicinity = "Greenmarket Square, Cape Town City Centre", 
-                    rating = 3.9
-                ),
-                TransitStop(
-                    id = "bellville_station",
-                    name = "Bellville Railway Station",
-                    latitude = -33.8953,
-                    longitude = 18.6224,
-                    stopType = TransitStopType.TRAIN_STATION,
-                    vicinity = "Charlie Hofmeyr Street, Bellville",
-                    rating = 4.0
-                )
-            )
-            
-            Log.d(TAG, "Found ${transitStops.size} transit stops")
-            Result.success(transitStops)
-            
-        } catch (e: Exception) {
-            Log.e(TAG, "Error searching transit places", e)
-            Result.failure(e)
-        }
-    }
-
     suspend fun getQuickTravelTime(
         origin: LatLng,
         destination: LatLng
-    ): Result<TravelTime> = withContext(Dispatchers.IO) {
-        try {
-            val result = getTravelTimes(
-                origins = listOf(origin),
-                destinations = listOf(destination)
-            )
-            
-            result.map { travelTimes ->
-                travelTimes.firstOrNull() ?: throw Exception("No travel time found")
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error getting quick travel time", e)
-            Result.failure(e)
+    ): Result<TravelTime> {
+        return getTravelTimes(
+            origins = listOf(origin),
+            destinations = listOf(destination)
+        ).map { travelTimes ->
+            travelTimes.firstOrNull() ?: throw Exception("No travel time found")
         }
     }
 

@@ -120,10 +120,10 @@ fun NearbyTransitScreen(
                 // Search Button
                 Button(
                     onClick = {
-                        // Search for nearby transit
+                        // Search for nearby transit using selected radius
                         viewModel.searchTransitPlaces(
-                            query = "transit station bus stop"
-                            // Cape Town City Centre
+                            query = "transit station bus stop",
+                            radiusMeters = searchRadius
                         )
                     },
                     modifier = Modifier.fillMaxWidth(),

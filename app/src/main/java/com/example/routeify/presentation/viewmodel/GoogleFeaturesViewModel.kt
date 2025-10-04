@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.routeify.data.repository.GooglePlacesEnhancedRepository
+import com.example.routeify.data.repository.GoogleTransitRepository
 import com.example.routeify.data.model.TransitStop
 import com.example.routeify.domain.model.TravelTime
 import com.google.android.gms.maps.model.LatLng
@@ -16,6 +17,7 @@ import kotlinx.coroutines.launch
 class GoogleFeaturesViewModel : ViewModel() {
 
     private val repository = GooglePlacesEnhancedRepository()
+    private val transitRepository = GoogleTransitRepository()
 
     // UI State
     var travelTimes = mutableStateOf<List<TravelTime>>(emptyList())
@@ -51,14 +53,20 @@ class GoogleFeaturesViewModel : ViewModel() {
     }
 
     /**
-     * Search for transit places
+     * Search for nearby transit places using Google Places API
      */
-    fun searchTransitPlaces(query: String) {
+    fun searchTransitPlaces(query: String, radiusMeters: Int = 5000) {
         viewModelScope.launch {
             isLoading.value = true
             errorMessage.value = null
             
-            repository.searchTransitPlaces(query)
+            // Use the working GoogleTransitRepository instead
+            // Default to Cape Town coordinates (Green Point area)
+            transitRepository.getTransitStops(
+                centerLat = -33.9032, // Green Point, Cape Town
+                centerLng = 18.4168,
+                radiusMeters = radiusMeters
+            )
                 .onSuccess { results ->
                     searchResults.value = results
                 }
