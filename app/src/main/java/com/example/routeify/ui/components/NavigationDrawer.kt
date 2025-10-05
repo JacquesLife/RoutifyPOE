@@ -25,6 +25,8 @@ fun AppNavigationDrawer(
     onNavigate: (String) -> Unit,
     onDismiss: () -> Unit,
     onLogout: () -> Unit,
+    username: String?,
+    email: String?,
     content: @Composable () -> Unit
 ) {
     val items = listOf(
@@ -42,7 +44,7 @@ fun AppNavigationDrawer(
         drawerContent = {
             ModalDrawerSheet {
                 // Drawer Header
-                DrawerHeader()
+                DrawerHeader(username = username, email = email)
 
                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
@@ -92,7 +94,7 @@ fun AppNavigationDrawer(
 }
 
 @Composable
-private fun DrawerHeader() {
+private fun DrawerHeader(username: String?, email: String?) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -107,11 +109,11 @@ private fun DrawerHeader() {
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = "John Doe",
+            text = username ?: "Guest",
             style = MaterialTheme.typography.titleLarge
         )
         Text(
-            text = "john.doe@example.com",
+            text = email ?: "",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )

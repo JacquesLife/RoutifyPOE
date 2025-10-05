@@ -30,6 +30,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -37,11 +39,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.routeify.ui.viewmodel.AuthViewModel
 import com.example.routeify.ui.theme.RouteifyBlue500
 import com.example.routeify.ui.theme.RouteifyGreen500
 
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(authViewModel: AuthViewModel = viewModel()) {
+    val authState by authViewModel.authState.collectAsState()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -63,8 +68,13 @@ fun ProfileScreen() {
                                 .size(48.dp),
                             contentAlignment = Alignment.Center
                         ) {
+                            val initials = (authState.username ?: "").split(" ")
+                                .mapNotNull { it.firstOrNull()?.uppercase() }
+                                .joinToString("")
+                                .take(2)
+                                .ifBlank { "GU" }
                             Text(
-                                text = "JD",
+                                text = initials,
                                 color = Color.White,
                                 fontWeight = FontWeight.Bold
                             )
@@ -72,8 +82,8 @@ fun ProfileScreen() {
                     }
                     Spacer(modifier = Modifier.width(12.dp))
                     Column {
-                        Text("RudolphRedNose", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
-                        Text("North.pole@gmail.com", color = Color.White.copy(alpha = 0.9f), fontSize = 12.sp)
+                        Text(authState.username ?: "Guest", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
+                        Text(authState.email ?: "", color = Color.White.copy(alpha = 0.9f), fontSize = 12.sp)
                     }
                 }
             }

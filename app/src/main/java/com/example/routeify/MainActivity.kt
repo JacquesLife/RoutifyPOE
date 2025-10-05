@@ -168,7 +168,9 @@ fun MainApp() {
                     popUpTo(0) { inclusive = true }
                     launchSingleTop = true
                 }
-            }
+            },
+            username = authState.username,
+            email = authState.email
         ) {
             content()
         }
