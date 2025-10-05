@@ -7,16 +7,26 @@ import kotlinx.coroutines.withContext
 import java.security.MessageDigest
 
 class UserRepository(private val userDao: UserDao) {
-    suspend fun register(email: String, password: String): Result<User> = withContext(Dispatchers.IO) {
-        val existing = userDao.findByEmail(email)
-        if (existing != null) return@withContext Result.failure(IllegalStateException("Email already in use"))
-        val user = User(email = email, passwordHash = hash(password))
+    suspend fun register(email: String, username: String, password: String): Result<User> = withContext(Dispatchers.IO) {
+        val existingEmail = userDao.findByEmail(email)
+        if (existingEmail != null) return@withContext Result.failure(IllegalStateException("Email already in use"))
+        val existingUsername = userDao.findByUsername(username)
+        if (existingUsername != null) return@withContext Result.failure(IllegalStateException("Username already in use"))
+        val user = User(email = email, username = username, passwordHash = hash(password))
         val id = userDao.insert(user)
         Result.success(user.copy(id = id))
     }
 
-    suspend fun login(email: String, password: String): Result<User> = withContext(Dispatchers.IO) {
+    suspend fun loginWithEmail(email: String, password: String): Result<User> = withContext(Dispatchers.IO) {
         val user = userDao.findByEmail(email)
+        if (user == null || user.passwordHash != hash(password)) {
+            return@withContext Result.failure(IllegalArgumentException("Invalid credentials"))
+        }
+        Result.success(user)
+    }
+
+    suspend fun loginWithUsername(username: String, password: String): Result<User> = withContext(Dispatchers.IO) {
+        val user = userDao.findByUsername(username)
         if (user == null || user.passwordHash != hash(password)) {
             return@withContext Result.failure(IllegalArgumentException("Invalid credentials"))
         }

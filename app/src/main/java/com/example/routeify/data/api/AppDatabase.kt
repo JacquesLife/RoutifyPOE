@@ -6,7 +6,7 @@ import com.example.routeify.data.model.User
 
 @Database(
     entities = [User::class],
-    version = 1,
+    version = 2,
     exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {

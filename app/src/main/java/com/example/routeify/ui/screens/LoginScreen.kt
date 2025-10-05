@@ -21,7 +21,7 @@ fun LoginScreen(
 ) {
     val authState by authViewModel.authState.collectAsState()
 
-    var email by remember { mutableStateOf("") }
+    var emailOrUsername by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
     LaunchedEffect(authState.isAuthenticated) {
@@ -34,9 +34,9 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
-                label = { Text("Email") },
+                value = emailOrUsername,
+                onValueChange = { emailOrUsername = it },
+                label = { Text("Email or Username") },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -56,7 +56,7 @@ fun LoginScreen(
             }
 
             Spacer(modifier = Modifier.height(16.dp))
-            Button(onClick = { authViewModel.login(email, password) }, modifier = Modifier.fillMaxWidth()) {
+            Button(onClick = { authViewModel.login(emailOrUsername, password) }, modifier = Modifier.fillMaxWidth()) {
                 Text("Login")
             }
             Spacer(modifier = Modifier.height(8.dp))

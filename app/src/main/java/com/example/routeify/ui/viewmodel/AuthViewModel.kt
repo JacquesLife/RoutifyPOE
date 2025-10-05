@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 data class AuthState(
     val isAuthenticated: Boolean = false,
     val email: String? = null,
+    val username: String? = null,
     val errorMessage: String? = null
 )
 
@@ -36,25 +37,30 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             authStore.isAuthenticatedFlow
                 .combine(authStore.emailFlow) { isAuth, email -> isAuth to email }
-                .collect { (isAuth, email) ->
-                    if (isAuth && email != null) {
-                        _authState.value = AuthState(isAuthenticated = true, email = email)
+                .combine(authStore.usernameFlow) { (isAuth, email), username -> Triple(isAuth, email, username) }
+                .collect { (isAuth, email, username) ->
+                    if (isAuth && email != null && username != null) {
+                        _authState.value = AuthState(isAuthenticated = true, email = email, username = username)
                     }
                 }
         }
     }
 
-    fun login(email: String, password: String) {
-        if (email.isBlank() || password.length < 4) {
+    fun login(emailOrUsername: String, password: String) {
+        if (emailOrUsername.isBlank() || password.length < 4) {
             _authState.value = AuthState(isAuthenticated = false, email = null, errorMessage = "Invalid credentials")
             return
         }
         viewModelScope.launch {
-            val result = userRepository.login(email, password)
+            val result = if ("@" in emailOrUsername) {
+                userRepository.loginWithEmail(emailOrUsername, password)
+            } else {
+                userRepository.loginWithUsername(emailOrUsername, password)
+            }
             result
                 .onSuccess {
-                    _authState.value = AuthState(isAuthenticated = true, email = it.email)
-                    authStore.setAuthenticated(it.email)
+                    _authState.value = AuthState(isAuthenticated = true, email = it.email, username = it.username)
+                    authStore.setAuthenticated(it.email, it.username)
                 }
                 .onFailure {
                     _authState.value = AuthState(isAuthenticated = false, email = null, errorMessage = it.message)
@@ -62,17 +68,17 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun register(email: String, password: String, confirm: String) {
-        if (email.isBlank() || password.length < 4 || password != confirm) {
+    fun register(email: String, username: String, password: String, confirm: String) {
+        if (email.isBlank() || username.isBlank() || password.length < 4 || password != confirm) {
             _authState.value = AuthState(isAuthenticated = false, email = null, errorMessage = "Registration failed")
             return
         }
         viewModelScope.launch {
-            val result = userRepository.register(email, password)
+            val result = userRepository.register(email, username, password)
             result
                 .onSuccess {
-                    _authState.value = AuthState(isAuthenticated = true, email = it.email)
-                    authStore.setAuthenticated(it.email)
+                    _authState.value = AuthState(isAuthenticated = true, email = it.email, username = it.username)
+                    authStore.setAuthenticated(it.email, it.username)
                 }
                 .onFailure {
                     _authState.value = AuthState(isAuthenticated = false, email = null, errorMessage = it.message)

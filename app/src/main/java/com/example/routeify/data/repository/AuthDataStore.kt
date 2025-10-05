@@ -14,15 +14,18 @@ class AuthDataStore(private val context: Context) {
     private object Keys {
         val isAuthenticated = booleanPreferencesKey("is_authenticated")
         val email = stringPreferencesKey("email")
+        val username = stringPreferencesKey("username")
     }
 
     val isAuthenticatedFlow: Flow<Boolean> = context.authPrefs.data.map { it[Keys.isAuthenticated] ?: false }
     val emailFlow: Flow<String?> = context.authPrefs.data.map { it[Keys.email] }
+    val usernameFlow: Flow<String?> = context.authPrefs.data.map { it[Keys.username] }
 
-    suspend fun setAuthenticated(email: String) {
+    suspend fun setAuthenticated(email: String, username: String) {
         context.authPrefs.edit { prefs ->
             prefs[Keys.isAuthenticated] = true
             prefs[Keys.email] = email
+            prefs[Keys.username] = username
         }
     }
 
@@ -30,6 +33,7 @@ class AuthDataStore(private val context: Context) {
         context.authPrefs.edit { prefs ->
             prefs[Keys.isAuthenticated] = false
             prefs.remove(Keys.email)
+            prefs.remove(Keys.username)
         }
     }
 }
