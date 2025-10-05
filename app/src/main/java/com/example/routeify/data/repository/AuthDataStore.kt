@@ -1,7 +1,6 @@
 package com.example.routeify.data.repository
 
 import android.content.Context
-import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -21,14 +20,14 @@ class AuthDataStore(private val context: Context) {
     val emailFlow: Flow<String?> = context.authPrefs.data.map { it[Keys.email] }
 
     suspend fun setAuthenticated(email: String) {
-        context.authPrefs.edit { prefs: Preferences ->
+        context.authPrefs.edit { prefs ->
             prefs[Keys.isAuthenticated] = true
             prefs[Keys.email] = email
         }
     }
 
     suspend fun clear() {
-        context.authPrefs.edit { prefs: Preferences ->
+        context.authPrefs.edit { prefs ->
             prefs[Keys.isAuthenticated] = false
             prefs.remove(Keys.email)
         }
