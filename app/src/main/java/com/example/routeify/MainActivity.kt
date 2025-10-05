@@ -20,6 +20,10 @@ import com.example.routeify.ui.screens.SplashScreen
 import com.example.routeify.ui.screens.MapScreen
 import com.example.routeify.ui.screens.ProfileScreen
 import com.example.routeify.ui.screens.SettingsScreen
+import com.example.routeify.ui.screens.LoginScreen
+import com.example.routeify.ui.screens.RegisterScreen
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.routeify.ui.viewmodel.AuthViewModel
 import com.example.routeify.presentation.screen.GoogleFeaturesScreen
 import com.example.routeify.ui.theme.RouteifyTheme
 
@@ -45,48 +49,36 @@ fun MainApp() {
     val scope = rememberCoroutineScope()
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = currentBackStackEntry?.destination?.route ?: "home"
+    val authViewModel: AuthViewModel = viewModel()
+    val authState by authViewModel.authState.collectAsState()
 
-    AppNavigationDrawer(
-        drawerState = drawerState,
-        selectedRoute = currentRoute,
-        onNavigate = { route ->
-            navController.navigate(route) {
-                // Pop up to the start destination to avoid building up a large stack
-                popUpTo(navController.graph.startDestinationId) {
-                    saveState = true
-                }
-                launchSingleTop = true
-                restoreState = true
-            }
-        },
-        onDismiss = {
-            scope.launch {
-                drawerState.close()
-            }
-        }
-    ) {
+    val isAuthRoute = currentRoute in listOf("login", "register", "splash") && !authState.isAuthenticated
+
+    val content: @Composable () -> Unit = {
         Scaffold(
             topBar = {
-                TopAppBar(
-                    title = { Text(getCurrentTitle(currentRoute)) },
-                    navigationIcon = {
-                        IconButton(onClick = {
-                            scope.launch {
-                                drawerState.open()
+                if (!isAuthRoute) {
+                    TopAppBar(
+                        title = { Text(getCurrentTitle(currentRoute)) },
+                        navigationIcon = {
+                            IconButton(onClick = {
+                                scope.launch {
+                                    drawerState.open()
+                                }
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Default.Menu,
+                                    contentDescription = "Menu"
+                                )
                             }
-                        }) {
-                            Icon(
-                                imageVector = Icons.Default.Menu,
-                                contentDescription = "Menu"
-                            )
-                        }
-                    },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                        navigationIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                        },
+                        colors = TopAppBarDefaults.topAppBarColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                            navigationIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
                     )
-                )
+                }
             }
         ) { paddingValues ->
             NavHost(
@@ -96,9 +88,16 @@ fun MainApp() {
             ) {
                 composable("splash") {
                     SplashScreen {
-                        navController.navigate("home") {
-                            popUpTo("splash") { inclusive = true }
-                            launchSingleTop = true
+                        if (authState.isAuthenticated) {
+                            navController.navigate("home") {
+                                popUpTo("splash") { inclusive = true }
+                                launchSingleTop = true
+                            }
+                        } else {
+                            navController.navigate("login") {
+                                popUpTo("splash") { inclusive = true }
+                                launchSingleTop = true
+                            }
                         }
                     }
                 }
@@ -113,7 +112,65 @@ fun MainApp() {
                 composable("notifications") {
                     ScreenPlaceholder("Notifications")
                 }
+                composable("login") {
+                    LoginScreen(
+                        onLoginSuccess = {
+                            navController.navigate("home") {
+                                popUpTo("login") { inclusive = true }
+                                launchSingleTop = true
+                            }
+                        },
+                        onNavigateToRegister = {
+                            navController.navigate("register")
+                        },
+                        authViewModel = authViewModel
+                    )
+                }
+                composable("register") {
+                    RegisterScreen(
+                        onRegisterSuccess = {
+                            navController.navigate("home") {
+                                popUpTo("register") { inclusive = true }
+                                launchSingleTop = true
+                            }
+                        },
+                        onNavigateToLogin = {
+                            navController.navigate("login")
+                        },
+                        authViewModel = authViewModel
+                    )
+                }
             }
+        }
+    }
+
+    if (isAuthRoute) {
+        content()
+    } else {
+        AppNavigationDrawer(
+            drawerState = drawerState,
+            selectedRoute = currentRoute,
+            onNavigate = { route ->
+                navController.navigate(route) {
+                    popUpTo(navController.graph.startDestinationId) {
+                        saveState = true
+                    }
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            },
+            onDismiss = {
+                scope.launch { drawerState.close() }
+            },
+            onLogout = {
+                authViewModel.logout()
+                navController.navigate("login") {
+                    popUpTo(0) { inclusive = true }
+                    launchSingleTop = true
+                }
+            }
+        ) {
+            content()
         }
     }
 }

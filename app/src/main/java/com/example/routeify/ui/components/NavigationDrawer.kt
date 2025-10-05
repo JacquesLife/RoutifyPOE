@@ -24,6 +24,7 @@ fun AppNavigationDrawer(
     selectedRoute: String,
     onNavigate: (String) -> Unit,
     onDismiss: () -> Unit,
+    onLogout: () -> Unit,
     content: @Composable () -> Unit
 ) {
     val items = listOf(
@@ -76,7 +77,10 @@ fun AppNavigationDrawer(
                     icon = { Icon(Icons.AutoMirrored.Filled.ExitToApp, contentDescription = "Logout") },
                     label = { Text("Logout") },
                     selected = false,
-                    onClick = { /* Handle logout */ },
+                    onClick = {
+                        onLogout()
+                        onDismiss()
+                    },
                     modifier = Modifier.padding(horizontal = 12.dp)
                 )
 

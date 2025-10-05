@@ -1,0 +1,38 @@
+package com.example.routeify.data.repository
+
+import android.content.Context
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+
+private val Context.authPrefs by preferencesDataStore(name = "auth_prefs")
+
+class AuthDataStore(private val context: Context) {
+    private object Keys {
+        val isAuthenticated = booleanPreferencesKey("is_authenticated")
+        val email = stringPreferencesKey("email")
+    }
+
+    val isAuthenticatedFlow: Flow<Boolean> = context.authPrefs.data.map { it[Keys.isAuthenticated] ?: false }
+    val emailFlow: Flow<String?> = context.authPrefs.data.map { it[Keys.email] }
+
+    suspend fun setAuthenticated(email: String) {
+        context.authPrefs.edit { prefs: Preferences ->
+            prefs[Keys.isAuthenticated] = true
+            prefs[Keys.email] = email
+        }
+    }
+
+    suspend fun clear() {
+        context.authPrefs.edit { prefs: Preferences ->
+            prefs[Keys.isAuthenticated] = false
+            prefs.remove(Keys.email)
+        }
+    }
+}
+
+

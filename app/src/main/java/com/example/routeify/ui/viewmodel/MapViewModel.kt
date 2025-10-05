@@ -16,14 +16,7 @@ data class MapUiState(
     val currentZoom: Float = 11f
 )
 
-/**
- * 🚀 DRAMATICALLY SIMPLIFIED MapViewModel using Google Transit!
- * 
- * BEFORE: 156 lines with complex zoom logic, caching, debouncing
- * AFTER: 60 lines with simple, clean Google API calls
- * 
- * Google handles all the complexity for us! 🎉
- */
+
 class MapViewModel : ViewModel() {
     
     private val repository = GoogleTransitRepository()
@@ -65,24 +58,3 @@ class MapViewModel : ViewModel() {
     }
 }
 
-/**
- * 🎯 MIGRATION BENEFITS:
- * 
- * ❌ REMOVED (Google handles this):
- * - Complex zoom-based loading logic
- * - Manual memory management  
- * - Debouncing and job cancellation
- * - Multiple API endpoint coordination
- * - Railway line coordinate conversion
- * - Manual caching and cache invalidation
- * - Performance optimizations
- * 
- * ✅ GAINED:
- * - Real-time transit data
- * - Automatic relevance filtering
- * - Google's infrastructure reliability
- * - Unified global transit system
- * - Much simpler codebase
- * - Better error handling
- * - Automatic rate limiting
- */
