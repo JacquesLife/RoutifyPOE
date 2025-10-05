@@ -28,6 +28,13 @@ import com.example.routeify.presentation.screen.GoogleFeaturesScreen
 import com.example.routeify.ui.theme.RouteifyTheme
 
 import kotlinx.coroutines.launch
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,6 +58,31 @@ fun MainApp() {
     val currentRoute = currentBackStackEntry?.destination?.route ?: "home"
     val authViewModel: AuthViewModel = viewModel()
     val authState by authViewModel.authState.collectAsState()
+    val context = androidx.compose.ui.platform.LocalContext.current
+
+    // Configure Google Sign-In
+    val gso = remember {
+        GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestEmail()
+            .build()
+    }
+    val googleClient = remember { GoogleSignIn.getClient(context, gso) }
+
+    val googleSignInLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+        try {
+            val account: GoogleSignInAccount = task.getResult(ApiException::class.java)
+            val email = account.email
+            val name = account.displayName
+            if (email != null) {
+                authViewModel.ssoSignIn(email, name)
+            }
+        } catch (e: ApiException) {
+            // ignore for now or show a snackbar
+        }
+    }
 
     val isAuthRoute = currentRoute in listOf("login", "register", "splash") && !authState.isAuthenticated
 
@@ -123,6 +155,9 @@ fun MainApp() {
                         onNavigateToRegister = {
                             navController.navigate("register")
                         },
+                        onGoogleSignInClick = {
+                            googleSignInLauncher.launch(googleClient.signInIntent)
+                        },
                         authViewModel = authViewModel
                     )
                 }
@@ -136,6 +171,9 @@ fun MainApp() {
                         },
                         onNavigateToLogin = {
                             navController.navigate("login")
+                        },
+                        onGoogleSignInClick = {
+                            googleSignInLauncher.launch(googleClient.signInIntent)
                         },
                         authViewModel = authViewModel
                     )

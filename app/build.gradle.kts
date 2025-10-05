@@ -82,6 +82,7 @@ dependencies {
     implementation(libs.google.play.services.maps)
     implementation(libs.google.maps.compose)
     implementation(libs.google.maps.utils)
+    implementation(libs.google.play.services.auth)
 
     // Networking for Google APIs
     implementation(libs.retrofit)

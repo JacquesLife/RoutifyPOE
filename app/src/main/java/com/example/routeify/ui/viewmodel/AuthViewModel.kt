@@ -90,6 +90,22 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
         _authState.value = AuthState()
         viewModelScope.launch { authStore.clear() }
     }
+
+    fun ssoSignIn(email: String, displayName: String?) {
+        viewModelScope.launch {
+            val generatedUsername = displayName?.replace("\s+".toRegex(), "")?.lowercase()?.takeIf { it.isNotBlank() }
+                ?: email.substringBefore("@")
+            val result = userRepository.upsertSsoUser(email, generatedUsername)
+            result
+                .onSuccess {
+                    _authState.value = AuthState(isAuthenticated = true, email = it.email, username = it.username)
+                    authStore.setAuthenticated(it.email, it.username)
+                }
+                .onFailure {
+                    _authState.value = AuthState(isAuthenticated = false, email = null, errorMessage = it.message)
+                }
+        }
+    }
 }
 
 

@@ -33,6 +33,22 @@ class UserRepository(private val userDao: UserDao) {
         Result.success(user)
     }
 
+    suspend fun upsertSsoUser(email: String, username: String): Result<User> = withContext(Dispatchers.IO) {
+        val existingEmail = userDao.findByEmail(email)
+        if (existingEmail != null) return@withContext Result.success(existingEmail)
+        val existingUsername = userDao.findByUsername(username)
+        val uniqueUsername = if (existingUsername == null) username else generateUniqueUsername(username)
+        val user = User(email = email, username = uniqueUsername, passwordHash = "")
+        val id = userDao.insert(user)
+        Result.success(user.copy(id = id))
+    }
+
+    private suspend fun generateUniqueUsername(base: String, attempt: Int = 1): String {
+        val candidate = if (attempt == 1) base else "$base$attempt"
+        val exists = userDao.findByUsername(candidate) != null
+        return if (!exists) candidate else generateUniqueUsername(base, attempt + 1)
+    }
+
     private fun hash(value: String): String {
         val bytes = MessageDigest.getInstance("SHA-256").digest(value.toByteArray())
         return bytes.joinToString("") { "%02x".format(it) }

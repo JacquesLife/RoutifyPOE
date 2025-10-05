@@ -1,6 +1,8 @@
 package com.example.routeify.ui.screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Google
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -17,6 +19,7 @@ import com.example.routeify.ui.viewmodel.AuthViewModel
 fun LoginScreen(
     onLoginSuccess: () -> Unit,
     onNavigateToRegister: () -> Unit,
+    onGoogleSignInClick: () -> Unit,
     authViewModel: AuthViewModel = viewModel()
 ) {
     val authState by authViewModel.authState.collectAsState()
@@ -62,6 +65,14 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(8.dp))
             Button(onClick = onNavigateToRegister, modifier = Modifier.fillMaxWidth()) {
                 Text("Create an account")
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(onClick = onGoogleSignInClick, modifier = Modifier.fillMaxWidth()) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.Google, contentDescription = null)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Continue with Google")
+                }
             }
         }
     }

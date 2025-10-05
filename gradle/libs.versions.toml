@@ -16,6 +16,7 @@ room = "2.6.1"
 playServicesMaps = "18.2.0"
 mapsCompose = "4.3.3"
 mapsUtils = "3.8.2"
+playServicesAuth = "21.2.0"
 
 # Networking
 retrofit = "2.9.0"
@@ -47,6 +48,7 @@ androidx-room-compiler = { group = "androidx.room", name = "room-compiler", vers
 google-play-services-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "playServicesMaps" }
 google-maps-compose = { group = "com.google.maps.android", name = "maps-compose", version.ref = "mapsCompose" }
 google-maps-utils = { group = "com.google.maps.android", name = "android-maps-utils", version.ref = "mapsUtils" }
+google-play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }
 
 # Networking  
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
