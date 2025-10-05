@@ -2,7 +2,8 @@ package com.example.routeify.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Google
+import androidx.compose.material3.Icon
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -69,7 +70,7 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(16.dp))
             Button(onClick = onGoogleSignInClick, modifier = Modifier.fillMaxWidth()) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.Google, contentDescription = null)
+                    Icon(Icons.Default.AccountCircle, contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("Continue with Google")
                 }

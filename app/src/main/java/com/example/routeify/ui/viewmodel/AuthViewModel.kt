@@ -93,7 +93,7 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
 
     fun ssoSignIn(email: String, displayName: String?) {
         viewModelScope.launch {
-            val generatedUsername = displayName?.replace("\s+".toRegex(), "")?.lowercase()?.takeIf { it.isNotBlank() }
+            val generatedUsername = displayName?.replace("\\s+".toRegex(), "")?.lowercase()?.takeIf { it.isNotBlank() }
                 ?: email.substringBefore("@")
             val result = userRepository.upsertSsoUser(email, generatedUsername)
             result

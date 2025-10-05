@@ -26,7 +26,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.routeify.ui.viewmodel.AuthViewModel
 import com.example.routeify.presentation.screen.GoogleFeaturesScreen
 import com.example.routeify.ui.theme.RouteifyTheme
-
+import android.widget.Toast
 import kotlinx.coroutines.launch
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -80,7 +80,7 @@ fun MainApp() {
                 authViewModel.ssoSignIn(email, name)
             }
         } catch (e: ApiException) {
-            // ignore for now or show a snackbar
+            Toast.makeText(context, "Google sign-in failed: ${e.statusCode}", Toast.LENGTH_LONG).show()
         }
     }
 
