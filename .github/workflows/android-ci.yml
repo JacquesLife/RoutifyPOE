@@ -26,7 +26,7 @@ jobs:
 
       # Cache Gradle dependencies for faster builds
       - name: Cache Gradle packages
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.gradle/caches
@@ -49,7 +49,7 @@ jobs:
 
       # Upload test results
       - name: Upload Unit Test Results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()  # Upload even if tests fail
         with:
           name: unit-test-results
@@ -59,7 +59,7 @@ jobs:
 
       # Upload lint results
       - name: Upload Lint Results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: lint-results
