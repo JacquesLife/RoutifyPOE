@@ -37,6 +37,7 @@ class GoogleTransitRepository {
                     Log.w("GoogleTransit", "⚠️ Radius adjusted from $radiusMeters to $validRadius meters")
                 }
                 
+                // Detailed logging for debugging
                 Log.d("GoogleTransit", "🚀 Starting Google Places API request...")
                 Log.d("GoogleTransit", "📍 Location: $centerLat,$centerLng")
                 Log.d("GoogleTransit", "📏 Search Radius: ${validRadius}m (${validRadius/1000.0}km)")
