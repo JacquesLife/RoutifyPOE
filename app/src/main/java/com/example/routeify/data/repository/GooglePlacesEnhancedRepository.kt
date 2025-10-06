@@ -95,7 +95,9 @@ class GooglePlacesEnhancedRepository {
     suspend fun getTransitDirections(
         origin: String,
         destination: String,
-        departureTime: Long? = null
+        departureTime: Long? = null,
+        transitModes: String? = null,
+        wheelchairAccessible: Boolean = false
     ): Result<List<TransitRoute>> = withContext(Dispatchers.IO) {
         try {
             Log.d(TAG, "Getting transit directions from $origin to $destination")
@@ -108,7 +110,8 @@ class GooglePlacesEnhancedRepository {
                 mode = "transit",
                 alternatives = true,
                 apiKey = apiKey,
-                departureTime = departureTimeStr
+                departureTime = departureTimeStr,
+                transitMode = transitModes
             )
 
             if (response.status == "OK" && response.routes.isNotEmpty()) {

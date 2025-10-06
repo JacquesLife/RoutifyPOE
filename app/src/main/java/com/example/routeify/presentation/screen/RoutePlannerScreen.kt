@@ -46,6 +46,25 @@ enum class TimeSelectionMode {
     ARRIVE_BY
 }
 
+enum class TransitMode {
+    BUS,
+    TRAIN,
+    TRAM,
+    WALK
+}
+
+enum class RoutePreference {
+    FASTEST,
+    FEWEST_TRANSFERS,
+    LEAST_WALKING
+}
+
+data class RouteFilters(
+    val transitModes: Set<TransitMode> = emptySet(),
+    val preference: RoutePreference? = null,
+    val wheelchairAccessible: Boolean = false
+)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RoutePlannerScreen(
@@ -67,6 +86,10 @@ fun RoutePlannerScreen(
     var timeSelectionMode by remember { mutableStateOf(TimeSelectionMode.LEAVE_NOW) }
     var selectedDateTime by remember { mutableStateOf(LocalDateTime.now()) }
     var showTimePicker by remember { mutableStateOf(false) }
+
+    // Filter state
+    var routeFilters by remember { mutableStateOf(RouteFilters()) }
+    var showFilters by remember { mutableStateOf(false) }
 
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -362,6 +385,16 @@ fun RoutePlannerScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Filters section
+            FiltersSection(
+                filters = routeFilters,
+                showFilters = showFilters,
+                onFiltersChange = { routeFilters = it },
+                onShowFiltersChange = { showFilters = it }
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -424,7 +457,23 @@ fun RoutePlannerScreen(
                         selectedDateTime.toEpochSecond(java.time.ZoneOffset.UTC) * 1000 // Convert to milliseconds
                     }
                     
-                    viewModel.getTransitRoutes(fromLocation, toLocation, departureTime)
+                    // Convert filters to API parameters
+                    val transitModes = routeFilters.transitModes.map { mode ->
+                        when (mode) {
+                            TransitMode.BUS -> "bus"
+                            TransitMode.TRAIN -> "train"
+                            TransitMode.TRAM -> "tram"
+                            TransitMode.WALK -> "walking"
+                        }
+                    }.joinToString("|")
+                    
+                    viewModel.getTransitRoutes(
+                        fromLocation, 
+                        toLocation, 
+                        departureTime,
+                        transitModes.ifEmpty { null },
+                        routeFilters.wheelchairAccessible
+                    )
                 },
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !isLoadingRoutes && fromLocation.isNotEmpty() && toLocation.isNotEmpty()
@@ -904,6 +953,158 @@ private fun RouteSegmentItem(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun FiltersSection(
+    filters: RouteFilters,
+    showFilters: Boolean,
+    onFiltersChange: (RouteFilters) -> Unit,
+    onShowFiltersChange: (Boolean) -> Unit
+) {
+    Column {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Route Options",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Medium
+            )
+            
+            TextButton(
+                onClick = { onShowFiltersChange(!showFilters) }
+            ) {
+                Text(if (showFilters) "Hide" else "Show")
+                Icon(
+                    if (showFilters) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp)
+                )
+            }
+        }
+        
+        if (showFilters) {
+            Spacer(modifier = Modifier.height(12.dp))
+            
+            // Transit mode chips
+            Text(
+                text = "Transport modes:",
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+            
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                contentPadding = PaddingValues(horizontal = 4.dp)
+            ) {
+                items(TransitMode.values()) { mode ->
+                    FilterChip(
+                        onClick = {
+                            val newModes = if (mode in filters.transitModes) {
+                                filters.transitModes - mode
+                            } else {
+                                filters.transitModes + mode
+                            }
+                            onFiltersChange(filters.copy(transitModes = newModes))
+                        },
+                        label = {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                Icon(
+                                    getTransitModeIcon(mode),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Text(getTransitModeName(mode))
+                            }
+                        },
+                        selected = mode in filters.transitModes
+                    )
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(12.dp))
+            
+            // Route preference chips
+            Text(
+                text = "Route preference:",
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+            
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                contentPadding = PaddingValues(horizontal = 4.dp)
+            ) {
+                items(RoutePreference.values()) { preference ->
+                    FilterChip(
+                        onClick = {
+                            val newPreference = if (filters.preference == preference) {
+                                null
+                            } else {
+                                preference
+                            }
+                            onFiltersChange(filters.copy(preference = newPreference))
+                        },
+                        label = { Text(getRoutePreferenceName(preference)) },
+                        selected = filters.preference == preference
+                    )
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(12.dp))
+            
+            // Accessibility option
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Checkbox(
+                    checked = filters.wheelchairAccessible,
+                    onCheckedChange = { checked ->
+                        onFiltersChange(filters.copy(wheelchairAccessible = checked))
+                    }
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Wheelchair accessible routes",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun getTransitModeIcon(mode: TransitMode): androidx.compose.ui.graphics.vector.ImageVector {
+    return when (mode) {
+        TransitMode.BUS -> Icons.Default.DirectionsBus
+        TransitMode.TRAIN -> Icons.Default.Train
+        TransitMode.TRAM -> Icons.Default.Tram
+        TransitMode.WALK -> Icons.Default.DirectionsWalk
+    }
+}
+
+private fun getTransitModeName(mode: TransitMode): String {
+    return when (mode) {
+        TransitMode.BUS -> "Bus"
+        TransitMode.TRAIN -> "Train"
+        TransitMode.TRAM -> "Tram"
+        TransitMode.WALK -> "Walk"
+    }
+}
+
+private fun getRoutePreferenceName(preference: RoutePreference): String {
+    return when (preference) {
+        RoutePreference.FASTEST -> "Fastest"
+        RoutePreference.FEWEST_TRANSFERS -> "Fewest transfers"
+        RoutePreference.LEAST_WALKING -> "Least walking"
     }
 }
 
