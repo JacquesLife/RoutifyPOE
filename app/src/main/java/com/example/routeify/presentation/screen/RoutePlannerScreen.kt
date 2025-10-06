@@ -27,10 +27,12 @@ fun RoutePlannerScreen(
     var fromLocation by remember { mutableStateOf("") }
     var toLocation by remember { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
-    
+
     val travelTimes by viewModel.travelTimes
     val isLoading by viewModel.isLoading
     val errorMessage by viewModel.errorMessage
+    val routeSuggestions by viewModel.routeSuggestions
+    val bestRouteSuggestion by viewModel.bestRouteSuggestion
 
     Column(
         modifier = Modifier
@@ -45,7 +47,7 @@ fun RoutePlannerScreen(
             IconButton(onClick = onBackClick) {
                 Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
             }
-            
+
             Text(
                 text = "🗺️ Route Planner",
                 style = MaterialTheme.typography.headlineMedium,
@@ -62,8 +64,8 @@ fun RoutePlannerScreen(
             onValueChange = { fromLocation = it },
             label = { Text("From") },
             placeholder = { Text("Enter any address or place name") },
-            leadingIcon = { 
-                Icon(Icons.Default.MyLocation, contentDescription = "From") 
+            leadingIcon = {
+                Icon(Icons.Default.MyLocation, contentDescription = "From")
             },
             trailingIcon = {
                 if (fromLocation.isNotEmpty()) {
@@ -85,8 +87,8 @@ fun RoutePlannerScreen(
             onValueChange = { toLocation = it },
             label = { Text("To") },
             placeholder = { Text("Enter any address or destination") },
-            leadingIcon = { 
-                Icon(Icons.Default.Place, contentDescription = "To") 
+            leadingIcon = {
+                Icon(Icons.Default.Place, contentDescription = "To")
             },
             trailingIcon = {
                 if (toLocation.isNotEmpty()) {
@@ -144,7 +146,7 @@ fun RoutePlannerScreen(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             OutlinedButton(
-                onClick = { 
+                onClick = {
                     fromLocation = "Cape Town City Centre"
                     toLocation = "V&A Waterfront"
                 },
@@ -152,9 +154,9 @@ fun RoutePlannerScreen(
             ) {
                 Text("🏙️ City ↔ Waterfront")
             }
-            
+
             OutlinedButton(
-                onClick = { 
+                onClick = {
                     fromLocation = "Cape Town City Centre"
                     toLocation = "Cape Town Airport"
                 },
@@ -229,7 +231,7 @@ fun RoutePlannerScreen(
         // Travel Time Results
         if (travelTimes.isNotEmpty()) {
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -261,10 +263,52 @@ fun RoutePlannerScreen(
                 }
             }
         }
+
+        // Best Route Suggestion
+        if (bestRouteSuggestion != null) {
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Icon(
+                            Icons.Default.Star,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                        Text(
+                            text = "Recommended Route",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    routeSuggestions.forEach { route ->
+                        Text(
+                            text = "Route ${route.routeId}: ${route.timeEst} mins, ${"%.1f".format(route.distance)} km",
+                            color = if (route.recommended) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+                            fontWeight = if (route.recommended) FontWeight.Bold else FontWeight.Normal,
+                            modifier = Modifier.padding(vertical = 4.dp)
+                        )
+
+                    }
+                }
+            }
+        }
     }
 }
 
-private fun planRoute(
+    private fun planRoute(
     from: String,
     to: String,
     viewModel: GoogleFeaturesViewModel

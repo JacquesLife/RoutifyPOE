@@ -7,6 +7,8 @@ import com.example.routeify.data.repository.GooglePlacesEnhancedRepository
 import com.example.routeify.data.repository.GoogleTransitRepository
 import com.example.routeify.data.model.TransitStop
 import com.example.routeify.domain.model.TravelTime
+import com.example.routeify.domain.smartsuggestions.SmartSuggesstionsUseCases
+import com.example.routeify.domain.model.RouteSuggestion
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.launch
 
@@ -31,6 +33,14 @@ class GoogleFeaturesViewModel : ViewModel() {
     
     var errorMessage = mutableStateOf<String?>(null)
         private set
+
+    // Smart suggestions use cases
+    private val smartSuggestions = SmartSuggesstionsUseCases()
+    var routeSuggestions = mutableStateOf<List<RouteSuggestion>>(emptyList())
+        private set
+    var bestRouteSuggestion = mutableStateOf<RouteSuggestion?>(null)
+        private set
+
 
     /**
      * Get travel times between locations
