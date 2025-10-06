@@ -20,14 +20,16 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.routeify.domain.model.PlaceSuggestion
 import com.example.routeify.domain.model.RouteSegment
 import com.example.routeify.domain.model.TransitRoute
 import com.example.routeify.presentation.viewmodel.GoogleFeaturesViewModel
-//Hows ur granny
-//Im dumb
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RoutePlannerScreen(
@@ -48,6 +50,8 @@ fun RoutePlannerScreen(
     val toSuggestions by viewModel.toSuggestions
     val transitRoutes by viewModel.transitRoutes
     val isLoadingRoutes by viewModel.isLoadingRoutes
+    val isLoadingFromSuggestions by viewModel.isLoadingFromSuggestions
+    val isLoadingToSuggestions by viewModel.isLoadingToSuggestions
     val errorMessage by viewModel.errorMessage
 
     LaunchedEffect(fromLocation) {
@@ -109,13 +113,21 @@ fun RoutePlannerScreen(
                         Icon(Icons.Default.MyLocation, contentDescription = "From")
                     },
                     trailingIcon = {
-                        if (fromLocation.isNotEmpty()) {
-                            IconButton(onClick = {
-                                fromLocation = ""
-                                selectedFromPlace = null
-                                viewModel.clearFromSuggestions()
-                            }) {
-                                Icon(Icons.Default.Clear, contentDescription = "Clear")
+                        Row {
+                            if (isLoadingFromSuggestions) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(20.dp),
+                                    strokeWidth = 2.dp,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            } else if (fromLocation.isNotEmpty()) {
+                                IconButton(onClick = {
+                                    fromLocation = ""
+                                    selectedFromPlace = null
+                                    viewModel.clearFromSuggestions()
+                                }) {
+                                    Icon(Icons.Default.Clear, contentDescription = "Clear")
+                                }
                             }
                         }
                     },
@@ -124,7 +136,7 @@ fun RoutePlannerScreen(
                 )
 
                 AnimatedVisibility(
-                    visible = showFromDropdown && fromSuggestions.isNotEmpty(),
+                    visible = showFromDropdown && (fromSuggestions.isNotEmpty() || (fromLocation.isNotEmpty() && !isLoadingFromSuggestions)),
                     enter = expandVertically() + fadeIn(),
                     exit = shrinkVertically() + fadeOut()
                 ) {
@@ -140,6 +152,7 @@ fun RoutePlannerScreen(
                             items(fromSuggestions) { suggestion ->
                                 SuggestionItem(
                                     suggestion = suggestion,
+                                    searchQuery = fromLocation,
                                     onClick = {
                                         fromLocation = suggestion.description
                                         selectedFromPlace = suggestion
@@ -147,6 +160,20 @@ fun RoutePlannerScreen(
                                         viewModel.clearFromSuggestions()
                                     }
                                 )
+                            }
+                            
+                            // Show "Use this exact address" when no suggestions but user has typed something
+                            if (fromSuggestions.isEmpty() && fromLocation.isNotEmpty() && !isLoadingFromSuggestions) {
+                                item {
+                                    ExactAddressItem(
+                                        address = fromLocation,
+                                        onClick = {
+                                            selectedFromPlace = null
+                                            showFromDropdown = false
+                                            viewModel.clearFromSuggestions()
+                                        }
+                                    )
+                                }
                             }
                         }
                     }
@@ -193,13 +220,21 @@ fun RoutePlannerScreen(
                         Icon(Icons.Default.Place, contentDescription = "To")
                     },
                     trailingIcon = {
-                        if (toLocation.isNotEmpty()) {
-                            IconButton(onClick = {
-                                toLocation = ""
-                                selectedToPlace = null
-                                viewModel.clearToSuggestions()
-                            }) {
-                                Icon(Icons.Default.Clear, contentDescription = "Clear")
+                        Row {
+                            if (isLoadingToSuggestions) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(20.dp),
+                                    strokeWidth = 2.dp,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            } else if (toLocation.isNotEmpty()) {
+                                IconButton(onClick = {
+                                    toLocation = ""
+                                    selectedToPlace = null
+                                    viewModel.clearToSuggestions()
+                                }) {
+                                    Icon(Icons.Default.Clear, contentDescription = "Clear")
+                                }
                             }
                         }
                     },
@@ -208,7 +243,7 @@ fun RoutePlannerScreen(
                 )
 
                 AnimatedVisibility(
-                    visible = showToDropdown && toSuggestions.isNotEmpty(),
+                    visible = showToDropdown && (toSuggestions.isNotEmpty() || (toLocation.isNotEmpty() && !isLoadingToSuggestions)),
                     enter = expandVertically() + fadeIn(),
                     exit = shrinkVertically() + fadeOut()
                 ) {
@@ -224,6 +259,7 @@ fun RoutePlannerScreen(
                             items(toSuggestions) { suggestion ->
                                 SuggestionItem(
                                     suggestion = suggestion,
+                                    searchQuery = toLocation,
                                     onClick = {
                                         toLocation = suggestion.description
                                         selectedToPlace = suggestion
@@ -231,6 +267,20 @@ fun RoutePlannerScreen(
                                         viewModel.clearToSuggestions()
                                     }
                                 )
+                            }
+                            
+                            // Show "Use this exact address" when no suggestions but user has typed something
+                            if (toSuggestions.isEmpty() && toLocation.isNotEmpty() && !isLoadingToSuggestions) {
+                                item {
+                                    ExactAddressItem(
+                                        address = toLocation,
+                                        onClick = {
+                                            selectedToPlace = null
+                                            showToDropdown = false
+                                            viewModel.clearToSuggestions()
+                                        }
+                                    )
+                                }
                             }
                         }
                     }
@@ -391,6 +441,7 @@ fun RoutePlannerScreen(
 @Composable
 private fun SuggestionItem(
     suggestion: PlaceSuggestion,
+    searchQuery: String,
     onClick: () -> Unit
 ) {
     Row(
@@ -409,13 +460,17 @@ private fun SuggestionItem(
         )
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = suggestion.mainText,
+                text = buildAnnotatedString {
+                    highlightMatchedText(suggestion.mainText, searchQuery)
+                },
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Medium
             )
             if (suggestion.secondaryText.isNotEmpty()) {
                 Text(
-                    text = suggestion.secondaryText,
+                    text = buildAnnotatedString {
+                        highlightMatchedText(suggestion.secondaryText, searchQuery)
+                    },
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -423,6 +478,79 @@ private fun SuggestionItem(
         }
     }
     Divider()
+}
+
+@Composable
+private fun ExactAddressItem(
+    address: String,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Icon(
+            Icons.Default.Edit,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(20.dp)
+        )
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = "Use this exact address",
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Text(
+                text = address,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+    Divider()
+}
+
+private fun androidx.compose.ui.text.AnnotatedString.Builder.highlightMatchedText(
+    text: String,
+    query: String
+) {
+    if (query.isEmpty()) {
+        append(text)
+        return
+    }
+    
+    val lowerText = text.lowercase()
+    val lowerQuery = query.lowercase()
+    var startIndex = 0
+    
+    while (true) {
+        val matchIndex = lowerText.indexOf(lowerQuery, startIndex)
+        if (matchIndex == -1) {
+            // No more matches, append remaining text
+            if (startIndex < text.length) {
+                append(text.substring(startIndex))
+            }
+            break
+        }
+        
+        // Append text before match
+        if (matchIndex > startIndex) {
+            append(text.substring(startIndex, matchIndex))
+        }
+        
+        // Append highlighted match
+        withStyle(style = SpanStyle(backgroundColor = Color.Yellow.copy(alpha = 0.3f))) {
+            append(text.substring(matchIndex, matchIndex + query.length))
+        }
+        
+        startIndex = matchIndex + query.length
+    }
 }
 
 @Composable
