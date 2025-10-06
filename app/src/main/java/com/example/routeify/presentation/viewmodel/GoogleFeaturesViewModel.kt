@@ -6,6 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.routeify.data.repository.GooglePlacesEnhancedRepository
 import com.example.routeify.data.repository.GoogleTransitRepository
 import com.example.routeify.data.model.TransitStop
+import com.example.routeify.domain.model.TravelTime
+import com.example.routeify.domain.smartsuggestions.SmartSuggesstionsUseCases
+import com.example.routeify.domain.model.RouteSuggestion
 import com.example.routeify.domain.model.*
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.Job
@@ -17,15 +20,16 @@ class GoogleFeaturesViewModel : ViewModel() {
     private val repository = GooglePlacesEnhancedRepository()
     private val transitRepository = GoogleTransitRepository()
 
+    // UI State
     var travelTimes = mutableStateOf<List<TravelTime>>(emptyList())
         private set
-
+    
     var searchResults = mutableStateOf<List<TransitStop>>(emptyList())
         private set
-
+    
     var isLoading = mutableStateOf(false)
         private set
-
+    
     var errorMessage = mutableStateOf<String?>(null)
         private set
 
@@ -138,11 +142,22 @@ class GoogleFeaturesViewModel : ViewModel() {
         }
     }
 
+    // Smart suggestions use cases
+    private val smartSuggestions = SmartSuggesstionsUseCases()
+    var routeSuggestions = mutableStateOf<List<RouteSuggestion>>(emptyList())
+        private set
+    var bestRouteSuggestion = mutableStateOf<RouteSuggestion?>(null)
+        private set
+
+
+    /**
+     * Get travel times between locations
+     */
     fun getTravelTimes(origins: List<LatLng>, destinations: List<LatLng>) {
         viewModelScope.launch {
             isLoading.value = true
             errorMessage.value = null
-
+            
             repository.getTravelTimes(origins, destinations)
                 .onSuccess { times ->
                     travelTimes.value = times
@@ -150,18 +165,23 @@ class GoogleFeaturesViewModel : ViewModel() {
                 .onFailure { error ->
                     errorMessage.value = "Failed to get travel times: ${error.message}"
                 }
-
+            
             isLoading.value = false
         }
     }
 
+    /**
+     * Search for nearby transit places using Google Places API
+     */
     fun searchTransitPlaces(query: String, radiusMeters: Int = 5000) {
         viewModelScope.launch {
             isLoading.value = true
             errorMessage.value = null
-
+            
+            // Use the working GoogleTransitRepository instead
+            // Default to Cape Town coordinates (Green Point area)
             transitRepository.getTransitStops(
-                centerLat = -33.9032,
+                centerLat = -33.9032, // Green Point, Cape Town
                 centerLng = 18.4168,
                 radiusMeters = radiusMeters
             )
@@ -171,11 +191,14 @@ class GoogleFeaturesViewModel : ViewModel() {
                 .onFailure { error ->
                     errorMessage.value = "Failed to search places: ${error.message}"
                 }
-
+            
             isLoading.value = false
         }
     }
 
+    /**
+     * Convert address to coordinates using geocoding
+     */
     suspend fun geocodeAddress(address: String): LatLng? {
         return repository.geocodeAddress(address)
             .onFailure { error ->
@@ -184,16 +207,21 @@ class GoogleFeaturesViewModel : ViewModel() {
             .getOrNull()
     }
 
+    /**
+     * Plan route between two addresses
+     */
     fun planRouteWithAddresses(fromAddress: String, toAddress: String) {
         viewModelScope.launch {
             isLoading.value = true
             errorMessage.value = null
-
+            
             try {
+                // Geocode both addresses
                 val fromCoords = geocodeAddress(fromAddress)
                 val toCoords = geocodeAddress(toAddress)
-
+                
                 if (fromCoords != null && toCoords != null) {
+                    // Get travel times
                     getTravelTimes(
                         origins = listOf(fromCoords),
                         destinations = listOf(toCoords)

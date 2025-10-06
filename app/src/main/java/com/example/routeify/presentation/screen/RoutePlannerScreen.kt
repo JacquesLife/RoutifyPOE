@@ -26,6 +26,8 @@ import com.example.routeify.domain.model.PlaceSuggestion
 import com.example.routeify.domain.model.RouteSegment
 import com.example.routeify.domain.model.TransitRoute
 import com.example.routeify.presentation.viewmodel.GoogleFeaturesViewModel
+import  com.example.routeify.domain.model.RouteSuggestion
+import com.google.android.gms.maps.model.LatLng
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,11 +44,16 @@ fun RoutePlannerScreen(
 
     val keyboardController = LocalSoftwareKeyboardController.current
 
+    val travelTimes by viewModel.travelTimes
+    val isLoading by viewModel.isLoading
+
     val fromSuggestions by viewModel.fromSuggestions
     val toSuggestions by viewModel.toSuggestions
     val transitRoutes by viewModel.transitRoutes
     val isLoadingRoutes by viewModel.isLoadingRoutes
     val errorMessage by viewModel.errorMessage
+    val routeSuggestions by viewModel.routeSuggestions
+    val bestRouteSuggestion by viewModel.bestRouteSuggestion
 
     LaunchedEffect(fromLocation) {
         if (fromLocation.isNotEmpty() && selectedFromPlace?.description != fromLocation) {
@@ -65,6 +72,21 @@ fun RoutePlannerScreen(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
+        // Header
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(onClick = onBackClick) {
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+            }
+
+            Text(
+                text = "🗺️ Route Planner",
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(start = 8.dp)
+            )
         Surface(
             tonalElevation = 2.dp,
             modifier = Modifier.fillMaxWidth()
@@ -88,6 +110,28 @@ fun RoutePlannerScreen(
             }
         }
 
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // From Location Input
+        OutlinedTextField(
+            value = fromLocation,
+            onValueChange = { fromLocation = it },
+            label = { Text("From") },
+            placeholder = { Text("Enter any address or place name") },
+            leadingIcon = {
+                Icon(Icons.Default.MyLocation, contentDescription = "From")
+            },
+            trailingIcon = {
+                if (fromLocation.isNotEmpty()) {
+                    IconButton(onClick = { fromLocation = "" }) {
+                        Icon(Icons.Default.Clear, contentDescription = "Clear")
+                    }
+                }
+            },
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            singleLine = true
+        )
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -153,6 +197,34 @@ fun RoutePlannerScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+        // To Location Input
+        OutlinedTextField(
+            value = toLocation,
+            onValueChange = { toLocation = it },
+            label = { Text("To") },
+            placeholder = { Text("Enter any address or destination") },
+            leadingIcon = {
+                Icon(Icons.Default.Place, contentDescription = "To")
+            },
+            trailingIcon = {
+                if (toLocation.isNotEmpty()) {
+                    IconButton(onClick = { toLocation = "" }) {
+                        Icon(Icons.Default.Clear, contentDescription = "Clear")
+                    }
+                }
+            },
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    keyboardController?.hide()
+                    if (fromLocation.isNotEmpty() && toLocation.isNotEmpty()) {
+                        planRoute(fromLocation, toLocation, viewModel)
+                    }
+                }
+            ),
+            singleLine = true
+        )
             Box(
                 modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center
@@ -604,6 +676,31 @@ private fun RouteSegmentItem(
                 )
             }
         }
+
+        // Best Route Suggestion
+        if (routeSuggestions.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text("Suggested Routes", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    routeSuggestions.forEach { route ->
+                        Text(
+                            text = "Route ${route.routeId}: ${route.timeEst} mins, ${route.distance} km",
+                            color = if (route == bestRouteSuggestion) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+                            fontWeight = if (route == bestRouteSuggestion) FontWeight.Bold else FontWeight.Normal,
+                            modifier = Modifier.padding(vertical = 4.dp)
+                        )
+                    }
+                }
+            }
+        }
+
     }
 }
 
