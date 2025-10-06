@@ -80,6 +80,16 @@ fun RoutePlannerScreen(
     onRouteSelected: (TransitRoute) -> Unit = {}
 ) {
     val context = LocalContext.current
+    
+    // ViewModel state
+    val fromSuggestions by viewModel.fromSuggestions
+    val toSuggestions by viewModel.toSuggestions
+    val transitRoutes by viewModel.transitRoutes
+    val isLoadingRoutes by viewModel.isLoadingRoutes
+    val isLoadingFromSuggestions by viewModel.isLoadingFromSuggestions
+    val isLoadingToSuggestions by viewModel.isLoadingToSuggestions
+    val errorMessage by viewModel.errorMessage
+    
     var fromLocation by remember { mutableStateOf("") }
     var toLocation by remember { mutableStateOf("") }
     var showFromDropdown by remember { mutableStateOf(false) }
@@ -144,14 +154,6 @@ fun RoutePlannerScreen(
             )
         }
     }
-
-    val fromSuggestions by viewModel.fromSuggestions
-    val toSuggestions by viewModel.toSuggestions
-    val transitRoutes by viewModel.transitRoutes
-    val isLoadingRoutes by viewModel.isLoadingRoutes
-    val isLoadingFromSuggestions by viewModel.isLoadingFromSuggestions
-    val isLoadingToSuggestions by viewModel.isLoadingToSuggestions
-    val errorMessage by viewModel.errorMessage
 
     LaunchedEffect(fromLocation) {
         if (fromLocation.isNotEmpty() && selectedFromPlace?.description != fromLocation) {
@@ -592,12 +594,7 @@ fun RoutePlannerScreen(
                         routeNumber = index + 1,
                         onViewOnMap = { onRouteSelected(route) },
                         onOpenInGoogleMaps = { 
-                            // Open in Google Maps
-                            val from = route.startLocation?.let { "${it.latitude},${it.longitude}" } ?: fromLocation
-                            val to = route.endLocation?.let { "${it.latitude},${it.longitude}" } ?: toLocation
-                            val uri = android.net.Uri.parse("https://www.google.com/maps/dir/?api=1&origin=$from&destination=$to&travelmode=transit")
-                            val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, uri)
-                            context.startActivity(intent)
+                            openInGoogleMaps(route, fromLocation, toLocation, context)
                         }
                     )
                     Spacer(modifier = Modifier.height(12.dp))
@@ -1419,4 +1416,17 @@ private fun getTransitIcon(vehicleType: String): androidx.compose.ui.graphics.ve
         "WALKING" -> Icons.Default.DirectionsWalk
         else -> Icons.Default.DirectionsTransit
     }
+}
+
+private fun openInGoogleMaps(
+    route: TransitRoute,
+    fromLocation: String,
+    toLocation: String,
+    context: android.content.Context
+) {
+    val from = route.startLocation?.let { "${it.latitude},${it.longitude}" } ?: fromLocation
+    val to = route.endLocation?.let { "${it.latitude},${it.longitude}" } ?: toLocation
+    val uri = android.net.Uri.parse("https://www.google.com/maps/dir/?api=1&origin=$from&destination=$to&travelmode=transit")
+    val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, uri)
+    context.startActivity(intent)
 }
