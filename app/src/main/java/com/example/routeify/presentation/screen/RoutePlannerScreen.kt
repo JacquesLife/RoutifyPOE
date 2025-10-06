@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -30,6 +31,13 @@ import com.example.routeify.domain.model.RouteSegment
 import com.example.routeify.domain.model.TransitRoute
 import com.example.routeify.presentation.viewmodel.GoogleFeaturesViewModel
 
+data class PresetLocation(
+    val id: String,
+    val name: String,
+    val address: String,
+    val icon: androidx.compose.ui.graphics.vector.ImageVector
+)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RoutePlannerScreen(
@@ -44,7 +52,18 @@ fun RoutePlannerScreen(
     var selectedFromPlace by remember { mutableStateOf<PlaceSuggestion?>(null) }
     var selectedToPlace by remember { mutableStateOf<PlaceSuggestion?>(null) }
 
+    // Recent searches state (in a real app, this would be stored in DataStore)
+    var recentSearches by remember { mutableStateOf(listOf("Cape Town Airport", "V&A Waterfront", "Canal Walk")) }
+
     val keyboardController = LocalSoftwareKeyboardController.current
+
+    // Preset locations
+    val presetLocations = remember {
+        listOf(
+            PresetLocation("home", "Home", "Your home address", Icons.Default.Home),
+            PresetLocation("work", "Work", "Your workplace", Icons.Default.Work)
+        )
+    }
 
     val fromSuggestions by viewModel.fromSuggestions
     val toSuggestions by viewModel.toSuggestions
@@ -180,6 +199,21 @@ fun RoutePlannerScreen(
                 }
             }
 
+            // Preset chips for "From" field
+            if (fromLocation.isEmpty()) {
+                Spacer(modifier = Modifier.height(8.dp))
+                PresetChipsRow(
+                    presets = presetLocations,
+                    recentSearches = recentSearches,
+                    onPresetClick = { address ->
+                        fromLocation = address
+                        selectedFromPlace = null
+                        showFromDropdown = false
+                        viewModel.clearFromSuggestions()
+                    }
+                )
+            }
+
             Spacer(modifier = Modifier.height(16.dp))
 
             Box(
@@ -287,6 +321,21 @@ fun RoutePlannerScreen(
                 }
             }
 
+            // Preset chips for "To" field
+            if (toLocation.isEmpty()) {
+                Spacer(modifier = Modifier.height(8.dp))
+                PresetChipsRow(
+                    presets = presetLocations,
+                    recentSearches = recentSearches,
+                    onPresetClick = { address ->
+                        toLocation = address
+                        selectedToPlace = null
+                        showToDropdown = false
+                        viewModel.clearToSuggestions()
+                    }
+                )
+            }
+
             Spacer(modifier = Modifier.height(24.dp))
 
             Row(
@@ -299,6 +348,12 @@ fun RoutePlannerScreen(
                         toLocation = "V&A Waterfront"
                         selectedFromPlace = null
                         selectedToPlace = null
+                        
+                        // Add to recent searches
+                        val newRecentSearches = (listOf(fromLocation, toLocation) + recentSearches)
+                            .distinct()
+                            .take(5)
+                        recentSearches = newRecentSearches
                     },
                     modifier = Modifier.weight(1f)
                 ) {
@@ -311,6 +366,12 @@ fun RoutePlannerScreen(
                         toLocation = "Cape Town Airport"
                         selectedFromPlace = null
                         selectedToPlace = null
+                        
+                        // Add to recent searches
+                        val newRecentSearches = (listOf(fromLocation, toLocation) + recentSearches)
+                            .distinct()
+                            .take(5)
+                        recentSearches = newRecentSearches
                     },
                     modifier = Modifier.weight(1f)
                 ) {
@@ -325,6 +386,13 @@ fun RoutePlannerScreen(
                     keyboardController?.hide()
                     showFromDropdown = false
                     showToDropdown = false
+                    
+                    // Add to recent searches if not already present
+                    val newRecentSearches = (listOf(fromLocation, toLocation) + recentSearches)
+                        .distinct()
+                        .take(5) // Keep only 5 most recent
+                    recentSearches = newRecentSearches
+                    
                     viewModel.getTransitRoutes(fromLocation, toLocation)
                 },
                 modifier = Modifier.fillMaxWidth(),
@@ -439,6 +507,62 @@ fun RoutePlannerScreen(
 }
 
 @Composable
+private fun PresetChipsRow(
+    presets: List<PresetLocation>,
+    recentSearches: List<String>,
+    onPresetClick: (String) -> Unit
+) {
+    LazyRow(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(horizontal = 4.dp)
+    ) {
+        // Preset locations (Home, Work)
+        items(presets) { preset ->
+            FilterChip(
+                onClick = { onPresetClick(preset.address) },
+                label = {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Icon(
+                            preset.icon,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Text(preset.name)
+                    }
+                },
+                selected = false,
+                leadingIcon = null
+            )
+        }
+        
+        // Recent searches
+        items(recentSearches) { search ->
+            FilterChip(
+                onClick = { onPresetClick(search) },
+                label = {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Icon(
+                            Icons.Default.History,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Text(search)
+                    }
+                },
+                selected = false,
+                leadingIcon = null
+            )
+        }
+    }
+}
+
+@Composable
 private fun SuggestionItem(
     suggestion: PlaceSuggestion,
     searchQuery: String,
@@ -545,7 +669,7 @@ private fun androidx.compose.ui.text.AnnotatedString.Builder.highlightMatchedTex
         }
         
         // Append highlighted match
-        withStyle(style = SpanStyle(backgroundColor = Color.Yellow.copy(alpha = 0.3f))) {
+        withStyle(style = SpanStyle(background = Color.Yellow.copy(alpha = 0.3f))) {
             append(text.substring(matchIndex, matchIndex + query.length))
         }
         
