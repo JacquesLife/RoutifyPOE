@@ -30,6 +30,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -37,11 +39,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.routeify.ui.viewmodel.AuthViewModel
 import com.example.routeify.ui.theme.RouteifyBlue500
 import com.example.routeify.ui.theme.RouteifyGreen500
 
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(authViewModel: AuthViewModel = viewModel()) {
+    val authState by authViewModel.authState.collectAsState()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -53,29 +58,44 @@ fun ProfileScreen() {
                 .background(
                     Brush.horizontalGradient(colors = listOf(RouteifyBlue500, RouteifyGreen500))
                 )
-                .padding(horizontal = 16.dp, vertical = 20.dp)
+                .padding(horizontal = 24.dp, vertical = 32.dp)
         ) {
-            Column {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Surface(shape = CircleShape, color = Color.White.copy(alpha = 0.25f)) {
-                        Box(
-                            modifier = Modifier
-                                .size(48.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "JD",
-                                color = Color.White,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                    }
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Column {
-                        Text("RudolphRedNose", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
-                        Text("North.pole@gmail.com", color = Color.White.copy(alpha = 0.9f), fontSize = 12.sp)
+            Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
+                Surface(
+                    shape = CircleShape,
+                    color = Color.White,
+                    modifier = Modifier.size(80.dp)
+                ) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        val initials = (authState.username ?: "").split(" ")
+                            .mapNotNull { it.firstOrNull()?.uppercase() }
+                            .joinToString("")
+                            .take(2)
+                            .ifBlank { "GU" }
+                        Text(
+                            text = initials,
+                            color = RouteifyBlue500,
+                            fontSize = 32.sp,
+                            fontWeight = FontWeight.Bold
+                        )
                     }
                 }
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    authState.username ?: "Guest",
+                    color = Color.White,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    authState.email ?: "",
+                    color = Color.White.copy(alpha = 0.9f),
+                    fontSize = 14.sp
+                )
             }
         }
 
@@ -137,9 +157,14 @@ fun ProfileScreen() {
 
 @Composable
 private fun SectionTitle(text: String) {
-    Spacer(modifier = Modifier.height(8.dp))
-    Text(text = text, style = MaterialTheme.typography.titleMedium)
-    Spacer(modifier = Modifier.height(8.dp))
+    Spacer(modifier = Modifier.height(16.dp))
+    Text(
+        text = text,
+        style = MaterialTheme.typography.titleLarge,
+        fontWeight = FontWeight.SemiBold,
+        color = MaterialTheme.colorScheme.onBackground
+    )
+    Spacer(modifier = Modifier.height(12.dp))
 }
 
 @Composable
@@ -147,21 +172,50 @@ private fun RouteCard(title: String, subtitle: String, leading: androidx.compose
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 12.dp),
-        shape = RoundedCornerShape(16.dp)
+            .padding(bottom = 10.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         ListItem(
             leadingContent = {
-                Surface(shape = CircleShape, color = MaterialTheme.colorScheme.secondaryContainer) {
-                    Box(modifier = Modifier.size(36.dp), contentAlignment = Alignment.Center) {
-                        Icon(leading, contentDescription = null, tint = MaterialTheme.colorScheme.onSecondaryContainer)
+                Surface(
+                    shape = CircleShape,
+                    color = RouteifyGreen500.copy(alpha = 0.1f),
+                    modifier = Modifier.size(48.dp)
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(
+                            leading,
+                            contentDescription = null,
+                            tint = RouteifyGreen500,
+                            modifier = Modifier.size(24.dp)
+                        )
                     }
                 }
             },
-            headlineContent = { Text(title) },
-            supportingContent = { Text(subtitle) },
+            headlineContent = {
+                Text(
+                    title,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Medium
+                )
+            },
+            supportingContent = {
+                Text(
+                    subtitle,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            },
             trailingContent = {
-                Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                Icon(
+                    Icons.AutoMirrored.Filled.ArrowForward,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
         )
     }
@@ -172,8 +226,12 @@ private fun PreferenceSwitch(title: String, subtitle: String, icon: androidx.com
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 12.dp),
-        shape = RoundedCornerShape(16.dp)
+            .padding(bottom = 10.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
             modifier = Modifier
@@ -181,17 +239,43 @@ private fun PreferenceSwitch(title: String, subtitle: String, icon: androidx.com
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Surface(shape = CircleShape, color = MaterialTheme.colorScheme.secondaryContainer) {
-                Box(modifier = Modifier.size(36.dp), contentAlignment = Alignment.Center) {
-                    Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.onSecondaryContainer)
+            Surface(
+                shape = CircleShape,
+                color = RouteifyBlue500.copy(alpha = 0.1f),
+                modifier = Modifier.size(44.dp)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        icon,
+                        contentDescription = null,
+                        tint = RouteifyBlue500,
+                        modifier = Modifier.size(22.dp)
+                    )
                 }
             }
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text(title, style = MaterialTheme.typography.bodyLarge)
-                Text(subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(
+                    title,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Medium
+                )
+                Text(
+                    subtitle,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
-            Switch(checked = false, onCheckedChange = { })
+            Switch(
+                checked = false,
+                onCheckedChange = { },
+                colors = SwitchDefaults.colors(
+                    checkedThumbColor = Color.White,
+                    checkedTrackColor = RouteifyBlue500,
+                    uncheckedThumbColor = Color.White,
+                    uncheckedTrackColor = MaterialTheme.colorScheme.outline
+                )
+            )
         }
     }
 }

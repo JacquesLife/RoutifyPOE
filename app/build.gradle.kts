@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.kapt)
 }
 
 // Load local.properties
@@ -33,7 +34,19 @@ android {
         buildConfigField("String", "GOOGLE_PLACES_API_KEY", "\"${localProperties.getProperty("GOOGLE_MAPS_API_KEY", "")}\"")
     }
 
+    signingConfigs {
+        create("shared") {
+            storeFile = file("shared-debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
+    }
+    
     buildTypes {
+        debug {
+            signingConfig = signingConfigs.getByName("shared")
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
@@ -66,8 +79,13 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.datastore.core)
+    implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.navigation.compose)
-    implementation(libs.androidx.room.external.antlr)
+
+    // Room
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    kapt(libs.androidx.room.compiler)
 
     // ViewModel
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
@@ -76,6 +94,7 @@ dependencies {
     implementation(libs.google.play.services.maps)
     implementation(libs.google.maps.compose)
     implementation(libs.google.maps.utils)
+    implementation(libs.google.play.services.auth)
 
     // Networking for Google APIs
     implementation(libs.retrofit)

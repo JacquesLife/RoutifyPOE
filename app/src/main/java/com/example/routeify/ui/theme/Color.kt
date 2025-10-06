@@ -2,44 +2,42 @@ package com.example.routeify.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Standard Material Design colors
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+// Routeify Modern Brand Colors - Blue to Green Gradient Theme
+val RouteifyBlue500 = Color(0xFF3B82F6) // Primary Blue
+val RouteifyBlue600 = Color(0xFF2563EB) // Darker Blue
+val RouteifyBlue400 = Color(0xFF60A5FA) // Lighter Blue
+val RouteifyBlue300 = Color(0xFF93C5FD) // Very Light Blue
+val RouteifyBlue100 = Color(0xFFDBEAFE) // Subtle Blue Background
 
-// Routeify Brand Colors (using consistent values)
-val RouteifyBlue = Color(0xFF3B82F6) // Updated to match test branch blue-500
-val RouteifyTeal = Color(0xFF4ECDC4)
-val RouteifyGreen = Color(0xFF10B981) // Updated to match test branch green-500
-
-// Gradient Colors
-val GradientStart = Color(0xFF3B82F6) // Updated to match RouteifyBlue
-val GradientMiddle = Color(0xFF4ECDC4) // Teal  
-val GradientEnd = Color(0xFF10B981) // Updated to match RouteifyGreen
-
-// UI Colors
-val BackgroundLight = Color(0xFFFFFFFF)
-val BackgroundDark = Color(0xFF030213)
-val SurfaceLight = Color(0xFFFFFFFF)
-val SurfaceDark = Color(0xFF1A1A1A)
-val OnSurfaceLight = Color(0xFF030213)
-val OnSurfaceDark = Color(0xFFFFFFFF)
-
-// Text Colors
-val TextPrimary = Color(0xFF030213)
-val TextSecondary = Color(0xFF717182)
-val TextOnDark = Color(0xFFFFFFFF)
+val RouteifyGreen500 = Color(0xFF10B981) // Primary Green
+val RouteifyGreen600 = Color(0xFF059669) // Darker Green
+val RouteifyGreen400 = Color(0xFF34D399) // Lighter Green
+val RouteifyGreen300 = Color(0xFF6EE7B7) // Very Light Green
+val RouteifyGreen100 = Color(0xFFD1FAE5) // Subtle Green Background
 
 // Accent Colors
-val AccentBlue = Color(0xFF3B82F6) // Updated to match RouteifyBlue
-val AccentGreen = Color(0xFF10B981) // Updated to match RouteifyGreen
-val Success = Color(0xFF10B981)
-val Warning = Color(0xFFF59E0B)
-val Error = Color(0xFFEF4444)
+val RouteifyTeal = Color(0xFF14B8A6)
+val RouteifyCyan = Color(0xFF06B6D4)
 
-// Keep test branch naming for compatibility
-val RouteifyBlue500 = RouteifyBlue
-val RouteifyGreen500 = RouteifyGreen
+// Neutral Colors
+val NeutralGray50 = Color(0xFFFAFAFA)
+val NeutralGray100 = Color(0xFFF5F5F5)
+val NeutralGray200 = Color(0xFFE5E5E5)
+val NeutralGray300 = Color(0xFFD4D4D4)
+val NeutralGray400 = Color(0xFFA3A3A3)
+val NeutralGray500 = Color(0xFF737373)
+val NeutralGray600 = Color(0xFF525252)
+val NeutralGray700 = Color(0xFF404040)
+val NeutralGray800 = Color(0xFF262626)
+val NeutralGray900 = Color(0xFF171717)
+
+// Semantic Colors
+val SuccessGreen = Color(0xFF10B981)
+val ErrorRed = Color(0xFFEF4444)
+val WarningOrange = Color(0xFFF59E0B)
+val InfoBlue = Color(0xFF3B82F6)
+
+// Dark Theme Colors
+val DarkBackground = Color(0xFF0F172A)
+val DarkSurface = Color(0xFF1E293B)
+val DarkSurfaceVariant = Color(0xFF334155)
