@@ -16,6 +16,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.routeify.presentation.viewmodel.GoogleFeaturesViewModel
+import  com.example.routeify.domain.model.RouteSuggestion
 import com.google.android.gms.maps.model.LatLng
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -265,46 +266,29 @@ fun RoutePlannerScreen(
         }
 
         // Best Route Suggestion
-        if (bestRouteSuggestion != null) {
+        if (routeSuggestions.isNotEmpty()) {
             Spacer(modifier = Modifier.height(16.dp))
 
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
             ) {
-                Column(
-                    modifier = Modifier.padding(16.dp)
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Icon(
-                            Icons.Default.Star,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                        Text(
-                            text = "Recommended Route",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(16.dp))
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text("Suggested Routes", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                    Spacer(modifier = Modifier.height(8.dp))
 
                     routeSuggestions.forEach { route ->
                         Text(
                             text = "Route ${route.routeId}: ${route.timeEst} mins, ${route.distance} km",
-                            color = if (route.recommended) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
-                            fontWeight = if (route.recommended) FontWeight.Bold else FontWeight.Normal,
+                            color = if (route == bestRouteSuggestion) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+                            fontWeight = if (route == bestRouteSuggestion) FontWeight.Bold else FontWeight.Normal,
                             modifier = Modifier.padding(vertical = 4.dp)
                         )
-
                     }
                 }
             }
         }
+
     }
 }
 
