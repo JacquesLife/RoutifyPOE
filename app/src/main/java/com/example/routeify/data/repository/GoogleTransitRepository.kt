@@ -25,9 +25,9 @@ class GoogleTransitRepository {
     private val apiKey = com.example.routeify.BuildConfig.GOOGLE_PLACES_API_KEY
 
     suspend fun getTransitStops(
-        centerLat: Double = -33.9249,
-        centerLng: Double = 18.4241,
-        radiusMeters: Int = 10000
+        centerLat: Double = -33.8911,
+        centerLng: Double = 18.6293,
+        radiusMeters: Int = 50000
     ): Result<List<TransitStop>> {
         return withContext(Dispatchers.IO) {
             try {
