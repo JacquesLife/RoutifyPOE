@@ -8,35 +8,75 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = RouteifyBlue400,
+    onPrimary = NeutralGray900,
+    primaryContainer = RouteifyBlue600,
+    onPrimaryContainer = RouteifyBlue100,
+    
+    secondary = RouteifyGreen400,
+    onSecondary = NeutralGray900,
+    secondaryContainer = RouteifyGreen600,
+    onSecondaryContainer = RouteifyGreen100,
+    
+    tertiary = RouteifyTeal,
+    onTertiary = NeutralGray900,
+    tertiaryContainer = RouteifyCyan,
+    onTertiaryContainer = RouteifyBlue100,
+    
+    background = DarkBackground,
+    onBackground = NeutralGray100,
+    surface = DarkSurface,
+    onSurface = NeutralGray100,
+    surfaceVariant = DarkSurfaceVariant,
+    onSurfaceVariant = NeutralGray300,
+    
+    error = ErrorRed,
+    onError = Color.White,
+    errorContainer = Color(0xFF5C1A1A),
+    onErrorContainer = Color(0xFFFFDAD6)
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
+    primary = RouteifyBlue500,
     onPrimary = Color.White,
+    primaryContainer = RouteifyBlue100,
+    onPrimaryContainer = RouteifyBlue600,
+    
+    secondary = RouteifyGreen500,
     onSecondary = Color.White,
+    secondaryContainer = RouteifyGreen100,
+    onSecondaryContainer = RouteifyGreen600,
+    
+    tertiary = RouteifyTeal,
     onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    tertiaryContainer = Color(0xFFCCF7F1),
+    onTertiaryContainer = Color(0xFF00504A),
+    
+    background = NeutralGray50,
+    onBackground = NeutralGray900,
+    surface = Color.White,
+    onSurface = NeutralGray900,
+    surfaceVariant = NeutralGray100,
+    onSurfaceVariant = NeutralGray600,
+    
+    error = ErrorRed,
+    onError = Color.White,
+    errorContainer = Color(0xFFFFDAD6),
+    onErrorContainer = Color(0xFF410002),
+    
+    outline = NeutralGray300,
+    outlineVariant = NeutralGray200
 )
 
 @Composable
 fun RouteifyTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false, // Disabled to use custom theme
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {

@@ -1,6 +1,8 @@
 package com.example.routeify.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.*
@@ -8,8 +10,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.routeify.ui.theme.RouteifyBlue500
+import com.example.routeify.ui.theme.RouteifyGreen500
 
 data class NavigationItem(
     val title: String,
@@ -52,12 +60,17 @@ fun AppNavigationDrawer(
                 items.forEach { item ->
                     NavigationDrawerItem(
                         icon = { Icon(item.icon, contentDescription = item.title) },
-                        label = { Text(item.title) },
+                        label = { Text(item.title, fontWeight = if (selectedRoute == item.route) FontWeight.SemiBold else FontWeight.Normal) },
                         selected = selectedRoute == item.route,
                         onClick = {
                             onNavigate(item.route)
                             onDismiss()
                         },
+                        colors = NavigationDrawerItemDefaults.colors(
+                            selectedContainerColor = RouteifyBlue500.copy(alpha = 0.15f),
+                            selectedIconColor = RouteifyBlue500,
+                            selectedTextColor = RouteifyBlue500
+                        ),
                         modifier = Modifier.padding(horizontal = 12.dp)
                     )
                 }
@@ -95,27 +108,44 @@ fun AppNavigationDrawer(
 
 @Composable
 private fun DrawerHeader(username: String?, email: String?) {
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(24.dp),
-        horizontalAlignment = Alignment.Start
+            .background(Brush.horizontalGradient(listOf(RouteifyBlue500, RouteifyGreen500)))
+            .padding(24.dp)
     ) {
-        Icon(
-            imageVector = Icons.Default.AccountCircle,
-            contentDescription = "Profile Picture",
-            modifier = Modifier.size(64.dp),
-            tint = MaterialTheme.colorScheme.primary
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = username ?: "Guest",
-            style = MaterialTheme.typography.titleLarge
-        )
-        Text(
-            text = email ?: "",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+        Column(horizontalAlignment = Alignment.Start) {
+            Surface(
+                shape = CircleShape,
+                color = Color.White,
+                modifier = Modifier.size(64.dp)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    val initials = (username ?: "").split(" ")
+                        .mapNotNull { it.firstOrNull()?.uppercase() }
+                        .joinToString("")
+                        .take(2)
+                        .ifBlank { "GU" }
+                    Text(
+                        text = initials,
+                        color = RouteifyBlue500,
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = username ?: "Guest",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+            )
+            Text(
+                text = email ?: "",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.White.copy(alpha = 0.9f)
+            )
+        }
     }
 }
