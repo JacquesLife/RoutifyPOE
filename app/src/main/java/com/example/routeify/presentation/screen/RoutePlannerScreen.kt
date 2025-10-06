@@ -26,7 +26,7 @@ import com.example.routeify.domain.model.PlaceSuggestion
 import com.example.routeify.domain.model.RouteSegment
 import com.example.routeify.domain.model.TransitRoute
 import com.example.routeify.presentation.viewmodel.GoogleFeaturesViewModel
-
+//Hows ur granny
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RoutePlannerScreen(
