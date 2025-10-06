@@ -35,7 +35,7 @@ android {
     }
 
     signingConfigs {
-        create("debug") {
+        create("shared") {
             storeFile = file("shared-debug.keystore")
             storePassword = "android"
             keyAlias = "androiddebugkey"
@@ -45,7 +45,7 @@ android {
     
     buildTypes {
         debug {
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("shared")
         }
         release {
             isMinifyEnabled = false
