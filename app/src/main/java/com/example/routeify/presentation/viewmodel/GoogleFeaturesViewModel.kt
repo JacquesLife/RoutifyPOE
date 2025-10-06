@@ -115,7 +115,7 @@ class GoogleFeaturesViewModel : ViewModel() {
         toSuggestions.value = emptyList()
     }
 
-    fun getTransitRoutes(fromLocation: String, toLocation: String) {
+    fun getTransitRoutes(fromLocation: String, toLocation: String, departureTime: Long? = null) {
         viewModelScope.launch {
             isLoadingRoutes.value = true
             isLoading.value = true
@@ -124,7 +124,8 @@ class GoogleFeaturesViewModel : ViewModel() {
 
             repository.getTransitDirections(
                 origin = fromLocation,
-                destination = toLocation
+                destination = toLocation,
+                departureTime = departureTime
             )
                 .onSuccess { routes ->
                     transitRoutes.value = routes

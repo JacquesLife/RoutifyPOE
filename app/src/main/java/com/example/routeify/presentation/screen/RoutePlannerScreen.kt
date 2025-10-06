@@ -26,6 +26,8 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import com.example.routeify.domain.model.PlaceSuggestion
 import com.example.routeify.domain.model.RouteSegment
 import com.example.routeify.domain.model.TransitRoute
@@ -37,6 +39,12 @@ data class PresetLocation(
     val address: String,
     val icon: androidx.compose.ui.graphics.vector.ImageVector
 )
+
+enum class TimeSelectionMode {
+    LEAVE_NOW,
+    DEPART_AT,
+    ARRIVE_BY
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,6 +62,11 @@ fun RoutePlannerScreen(
 
     // Recent searches state (in a real app, this would be stored in DataStore)
     var recentSearches by remember { mutableStateOf(listOf("Cape Town Airport", "V&A Waterfront", "Canal Walk")) }
+
+    // Time selection state
+    var timeSelectionMode by remember { mutableStateOf(TimeSelectionMode.LEAVE_NOW) }
+    var selectedDateTime by remember { mutableStateOf(LocalDateTime.now()) }
+    var showTimePicker by remember { mutableStateOf(false) }
 
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -336,7 +349,18 @@ fun RoutePlannerScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Time selection section
+            TimeSelectionSection(
+                timeSelectionMode = timeSelectionMode,
+                selectedDateTime = selectedDateTime,
+                onModeChange = { timeSelectionMode = it },
+                onDateTimeChange = { selectedDateTime = it },
+                onTimePickerClick = { showTimePicker = true }
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -393,7 +417,14 @@ fun RoutePlannerScreen(
                         .take(5) // Keep only 5 most recent
                     recentSearches = newRecentSearches
                     
-                    viewModel.getTransitRoutes(fromLocation, toLocation)
+                    // Pass departure time if not "Leave now"
+                    val departureTime = if (timeSelectionMode == TimeSelectionMode.LEAVE_NOW) {
+                        null
+                    } else {
+                        selectedDateTime.toEpochSecond(java.time.ZoneOffset.UTC) * 1000 // Convert to milliseconds
+                    }
+                    
+                    viewModel.getTransitRoutes(fromLocation, toLocation, departureTime)
                 },
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !isLoadingRoutes && fromLocation.isNotEmpty() && toLocation.isNotEmpty()
@@ -503,6 +534,18 @@ fun RoutePlannerScreen(
                 }
             }
         }
+    }
+
+    // Time picker dialog
+    if (showTimePicker) {
+        TimePickerDialog(
+            initialDateTime = selectedDateTime,
+            onDateTimeSelected = { dateTime ->
+                selectedDateTime = dateTime
+                showTimePicker = false
+            },
+            onDismiss = { showTimePicker = false }
+        )
     }
 }
 
@@ -862,6 +905,163 @@ private fun RouteSegmentItem(
             }
         }
     }
+}
+
+@Composable
+private fun TimeSelectionSection(
+    timeSelectionMode: TimeSelectionMode,
+    selectedDateTime: LocalDateTime,
+    onModeChange: (TimeSelectionMode) -> Unit,
+    onDateTimeChange: (LocalDateTime) -> Unit,
+    onTimePickerClick: () -> Unit
+) {
+    Column {
+        Text(
+            text = "When do you want to travel?",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+        
+        // Segmented control for time mode
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            TimeSelectionMode.values().forEach { mode ->
+                FilterChip(
+                    onClick = { onModeChange(mode) },
+                    label = {
+                        Text(
+                            when (mode) {
+                                TimeSelectionMode.LEAVE_NOW -> "Leave now"
+                                TimeSelectionMode.DEPART_AT -> "Depart at"
+                                TimeSelectionMode.ARRIVE_BY -> "Arrive by"
+                            }
+                        )
+                    },
+                    selected = timeSelectionMode == mode,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+        }
+        
+        // Time picker button (only show if not "Leave now")
+        if (timeSelectionMode != TimeSelectionMode.LEAVE_NOW) {
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedButton(
+                onClick = onTimePickerClick,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Icon(
+                        Icons.Default.Schedule,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Text(
+                        text = selectedDateTime.format(
+                            DateTimeFormatter.ofPattern("MMM dd, yyyy 'at' HH:mm")
+                        )
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun TimePickerDialog(
+    initialDateTime: LocalDateTime,
+    onDateTimeSelected: (LocalDateTime) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var selectedDate by remember { mutableStateOf(initialDateTime.toLocalDate()) }
+    var selectedTime by remember { mutableStateOf(initialDateTime.toLocalTime()) }
+    
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Select Date & Time") },
+        text = {
+            Column {
+                Text(
+                    text = "Date:",
+                    style = MaterialTheme.typography.titleSmall,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                
+                // Simple date picker (in a real app, you'd use DatePicker)
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    val today = java.time.LocalDate.now()
+                    val dates = (0..6).map { today.plusDays(it.toLong()) }
+                    
+                    items(dates) { date ->
+                        FilterChip(
+                            onClick = { selectedDate = date },
+                            label = { 
+                                Text(
+                                    date.format(DateTimeFormatter.ofPattern("MMM dd"))
+                                )
+                            },
+                            selected = selectedDate == date
+                        )
+                    }
+                }
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                Text(
+                    text = "Time:",
+                    style = MaterialTheme.typography.titleSmall,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                
+                // Simple time picker (in a real app, you'd use TimePicker)
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    val times = (6..23).map { hour ->
+                        listOf(
+                            java.time.LocalTime.of(hour, 0),
+                            java.time.LocalTime.of(hour, 30)
+                        )
+                    }.flatten()
+                    
+                    items(times) { time ->
+                        FilterChip(
+                            onClick = { selectedTime = time },
+                            label = { 
+                                Text(
+                                    time.format(DateTimeFormatter.ofPattern("HH:mm"))
+                                )
+                            },
+                            selected = selectedTime == time
+                        )
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    val newDateTime = LocalDateTime.of(selectedDate, selectedTime)
+                    onDateTimeSelected(newDateTime)
+                }
+            ) {
+                Text("OK")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
 }
 
 @Composable
