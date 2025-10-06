@@ -295,7 +295,7 @@ fun RoutePlannerScreen(
 
                     routeSuggestions.forEach { route ->
                         Text(
-                            text = "Route ${route.routeId}: ${route.timeEst} mins, ${"%.1f".format(route.distance)} km",
+                            text = "Route ${route.routeId}: ${route.timeEst} mins, ${route.distance} km",
                             color = if (route.recommended) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
                             fontWeight = if (route.recommended) FontWeight.Bold else FontWeight.Normal,
                             modifier = Modifier.padding(vertical = 4.dp)
