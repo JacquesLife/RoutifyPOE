@@ -4,6 +4,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.material3.BottomSheetDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.rememberBottomSheetScaffoldState
+import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -36,6 +42,7 @@ import com.example.routeify.utils.ClusterManagerEffect
 import com.example.routeify.utils.rememberClusterManager
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.Marker
@@ -45,16 +52,32 @@ import com.google.maps.android.compose.MapsComposeExperimentalApi
 import com.google.maps.android.compose.rememberCameraPositionState
 
 
-@OptIn(MapsComposeExperimentalApi::class)
+@OptIn(MapsComposeExperimentalApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun MapScreen() {
     LocalContext.current
     val viewModel: MapViewModel = viewModel()
     val uiState by viewModel.uiState.collectAsState()
     
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
+    val bottomSheetScaffoldState = rememberBottomSheetScaffoldState()
+    
+    BottomSheetScaffold(
+        scaffoldState = bottomSheetScaffoldState,
+        sheetContent = {
+            // Bottom sheet content will be added here
+            BottomSheetContent()
+        },
+        sheetPeekHeight = 80.dp,
+        sheetContainerColor = MaterialTheme.colorScheme.surface,
+        sheetDragHandle = {
+            BottomSheetDefaults.DragHandle()
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
         // Header Card
         Card(
             modifier = Modifier
@@ -85,6 +108,17 @@ fun MapScreen() {
                 
 
             }
+        }
+
+        // Route Overview Bar (when route is selected)
+        val selectedArgs = remember { viewModel.getSelectedRouteArgs() }
+        if (selectedArgs != null) {
+            RouteOverviewBar(
+                selectedArgs = selectedArgs,
+                onStartNavigation = {
+                    // TODO: Implement navigation start
+                }
+            )
         }
 
         // Map with clustering
@@ -158,13 +192,27 @@ fun MapScreen() {
             }
 
             if (polylinePoints.isNotEmpty()) {
-                Polyline(points = polylinePoints)
+                // Enhanced polyline with thicker width and primary color
+                Polyline(
+                    points = polylinePoints,
+                    color = MaterialTheme.colorScheme.primary,
+                    width = 10f,
+                    geodesic = true
+                )
 
                 selectedArgs?.origin?.let { start ->
-                    Marker(state = MarkerState(start), title = "Start")
+                    Marker(
+                        state = MarkerState(start), 
+                        title = "Start",
+                        icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)
+                    )
                 }
                 selectedArgs?.destination?.let { end ->
-                    Marker(state = MarkerState(end), title = "End")
+                    Marker(
+                        state = MarkerState(end), 
+                        title = "End",
+                        icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)
+                    )
                 }
             }
         }
@@ -252,5 +300,313 @@ fun MapScreen() {
                 )
             }
         }
+        }
+        
+        // Controls Cluster (FAB Group)
+        ControlsCluster()
     }
+}
+
+@Composable
+private fun RouteOverviewBar(
+    selectedArgs: com.example.routeify.ui.viewmodel.SelectedRouteArgs,
+    onStartNavigation: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            // Route info
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = "Selected Route",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    // ETA placeholder (would come from route data)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Icon(
+                            Icons.Default.Schedule,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                        Text(
+                            text = "~25 min", // Placeholder
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                    
+                    // Distance placeholder
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Icon(
+                            Icons.Default.Straighten,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                        Text(
+                            text = "~8.5 km", // Placeholder
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                    
+                    // Transfers placeholder
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Icon(
+                            Icons.Default.TransferWithinAStation,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                        Text(
+                            text = "2 transfers", // Placeholder
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                }
+            }
+            
+            // Action buttons
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                // Share button
+                IconButton(
+                    onClick = {
+                        // TODO: Implement share functionality
+                        val context = androidx.compose.ui.platform.LocalContext.current
+                        val shareIntent = android.content.Intent().apply {
+                            action = android.content.Intent.ACTION_SEND
+                            type = "text/plain"
+                            putExtra(android.content.Intent.EXTRA_TEXT, generateRouteDeepLink(selectedArgs))
+                        }
+                        context.startActivity(android.content.Intent.createChooser(shareIntent, "Share Route"))
+                    }
+                ) {
+                    Icon(
+                        Icons.Default.Share,
+                        contentDescription = "Share route",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+                
+                // Start button
+                Button(
+                    onClick = onStartNavigation,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    )
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Icon(
+                            Icons.Default.Navigation,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Text("Start")
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun BottomSheetContent() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        Text(
+            text = "Step-by-Step Directions",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+        
+        // Placeholder steps (in a real app, these would come from the route data)
+        val steps = listOf(
+            "Walk to Cape Town Station (5 min)",
+            "Take Southern Line to Claremont (15 min)",
+            "Walk to destination (3 min)"
+        )
+        
+        steps.forEachIndexed { index, step ->
+            Row(
+                modifier = Modifier.padding(vertical = 8.dp),
+                verticalAlignment = Alignment.Top
+            ) {
+                // Step number
+                Surface(
+                    shape = RoundedCornerShape(12.dp),
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(24.dp)
+                ) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Text(
+                            text = "${index + 1}",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+                
+                Spacer(modifier = Modifier.width(12.dp))
+                
+                // Step description
+                Text(
+                    text = step,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.weight(1f)
+                )
+                
+                // Step time
+                Text(
+                    text = when (index) {
+                        0 -> "5 min"
+                        1 -> "15 min"
+                        2 -> "3 min"
+                        else -> ""
+                    },
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            
+            if (index < steps.lastIndex) {
+                Divider(
+                    modifier = Modifier
+                        .padding(start = 12.dp)
+                        .padding(vertical = 8.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ControlsCluster() {
+    var expanded by remember { mutableStateOf(false) }
+    var mapStyle by remember { mutableStateOf(false) } // false = Day, true = Night
+    var showTransitLines by remember { mutableStateOf(true) }
+    
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        // Control buttons positioned in bottom-right
+        Column(
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            // Recenter button
+            FloatingActionButton(
+                onClick = {
+                    // TODO: Implement recenter functionality
+                },
+                modifier = Modifier.size(56.dp),
+                containerColor = MaterialTheme.colorScheme.primary
+            ) {
+                Icon(
+                    Icons.Default.MyLocation,
+                    contentDescription = "Recenter",
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
+            }
+            
+            // Re-route button (only show if route is selected)
+            val selectedArgs = remember { com.example.routeify.ui.viewmodel.MapViewModel().getSelectedRouteArgs() }
+            if (selectedArgs != null) {
+                FloatingActionButton(
+                    onClick = {
+                        // TODO: Implement re-route functionality
+                    },
+                    modifier = Modifier.size(56.dp),
+                    containerColor = MaterialTheme.colorScheme.secondary
+                ) {
+                    Icon(
+                        Icons.Default.Refresh,
+                        contentDescription = "Re-route",
+                        tint = MaterialTheme.colorScheme.onSecondary
+                    )
+                }
+            }
+            
+            // Map style toggle
+            FloatingActionButton(
+                onClick = { mapStyle = !mapStyle },
+                modifier = Modifier.size(56.dp),
+                containerColor = if (mapStyle) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.surface
+            ) {
+                Icon(
+                    if (mapStyle) Icons.Default.LightMode else Icons.Default.DarkMode,
+                    contentDescription = if (mapStyle) "Day mode" else "Night mode",
+                    tint = if (mapStyle) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.onSurface
+                )
+            }
+            
+            // Layers toggle
+            FloatingActionButton(
+                onClick = { showTransitLines = !showTransitLines },
+                modifier = Modifier.size(56.dp),
+                containerColor = if (showTransitLines) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface
+            ) {
+                Icon(
+                    Icons.Default.Layers,
+                    contentDescription = if (showTransitLines) "Hide transit lines" else "Show transit lines",
+                    tint = if (showTransitLines) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
+                )
+            }
+        }
+    }
+}
+
+private fun generateRouteDeepLink(selectedArgs: com.example.routeify.ui.viewmodel.SelectedRouteArgs): String {
+    val fromLat = selectedArgs.origin?.latitude ?: 0.0
+    val fromLng = selectedArgs.origin?.longitude ?: 0.0
+    val toLat = selectedArgs.destination?.latitude ?: 0.0
+    val toLng = selectedArgs.destination?.longitude ?: 0.0
+    val poly = selectedArgs.encodedPolyline ?: ""
+    
+    return "routeify://map?fromLat=$fromLat&fromLng=$fromLng&toLat=$toLat&toLng=$toLng&poly=$poly"
 }

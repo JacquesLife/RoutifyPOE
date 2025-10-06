@@ -588,7 +588,16 @@ fun RoutePlannerScreen(
                     TransitRouteCard(
                         route = route,
                         routeNumber = index + 1,
-                        onClick = { onRouteSelected(route) }
+                        onViewOnMap = { onRouteSelected(route) },
+                        onOpenInGoogleMaps = { 
+                            // Open in Google Maps
+                            val context = androidx.compose.ui.platform.LocalContext.current
+                            val from = route.startLocation?.let { "${it.latitude},${it.longitude}" } ?: fromLocation
+                            val to = route.endLocation?.let { "${it.latitude},${it.longitude}" } ?: toLocation
+                            val uri = android.net.Uri.parse("https://www.google.com/maps/dir/?api=1&origin=$from&destination=$to&travelmode=transit")
+                            val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, uri)
+                            context.startActivity(intent)
+                        }
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                 }
@@ -819,10 +828,10 @@ private fun androidx.compose.ui.text.AnnotatedString.Builder.highlightMatchedTex
 private fun TransitRouteCard(
     route: TransitRoute,
     routeNumber: Int,
-    onClick: () -> Unit = {}
+    onViewOnMap: () -> Unit = {},
+    onOpenInGoogleMaps: () -> Unit = {}
 ) {
     Card(
-        onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(
@@ -886,6 +895,50 @@ private fun TransitRouteCard(
                 )
                 if (index < route.segments.lastIndex) {
                     Spacer(modifier = Modifier.height(8.dp))
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+            Divider()
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Action buttons
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Button(
+                    onClick = onViewOnMap,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Icon(
+                            Icons.Default.Map,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Text("View on Map")
+                    }
+                }
+                
+                OutlinedButton(
+                    onClick = onOpenInGoogleMaps,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Icon(
+                            Icons.Default.OpenInNew,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Text("Google Maps")
+                    }
                 }
             }
         }
