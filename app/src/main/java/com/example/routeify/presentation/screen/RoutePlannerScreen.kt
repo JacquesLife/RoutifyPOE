@@ -32,7 +32,8 @@ import com.example.routeify.presentation.viewmodel.GoogleFeaturesViewModel
 @Composable
 fun RoutePlannerScreen(
     viewModel: GoogleFeaturesViewModel = viewModel(),
-    onBackClick: () -> Unit = {}
+    onBackClick: () -> Unit = {},
+    onRouteSelected: (TransitRoute) -> Unit = {}
 ) {
     var fromLocation by remember { mutableStateOf("") }
     var toLocation by remember { mutableStateOf("") }
@@ -342,7 +343,8 @@ fun RoutePlannerScreen(
                 transitRoutes.forEachIndexed { index, route ->
                     TransitRouteCard(
                         route = route,
-                        routeNumber = index + 1
+                        routeNumber = index + 1,
+                        onClick = { onRouteSelected(route) }
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                 }
@@ -426,9 +428,11 @@ private fun SuggestionItem(
 @Composable
 private fun TransitRouteCard(
     route: TransitRoute,
-    routeNumber: Int
+    routeNumber: Int,
+    onClick: () -> Unit = {}
 ) {
     Card(
+        onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(

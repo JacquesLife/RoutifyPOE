@@ -37,6 +37,9 @@ import com.example.routeify.utils.rememberClusterManager
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.Polyline
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.MapEffect
 import com.google.maps.android.compose.MapsComposeExperimentalApi
 import com.google.maps.android.compose.rememberCameraPositionState
@@ -130,6 +133,18 @@ fun MapScreen() {
         var map by remember { mutableStateOf<com.google.android.gms.maps.GoogleMap?>(null) }
         val clusterManager = rememberClusterManager(map)
 
+        // Selected route rendering from SavedStateHandle via ViewModel
+        val selectedArgs = remember { viewModel.getSelectedRouteArgs() }
+        val polylinePoints = remember(selectedArgs) {
+            selectedArgs?.encodedPolyline?.let { encoded ->
+                try {
+                    com.google.maps.android.PolyUtil.decode(encoded)
+                } catch (e: Exception) {
+                    emptyList()
+                }
+            } ?: emptyList()
+        }
+
         GoogleMap(
             modifier = Modifier
                 .fillMaxWidth()
@@ -140,6 +155,31 @@ fun MapScreen() {
         ) {
             MapEffect(Unit) { googleMap ->
                 map = googleMap
+            }
+
+            if (polylinePoints.isNotEmpty()) {
+                Polyline(points = polylinePoints)
+
+                selectedArgs?.origin?.let { start ->
+                    Marker(state = MarkerState(start), title = "Start")
+                }
+                selectedArgs?.destination?.let { end ->
+                    Marker(state = MarkerState(end), title = "End")
+                }
+            }
+        }
+
+        // Move camera to fit route when available
+        LaunchedEffect(polylinePoints) {
+            if (polylinePoints.isNotEmpty()) {
+                map?.let { gMap ->
+                    val builder = com.google.android.gms.maps.model.LatLngBounds.Builder()
+                    polylinePoints.forEach { builder.include(it) }
+                    val bounds = builder.build()
+                    gMap.animateCamera(
+                        com.google.android.gms.maps.CameraUpdateFactory.newLatLngBounds(bounds, 80)
+                    )
+                }
             }
         }
         

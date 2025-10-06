@@ -20,7 +20,8 @@ import com.example.routeify.presentation.viewmodel.GoogleFeaturesViewModel
 @Composable
 fun GoogleFeaturesScreen(
     viewModel: GoogleFeaturesViewModel = viewModel(),
-    onBackClick: () -> Unit = {}
+    onBackClick: () -> Unit = {},
+    onRouteSelectedNavigateToMap: (String) -> Unit = {}
 ) {
     var selectedStop by remember { mutableStateOf<TransitStop?>(null) }
     var currentScreen by remember { mutableStateOf("main") }
@@ -29,7 +30,25 @@ fun GoogleFeaturesScreen(
         "route_planner" -> {
             RoutePlannerScreen(
                 viewModel = viewModel,
-                onBackClick = { currentScreen = "main" }
+                onBackClick = { currentScreen = "main" },
+                onRouteSelected = { route ->
+                    val fromLat = route.startLocation?.latitude?.toString()
+                    val fromLng = route.startLocation?.longitude?.toString()
+                    val toLat = route.endLocation?.latitude?.toString()
+                    val toLng = route.endLocation?.longitude?.toString()
+                    val poly = route.overviewPolyline
+                    val encodedPoly = poly?.let { java.net.URLEncoder.encode(it, "UTF-8") }
+                    val routeStr = buildString {
+                        append("map")
+                        append("?")
+                        if (fromLat != null) append("fromLat=$fromLat&")
+                        if (fromLng != null) append("fromLng=$fromLng&")
+                        if (toLat != null) append("toLat=$toLat&")
+                        if (toLng != null) append("toLng=$toLng&")
+                        if (encodedPoly != null) append("poly=$encodedPoly")
+                    }.trimEnd('&')
+                    onRouteSelectedNavigateToMap(routeStr)
+                }
             )
         }
         "nearby_transit" -> {

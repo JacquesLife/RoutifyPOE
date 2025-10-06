@@ -142,7 +142,10 @@ class GooglePlacesEnhancedRepository {
                         totalDistance = leg.distance.text,
                         totalDuration = leg.duration.text,
                         durationValue = leg.duration.value,
-                        segments = segments
+                        segments = segments,
+                        overviewPolyline = route.overviewPolyline?.points,
+                        startLocation = com.google.android.gms.maps.model.LatLng(leg.startLocation.lat, leg.startLocation.lng),
+                        endLocation = com.google.android.gms.maps.model.LatLng(leg.endLocation.lat, leg.endLocation.lng)
                     )
                 }
 

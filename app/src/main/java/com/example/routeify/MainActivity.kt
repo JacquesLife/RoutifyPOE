@@ -14,6 +14,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.NavType
+import androidx.navigation.compose.navArgument
 import com.example.routeify.ui.components.AppNavigationDrawer
 import com.example.routeify.ui.screens.HomeScreen
 import com.example.routeify.ui.screens.SplashScreen
@@ -135,9 +137,26 @@ fun MainApp() {
                 }
                 composable("home") { HomeScreen() }
                 composable("profile") { ProfileScreen() }
-                composable("map") { MapScreen() }
+                composable(
+                    route = "map?fromLat={fromLat}&fromLng={fromLng}&toLat={toLat}&toLng={toLng}&poly={poly}",
+                    arguments = listOf(
+                        navArgument("fromLat") { type = NavType.StringType; nullable = true },
+                        navArgument("fromLng") { type = NavType.StringType; nullable = true },
+                        navArgument("toLat") { type = NavType.StringType; nullable = true },
+                        navArgument("toLng") { type = NavType.StringType; nullable = true },
+                        navArgument("poly") { type = NavType.StringType; nullable = true }
+                    )
+                ) { MapScreen() }
                 composable("settings") { SettingsScreen() }
-                composable("google-features") { GoogleFeaturesScreen() }
+                composable("google-features") {
+                    GoogleFeaturesScreen(
+                        onRouteSelectedNavigateToMap = { routeString ->
+                            navController.navigate(routeString) {
+                                launchSingleTop = true
+                            }
+                        }
+                    )
+                }
                 composable("favorites") {
                     ScreenPlaceholder("Favorites")
                 }
