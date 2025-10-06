@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -78,6 +79,7 @@ fun RoutePlannerScreen(
     onBackClick: () -> Unit = {},
     onRouteSelected: (TransitRoute) -> Unit = {}
 ) {
+    val context = LocalContext.current
     var fromLocation by remember { mutableStateOf("") }
     var toLocation by remember { mutableStateOf("") }
     var showFromDropdown by remember { mutableStateOf(false) }
@@ -591,7 +593,6 @@ fun RoutePlannerScreen(
                         onViewOnMap = { onRouteSelected(route) },
                         onOpenInGoogleMaps = { 
                             // Open in Google Maps
-                            val context = androidx.compose.ui.platform.LocalContext.current
                             val from = route.startLocation?.let { "${it.latitude},${it.longitude}" } ?: fromLocation
                             val to = route.endLocation?.let { "${it.latitude},${it.longitude}" } ?: toLocation
                             val uri = android.net.Uri.parse("https://www.google.com/maps/dir/?api=1&origin=$from&destination=$to&travelmode=transit")
