@@ -65,6 +65,12 @@ data class RouteFilters(
     val wheelchairAccessible: Boolean = false
 )
 
+data class ValidationResult(
+    val isValid: Boolean,
+    val message: String? = null,
+    val icon: androidx.compose.ui.graphics.vector.ImageVector? = null
+)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RoutePlannerScreen(
@@ -99,6 +105,42 @@ fun RoutePlannerScreen(
             PresetLocation("home", "Home", "Your home address", Icons.Default.Home),
             PresetLocation("work", "Work", "Your workplace", Icons.Default.Work)
         )
+    }
+
+    // Validation logic
+    val validationResult = remember(fromLocation, toLocation, isLoadingRoutes) {
+        when {
+            isLoadingRoutes -> ValidationResult(
+                isValid = false,
+                message = "Finding routes...",
+                icon = Icons.Default.Search
+            )
+            fromLocation.isEmpty() && toLocation.isEmpty() -> ValidationResult(
+                isValid = false,
+                message = "Enter your starting location and destination to find routes",
+                icon = Icons.Default.Info
+            )
+            fromLocation.isEmpty() -> ValidationResult(
+                isValid = false,
+                message = "Enter your starting location",
+                icon = Icons.Default.MyLocation
+            )
+            toLocation.isEmpty() -> ValidationResult(
+                isValid = false,
+                message = "Enter your destination",
+                icon = Icons.Default.Place
+            )
+            fromLocation == toLocation -> ValidationResult(
+                isValid = false,
+                message = "Starting location and destination must be different",
+                icon = Icons.Default.Warning
+            )
+            else -> ValidationResult(
+                isValid = true,
+                message = "Ready to find routes!",
+                icon = Icons.Default.CheckCircle
+            )
+        }
     }
 
     val fromSuggestions by viewModel.fromSuggestions
@@ -475,8 +517,7 @@ fun RoutePlannerScreen(
                         routeFilters.wheelchairAccessible
                     )
                 },
-                modifier = Modifier.fillMaxWidth(),
-                enabled = !isLoadingRoutes && fromLocation.isNotEmpty() && toLocation.isNotEmpty()
+                modifier = Modifier.fillMaxWidth()
             ) {
                 if (isLoadingRoutes) {
                     Row(
@@ -500,6 +541,11 @@ fun RoutePlannerScreen(
                     }
                 }
             }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Validation hints
+            ValidationHintCard(validationResult = validationResult)
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -950,6 +996,50 @@ private fun RouteSegmentItem(
                     text = "${segment.distance} • ${segment.duration}",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ValidationHintCard(
+    validationResult: ValidationResult
+) {
+    if (validationResult.message != null) {
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(
+                containerColor = when {
+                    validationResult.isValid -> MaterialTheme.colorScheme.primaryContainer
+                    else -> MaterialTheme.colorScheme.surfaceVariant
+                }
+            ),
+            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+        ) {
+            Row(
+                modifier = Modifier.padding(12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                validationResult.icon?.let { icon ->
+                    Icon(
+                        icon,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp),
+                        tint = when {
+                            validationResult.isValid -> MaterialTheme.colorScheme.primary
+                            else -> MaterialTheme.colorScheme.onSurfaceVariant
+                        }
+                    )
+                }
+                Text(
+                    text = validationResult.message,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = when {
+                        validationResult.isValid -> MaterialTheme.colorScheme.onPrimaryContainer
+                        else -> MaterialTheme.colorScheme.onSurfaceVariant
+                    }
                 )
             }
         }
