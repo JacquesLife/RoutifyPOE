@@ -1,5 +1,7 @@
 package com.example.routeify.presentation.screen
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -72,6 +74,7 @@ data class ValidationResult(
     val icon: androidx.compose.ui.graphics.vector.ImageVector? = null
 )
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RoutePlannerScreen(
@@ -80,7 +83,7 @@ fun RoutePlannerScreen(
     onRouteSelected: (TransitRoute) -> Unit = {}
 ) {
     val context = LocalContext.current
-    
+
     // ViewModel state
     val fromSuggestions by viewModel.fromSuggestions
     val toSuggestions by viewModel.toSuggestions
@@ -89,7 +92,7 @@ fun RoutePlannerScreen(
     val isLoadingFromSuggestions by viewModel.isLoadingFromSuggestions
     val isLoadingToSuggestions by viewModel.isLoadingToSuggestions
     val errorMessage by viewModel.errorMessage
-    
+
     var fromLocation by remember { mutableStateOf("") }
     var toLocation by remember { mutableStateOf("") }
     var showFromDropdown by remember { mutableStateOf(false) }
@@ -262,7 +265,7 @@ fun RoutePlannerScreen(
                                     }
                                 )
                             }
-                            
+
                             // Show "Use this exact address" when no suggestions but user has typed something
                             if (fromSuggestions.isEmpty() && fromLocation.isNotEmpty() && !isLoadingFromSuggestions) {
                                 item {
@@ -384,7 +387,7 @@ fun RoutePlannerScreen(
                                     }
                                 )
                             }
-                            
+
                             // Show "Use this exact address" when no suggestions but user has typed something
                             if (toSuggestions.isEmpty() && toLocation.isNotEmpty() && !isLoadingToSuggestions) {
                                 item {
@@ -441,46 +444,46 @@ fun RoutePlannerScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                OutlinedButton(
-                    onClick = {
-                        fromLocation = "Cape Town City Centre"
-                        toLocation = "V&A Waterfront"
-                        selectedFromPlace = null
-                        selectedToPlace = null
-                        
-                        // Add to recent searches
-                        val newRecentSearches = (listOf(fromLocation, toLocation) + recentSearches)
-                            .distinct()
-                            .take(5)
-                        recentSearches = newRecentSearches
-                    },
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text("🏙️ City → Waterfront", style = MaterialTheme.typography.bodySmall)
-                }
-
-                OutlinedButton(
-                    onClick = {
-                        fromLocation = "Cape Town City Centre"
-                        toLocation = "Cape Town Airport"
-                        selectedFromPlace = null
-                        selectedToPlace = null
-                        
-                        // Add to recent searches
-                        val newRecentSearches = (listOf(fromLocation, toLocation) + recentSearches)
-                            .distinct()
-                            .take(5)
-                        recentSearches = newRecentSearches
-                    },
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text("✈️ City → Airport", style = MaterialTheme.typography.bodySmall)
-                }
-            }
+//            Row(
+//                modifier = Modifier.fillMaxWidth(),
+//                horizontalArrangement = Arrangement.spacedBy(8.dp)
+//            ) {
+//                OutlinedButton(
+//                    onClick = {
+//                        fromLocation = "Cape Town City Centre"
+//                        toLocation = "V&A Waterfront"
+//                        selectedFromPlace = null
+//                        selectedToPlace = null
+//
+//                        // Add to recent searches
+//                        val newRecentSearches = (listOf(fromLocation, toLocation) + recentSearches)
+//                            .distinct()
+//                            .take(5)
+//                        recentSearches = newRecentSearches
+//                    },
+//                    modifier = Modifier.weight(1f)
+//                ) {
+//                    Text("🏙️ City → Waterfront", style = MaterialTheme.typography.bodySmall)
+//                }
+//
+//                OutlinedButton(
+//                    onClick = {
+//                        fromLocation = "Cape Town City Centre"
+//                        toLocation = "Cape Town Airport"
+//                        selectedFromPlace = null
+//                        selectedToPlace = null
+//
+//                        // Add to recent searches
+//                        val newRecentSearches = (listOf(fromLocation, toLocation) + recentSearches)
+//                            .distinct()
+//                            .take(5)
+//                        recentSearches = newRecentSearches
+//                    },
+//                    modifier = Modifier.weight(1f)
+//                ) {
+//                    Text("✈️ City → Airport", style = MaterialTheme.typography.bodySmall)
+//                }
+//            }
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -489,20 +492,20 @@ fun RoutePlannerScreen(
                     keyboardController?.hide()
                     showFromDropdown = false
                     showToDropdown = false
-                    
+
                     // Add to recent searches if not already present
                     val newRecentSearches = (listOf(fromLocation, toLocation) + recentSearches)
                         .distinct()
                         .take(5) // Keep only 5 most recent
                     recentSearches = newRecentSearches
-                    
+
                     // Pass departure time if not "Leave now"
                     val departureTime = if (timeSelectionMode == TimeSelectionMode.LEAVE_NOW) {
                         null
                     } else {
                         selectedDateTime.toEpochSecond(java.time.ZoneOffset.UTC) * 1000 // Convert to milliseconds
                     }
-                    
+
                     // Convert filters to API parameters
                     val transitModes = routeFilters.transitModes.map { mode ->
                         when (mode) {
@@ -512,10 +515,10 @@ fun RoutePlannerScreen(
                             TransitMode.WALK -> "walking"
                         }
                     }.joinToString("|")
-                    
+
                     viewModel.getTransitRoutes(
-                        fromLocation, 
-                        toLocation, 
+                        fromLocation,
+                        toLocation,
                         departureTime,
                         transitModes.ifEmpty { null },
                         routeFilters.wheelchairAccessible
@@ -601,40 +604,40 @@ fun RoutePlannerScreen(
                 }
             }
 
-            if (transitRoutes.isEmpty() && !isLoadingRoutes && errorMessage == null) {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
-                    )
-                ) {
-                    Row(
-                        modifier = Modifier.padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        Icon(
-                            Icons.Default.Info,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                        Column {
-                            Text(
-                                text = "How to use:",
-                                style = MaterialTheme.typography.titleSmall,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(
-                                text = "• Type to see location suggestions\n• Select from dropdown or continue typing\n• Click 'Find Transit Routes' to see bus and train options",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
-                }
-            }
+//            if (transitRoutes.isEmpty() && !isLoadingRoutes && errorMessage == null) {
+//                Card(
+//                    modifier = Modifier.fillMaxWidth(),
+//                    colors = CardDefaults.cardColors(
+//                        containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+//                    )
+//                ) {
+//                    Row(
+//                        modifier = Modifier.padding(16.dp),
+//                        verticalAlignment = Alignment.CenterVertically,
+//                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+//                    ) {
+//                        Icon(
+//                            Icons.Default.Info,
+//                            contentDescription = null,
+//                            tint = MaterialTheme.colorScheme.primary
+//                        )
+//                        Column {
+//                            Text(
+//                                text = "How to use:",
+//                                style = MaterialTheme.typography.titleSmall,
+//                                fontWeight = FontWeight.Bold,
+//                                color = MaterialTheme.colorScheme.onSurface
+//                            )
+//                            Spacer(modifier = Modifier.height(4.dp))
+//                            Text(
+//                                text = "• Type to see location suggestions\n• Select from dropdown or continue typing\n• Click 'Find Transit Routes' to see bus and train options",
+//                                style = MaterialTheme.typography.bodySmall,
+//                                color = MaterialTheme.colorScheme.onSurfaceVariant
+//                            )
+//                        }
+//                    }
+//                }
+//            }
         }
     }
 
@@ -682,7 +685,7 @@ private fun PresetChipsRow(
                 leadingIcon = null
             )
         }
-        
+
         // Recent searches
         items(recentSearches) { search ->
             FilterChip(
@@ -793,11 +796,11 @@ private fun androidx.compose.ui.text.AnnotatedString.Builder.highlightMatchedTex
         append(text)
         return
     }
-    
+
     val lowerText = text.lowercase()
     val lowerQuery = query.lowercase()
     var startIndex = 0
-    
+
     while (true) {
         val matchIndex = lowerText.indexOf(lowerQuery, startIndex)
         if (matchIndex == -1) {
@@ -807,17 +810,17 @@ private fun androidx.compose.ui.text.AnnotatedString.Builder.highlightMatchedTex
             }
             break
         }
-        
+
         // Append text before match
         if (matchIndex > startIndex) {
             append(text.substring(startIndex, matchIndex))
         }
-        
+
         // Append highlighted match
         withStyle(style = SpanStyle(background = Color.Yellow.copy(alpha = 0.3f))) {
             append(text.substring(matchIndex, matchIndex + query.length))
         }
-        
+
         startIndex = matchIndex + query.length
     }
 }
@@ -923,7 +926,7 @@ private fun TransitRouteCard(
                         Text("View on Map")
                     }
                 }
-                
+
                 OutlinedButton(
                     onClick = { openInGoogleMaps(route, fromLocation, toLocation, context) },
                     modifier = Modifier.weight(1f)
@@ -1117,7 +1120,7 @@ private fun FiltersSection(
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Medium
             )
-            
+
             TextButton(
                 onClick = { onShowFiltersChange(!showFilters) }
             ) {
@@ -1129,17 +1132,17 @@ private fun FiltersSection(
                 )
             }
         }
-        
+
         if (showFilters) {
             Spacer(modifier = Modifier.height(12.dp))
-            
+
             // Transit mode chips
             Text(
                 text = "Transport modes:",
                 style = MaterialTheme.typography.titleSmall,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
-            
+
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 contentPadding = PaddingValues(horizontal = 4.dp)
@@ -1171,16 +1174,16 @@ private fun FiltersSection(
                     )
                 }
             }
-            
+
             Spacer(modifier = Modifier.height(12.dp))
-            
+
             // Route preference chips
             Text(
                 text = "Route preference:",
                 style = MaterialTheme.typography.titleSmall,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
-            
+
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 contentPadding = PaddingValues(horizontal = 4.dp)
@@ -1200,9 +1203,9 @@ private fun FiltersSection(
                     )
                 }
             }
-            
+
             Spacer(modifier = Modifier.height(12.dp))
-            
+
             // Accessibility option
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -1251,6 +1254,7 @@ private fun getRoutePreferenceName(preference: RoutePreference): String {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun TimeSelectionSection(
     timeSelectionMode: TimeSelectionMode,
@@ -1266,7 +1270,7 @@ private fun TimeSelectionSection(
             fontWeight = FontWeight.Medium,
             modifier = Modifier.padding(bottom = 8.dp)
         )
-        
+
         // Segmented control for time mode
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -1289,7 +1293,7 @@ private fun TimeSelectionSection(
                 )
             }
         }
-        
+
         // Time picker button (only show if not "Leave now")
         if (timeSelectionMode != TimeSelectionMode.LEAVE_NOW) {
             Spacer(modifier = Modifier.height(8.dp))
@@ -1317,6 +1321,7 @@ private fun TimeSelectionSection(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun TimePickerDialog(
     initialDateTime: LocalDateTime,
@@ -1325,7 +1330,7 @@ private fun TimePickerDialog(
 ) {
     var selectedDate by remember { mutableStateOf(initialDateTime.toLocalDate()) }
     var selectedTime by remember { mutableStateOf(initialDateTime.toLocalTime()) }
-    
+
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("Select Date & Time") },
@@ -1336,18 +1341,18 @@ private fun TimePickerDialog(
                     style = MaterialTheme.typography.titleSmall,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
-                
+
                 // Simple date picker (in a real app, you'd use DatePicker)
                 LazyRow(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     val today = java.time.LocalDate.now()
                     val dates = (0..6).map { today.plusDays(it.toLong()) }
-                    
+
                     items(dates) { date ->
                         FilterChip(
                             onClick = { selectedDate = date },
-                            label = { 
+                            label = {
                                 Text(
                                     date.format(DateTimeFormatter.ofPattern("MMM dd"))
                                 )
@@ -1356,15 +1361,15 @@ private fun TimePickerDialog(
                         )
                     }
                 }
-                
+
                 Spacer(modifier = Modifier.height(16.dp))
-                
+
                 Text(
                     text = "Time:",
                     style = MaterialTheme.typography.titleSmall,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
-                
+
                 // Simple time picker (in a real app, you'd use TimePicker)
                 LazyRow(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -1375,11 +1380,11 @@ private fun TimePickerDialog(
                             java.time.LocalTime.of(hour, 30)
                         )
                     }.flatten()
-                    
+
                     items(times) { time ->
                         FilterChip(
                             onClick = { selectedTime = time },
-                            label = { 
+                            label = {
                                 Text(
                                     time.format(DateTimeFormatter.ofPattern("HH:mm"))
                                 )
