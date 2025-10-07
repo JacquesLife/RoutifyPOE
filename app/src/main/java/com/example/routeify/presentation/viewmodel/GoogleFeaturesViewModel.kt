@@ -158,7 +158,7 @@ class GoogleFeaturesViewModel : ViewModel() {
                 .onSuccess { routes ->
                     transitRoutes.value = routes
                     if (routes.isEmpty()) {
-                        errorMessage.value = "No transit routes found. Try different locations or check if transit is available."
+                        errorMessage.value = "No transit routes found. The app tried to find nearby transit stops but couldn't find a suitable route. Try different locations or check if transit is available in this area."
                     }
                 }
                 .onFailure { error ->

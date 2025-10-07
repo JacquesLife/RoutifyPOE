@@ -112,9 +112,27 @@ class GooglePlacesEnhancedRepository {
         wheelchairAccessible: Boolean = false
         // transitModes example: "bus|subway|train|tram|rail"
     ): Result<List<TransitRoute>> = withContext(Dispatchers.IO) {
+        // First try direct transit routing
+        val directResult = getTransitDirectionsDirect(origin, destination, departureTime, transitModes, wheelchairAccessible)
+
+        // If direct routing fails, try with nearest stops
+        if (directResult.isFailure || directResult.getOrNull()?.isEmpty() == true) {
+            Log.d(TAG, "Direct transit routing failed, trying with nearest stops...")
+            return@withContext getTransitDirectionsWithNearestStops(origin, destination, departureTime, transitModes, wheelchairAccessible)
+        }
+
+        return@withContext directResult
+    }
+
+    private suspend fun getTransitDirectionsDirect(
+        origin: String,
+        destination: String,
+        departureTime: Long? = null,
+        transitModes: String? = null,
+        wheelchairAccessible: Boolean = false
+    ): Result<List<TransitRoute>> = withContext(Dispatchers.IO) {
         try {
-            // Log the request parameters
-            Log.d(TAG, "Getting transit directions from $origin to $destination")
+            Log.d(TAG, "Getting direct transit directions from $origin to $destination")
 
             // Convert departure time to seconds since epoch or use "now"
             val departureTimeStr = departureTime?.let { (it / 1000).toString() } ?: "now"
@@ -173,23 +191,222 @@ class GooglePlacesEnhancedRepository {
                     )
                 }
 
-                // Log the number of routes found
-                Log.d(TAG, "Found ${transitRoutes.size} transit routes")
+                Log.d(TAG, "Found ${transitRoutes.size} direct transit routes")
                 Result.success(transitRoutes)
             } else {
-                // Handle error case
-                val errorMsg = response.errorMessage ?: "No transit routes found"
-                Log.e(TAG, "Directions API error: ${response.status} - $errorMsg")
+                val errorMsg = response.errorMessage ?: "No direct transit routes found"
+                Log.e(TAG, "Direct directions API error: ${response.status} - $errorMsg")
                 Result.failure(Exception(errorMsg))
             }
             // Return failure on API errors
         } catch (e: Exception) {
-            Log.e(TAG, "Error getting directions", e)
+            Log.e(TAG, "Error getting direct directions", e)
+            Result.failure(e)
+        }
+    }
+
+    private suspend fun getTransitDirectionsWithNearestStops(
+        origin: String,
+        destination: String,
+        departureTime: Long? = null,
+        transitModes: String? = null,
+        wheelchairAccessible: Boolean = false
+    ): Result<List<TransitRoute>> = withContext(Dispatchers.IO) {
+        try {
+            Log.d(TAG, "Getting transit directions with nearest stops from $origin to $destination")
+
+            // First, geocode both addresses to get coordinates
+            val originCoords = geocodeAddress(origin).getOrNull()
+            val destinationCoords = geocodeAddress(destination).getOrNull()
+
+            if (originCoords == null || destinationCoords == null) {
+                return@withContext Result.failure(Exception("Could not find coordinates for one or both locations"))
+            }
+
+            Log.d(TAG, "Origin: ${originCoords.latitude},${originCoords.longitude}")
+            Log.d(TAG, "Destination: ${destinationCoords.latitude},${destinationCoords.longitude}")
+
+            // Find nearest transit stops
+            val transitRepository = GoogleTransitRepository()
+            val originStopsResult = transitRepository.findNearestTransitStops(
+                originCoords.latitude,
+                originCoords.longitude,
+                maxDistanceMeters = 5000, // 1km max walk
+                maxResults = 3
+            )
+            val destinationStopsResult = transitRepository.findNearestTransitStops(
+                destinationCoords.latitude,
+                destinationCoords.longitude,
+                maxDistanceMeters = 5000, // 1km max walk
+                maxResults = 3
+            )
+
+            if (originStopsResult.isFailure || destinationStopsResult.isFailure) {
+                return@withContext Result.failure(Exception("Could not find nearby transit stops"))
+            }
+
+            val originStops = originStopsResult.getOrThrow()
+            val destinationStops = destinationStopsResult.getOrThrow()
+
+            if (originStops.isEmpty() || destinationStops.isEmpty()) {
+                return@withContext Result.failure(Exception("No transit stops found within walking distance"))
+            }
+
+            Log.d(TAG, "Found ${originStops.size} origin stops and ${destinationStops.size} destination stops")
+
+            // Try different combinations of stops
+            val allRoutes = mutableListOf<TransitRoute>()
+
+            for (originStop in originStops) {
+                for (destinationStop in destinationStops) {
+                    val stopOrigin = "${originStop.latitude},${originStop.longitude}"
+                    val stopDestination = "${destinationStop.latitude},${destinationStop.longitude}"
+
+                    Log.d(TAG, "Trying route: ${originStop.name} -> ${destinationStop.name}")
+
+                    // Get transit route between stops
+                    val transitResult = getTransitDirectionsDirect(
+                        stopOrigin,
+                        stopDestination,
+                        departureTime,
+                        transitModes,
+                        wheelchairAccessible
+                    )
+
+                    if (transitResult.isSuccess) {
+                        val routes = transitResult.getOrThrow()
+
+                        // Add walking segments to each route (async)
+                        val enhancedRoutes = mutableListOf<TransitRoute>()
+                        for (route in routes) {
+                            val walkingToStop = createWalkingSegment(
+                                from = origin,
+                                to = originStop.name,
+                                fromCoords = originCoords,
+                                toCoords = com.google.android.gms.maps.model.LatLng(originStop.latitude, originStop.longitude)
+                            )
+
+                            val walkingFromStop = createWalkingSegment(
+                                from = destinationStop.name,
+                                to = destination,
+                                fromCoords = com.google.android.gms.maps.model.LatLng(destinationStop.latitude, destinationStop.longitude),
+                                toCoords = destinationCoords
+                            )
+
+                            // Create enhanced route with walking segments
+                            val enhancedRoute = route.copy(
+                                segments = listOf(walkingToStop) + route.segments + walkingFromStop,
+                                summary = "Walk to ${originStop.name}, then ${route.summary}, then walk to destination"
+                            )
+                            enhancedRoutes.add(enhancedRoute)
+                        }
+
+                        allRoutes.addAll(enhancedRoutes)
+                        Log.d(TAG, "✅ Found ${enhancedRoutes.size} routes via ${originStop.name} -> ${destinationStop.name}")
+                    }
+                }
+            }
+
+            if (allRoutes.isNotEmpty()) {
+                Log.d(TAG, "🎉 Found ${allRoutes.size} total routes with nearest stops")
+                Result.success(allRoutes)
+            } else {
+                Log.d(TAG, "❌ No routes found even with nearest stops")
+                Result.failure(Exception("No transit routes found, even when including nearby stops"))
+            }
+
+        } catch (e: Exception) {
+            Log.e(TAG, "Error getting directions with nearest stops", e)
+            Result.failure(e)
+        }
+    }
+
+    private suspend fun createWalkingSegment(
+        from: String,
+        to: String,
+        fromCoords: com.google.android.gms.maps.model.LatLng,
+        toCoords: com.google.android.gms.maps.model.LatLng
+    ): RouteSegment {
+        // Try to get accurate walking directions from Google
+        return try {
+            val walkingResult = getWalkingDirections(
+                "${fromCoords.latitude},${fromCoords.longitude}",
+                "${toCoords.latitude},${toCoords.longitude}"
+            )
+
+            if (walkingResult.isSuccess) {
+                val walkingResponse = walkingResult.getOrThrow()
+                val route = walkingResponse.routes.firstOrNull()
+                val leg = route?.legs?.firstOrNull()
+
+                if (leg != null) {
+                    RouteSegment(
+                        instruction = "Walk from $from to $to",
+                        distance = leg.distance.text,
+                        duration = leg.duration.text,
+                        travelMode = "WALKING"
+                    )
+                } else {
+                    createEstimatedWalkingSegment(from, to, fromCoords, toCoords)
+                }
+            } else {
+                createEstimatedWalkingSegment(from, to, fromCoords, toCoords)
+            }
+        } catch (e: Exception) {
+            Log.w(TAG, "Failed to get walking directions, using estimate", e)
+            createEstimatedWalkingSegment(from, to, fromCoords, toCoords)
+        }
+    }
+
+    private fun createEstimatedWalkingSegment(
+        from: String,
+        to: String,
+        fromCoords: com.google.android.gms.maps.model.LatLng,
+        toCoords: com.google.android.gms.maps.model.LatLng
+    ): RouteSegment {
+        // Calculate walking distance and time
+        val distance = calculateDistance(fromCoords.latitude, fromCoords.longitude, toCoords.latitude, toCoords.longitude)
+        val distanceMeters = (distance * 1000).toInt()
+        val walkingTimeMinutes = (distanceMeters / 80.0).toInt() // Assume 80m/min walking speed
+
+        return RouteSegment(
+            instruction = "Walk from $from to $to",
+            distance = if (distanceMeters < 1000) "${distanceMeters}m" else "${String.format("%.1f", distance)}km",
+            duration = "${walkingTimeMinutes} min",
+            travelMode = "WALKING"
+        )
+    }
+
+    private suspend fun getWalkingDirections(
+        origin: String,
+        destination: String
+    ): Result<com.example.routeify.data.api.GoogleDirectionsResponse> = withContext(Dispatchers.IO) {
+        try {
+            val response = api.getDirections(
+                origin = origin,
+                destination = destination,
+                mode = "walking",
+                alternatives = false,
+                apiKey = apiKey
+            )
+
+            if (response.status == "OK" && response.routes.isNotEmpty()) {
+                Result.success(response)
+            } else {
+                Result.failure(Exception("Walking directions failed: ${response.status}"))
+            }
+        } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
     // Fetch travel times between multiple origins and destinations
+    private fun calculateDistance(lat1: Double, lng1: Double, lat2: Double, lng2: Double): Double {
+        val results = FloatArray(1)
+        android.location.Location.distanceBetween(lat1, lng1, lat2, lng2, results)
+        return (results[0] / 1000.0) // Convert meters to kilometers
+    }
+
     suspend fun getTravelTimes(
         origins: List<LatLng>,
         destinations: List<LatLng>,
@@ -246,7 +463,7 @@ class GooglePlacesEnhancedRepository {
             Result.failure(e)
         }
     }
-    
+
     // Convenience method for single origin-destination travel time
     suspend fun getQuickTravelTime(
         origin: LatLng,
