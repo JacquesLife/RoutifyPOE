@@ -1,3 +1,14 @@
+/*
+ * ============================================================================
+ * COLOR THEME - App Color Palette & Branding
+ * ============================================================================
+ * 
+ * Defines the complete color scheme for Routeify app.
+ * Blue to green gradient theme with light/dark mode support.
+ * 
+ * ============================================================================
+ */
+
 package com.example.routeify.ui.theme
 
 import androidx.compose.ui.graphics.Color
@@ -41,3 +52,5 @@ val InfoBlue = Color(0xFF3B82F6)
 val DarkBackground = Color(0xFF0F172A)
 val DarkSurface = Color(0xFF1E293B)
 val DarkSurfaceVariant = Color(0xFF334155)
+
+// --------------------------------------------------End of File----------------------------------------------------------------

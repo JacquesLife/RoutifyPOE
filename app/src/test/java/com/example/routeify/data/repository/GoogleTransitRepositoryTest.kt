@@ -1,3 +1,14 @@
+/*
+ * ============================================================================
+ * GOOGLE TRANSIT REPOSITORY TEST - Transit Repository Unit Tests
+ * ============================================================================
+ * 
+ * Unit tests for Google Transit Repository functionality.
+ * Tests transit stop discovery, API calls, and data processing.
+ * 
+ * ============================================================================
+ */
+
 package com.example.routeify.data.repository
 
 import com.example.routeify.data.model.TransitStopType
@@ -69,3 +80,5 @@ class GoogleTransitRepositoryTest {
         assertTrue("Should have at least 5 stop types", allTypes.size >= 5)
     }
 }
+
+// --------------------------------------------------End of File----------------------------------------------------------------

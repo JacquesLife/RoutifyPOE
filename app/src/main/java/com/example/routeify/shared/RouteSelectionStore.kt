@@ -1,3 +1,14 @@
+/*
+ * ============================================================================
+ * ROUTE SELECTION STORE - Global Route State Management
+ * ============================================================================
+ * 
+ * Singleton store for managing selected route data across app navigation.
+ * Provides thread-safe access to current route selection state.
+ * 
+ * ============================================================================
+ */
+
 package com.example.routeify.shared
 
 import com.example.routeify.domain.model.TransitRoute
@@ -21,4 +32,4 @@ object RouteSelectionStore {
     }
 }
 
-
+// --------------------------------------------------End of File----------------------------------------------------------------

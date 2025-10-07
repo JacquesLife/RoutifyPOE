@@ -1,3 +1,14 @@
+/*
+ * ============================================================================
+ * MAIN THEME - Material 3 Theme Configuration
+ * ============================================================================
+ * 
+ * Configures Material 3 design system with custom Routeify branding.
+ * Handles light/dark mode switching and dynamic color support.
+ * 
+ * ============================================================================
+ */
+
 package com.example.routeify.ui.theme
 
 import android.os.Build
@@ -108,3 +119,5 @@ fun RouteifyTheme(
         content = content
     )
 }
+
+// --------------------------------------------------End of File----------------------------------------------------------------

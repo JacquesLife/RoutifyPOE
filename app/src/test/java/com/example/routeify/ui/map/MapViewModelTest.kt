@@ -1,3 +1,14 @@
+/*
+ * ============================================================================
+ * MAP VIEWMODEL TEST - ViewModel Unit Tests
+ * ============================================================================
+ * 
+ * Unit tests for MapViewModel state management and functionality.
+ * Tests zoom controls, state updates, and coroutine handling.
+ * 
+ * ============================================================================
+ */
+
 package com.example.routeify.ui.map
 
 import androidx.lifecycle.SavedStateHandle
@@ -104,3 +115,5 @@ class MapViewModelTest {
             originalState.error, updatedState.error)
     }
 }
+
+// --------------------------------------------------End of File----------------------------------------------------------------

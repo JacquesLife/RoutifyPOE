@@ -1,3 +1,14 @@
+/*
+ * ============================================================================
+ * MAP ICON UTILS - Custom Map Marker Creation Utility
+ * ============================================================================
+ * 
+ * Utility functions for creating custom map markers and icons.
+ * Handles bitmap conversion and styled marker generation for maps.
+ * 
+ * ============================================================================
+ */
+
 package com.example.routeify.utils
 
 import android.content.Context
@@ -52,3 +63,5 @@ object MapIconUtils {
         return BitmapDescriptorFactory.fromBitmap(bitmap)
     }
 }
+
+// --------------------------------------------------End of File----------------------------------------------------------------

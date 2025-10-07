@@ -1,3 +1,45 @@
+/*
+ * ============================================================================
+ * GOOGLE FEATURES VIEWMODEL - Advanced Location Services State Management (272+ lines)
+ * ============================================================================
+ * 
+ * Sophisticated ViewModel orchestrating complex Google Maps Platform integrations
+ * with advanced state management and real-time data coordination.
+ * 
+ * STATE MANAGEMENT SCOPE:
+ * - Distance matrix calculations with multi-origin/destination support
+ * - Real-time geocoding and reverse geocoding operations
+ * - Place autocomplete with intelligent suggestion filtering
+ * - Detailed place information retrieval and caching
+ * - Smart route suggestions with AI-powered recommendations
+ * - Transit stop discovery and management
+ * - Loading states and comprehensive error handling
+ * 
+ * SMART SUGGESTIONS INTEGRATION:
+ * - Integration with SmartSuggestionEngine for route optimization
+ * - Real-time route analysis and recommendation generation
+ * - User preference learning and suggestion personalization
+ * - Route comparison and intelligent ranking
+ * 
+ * REACTIVE ARCHITECTURE:
+ * - Comprehensive state exposure via Compose-compatible mutableStateOf
+ * - Coroutine-based asynchronous operations with proper scope management
+ * - Repository pattern integration with clean separation of concerns
+ * - Real-time UI updates with optimistic state management
+ * 
+ * KEY FEATURES:
+ * - Multi-repository coordination (Places + Transit)
+ * - Complex async operation chaining and error recovery
+ * - Intelligent caching and performance optimization
+ * - Debounced search operations for optimal API usage
+ * - Comprehensive logging and debugging support
+ * 
+ * This ViewModel represents the most complex business logic coordination
+ * in the app, managing multiple data sources and real-time state updates.
+ * 
+ * ============================================================================
+ */
+
 package com.example.routeify.presentation.viewmodel
 
 import androidx.compose.runtime.mutableStateOf
@@ -258,3 +300,5 @@ class GoogleFeaturesViewModel : ViewModel() {
         }
     }
 }
+
+// --------------------------------------------------End of File----------------------------------------------------------------

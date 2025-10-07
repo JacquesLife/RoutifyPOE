@@ -1,3 +1,14 @@
+/*
+ * ============================================================================
+ * TRAVEL TIME CARD - Journey Information Component
+ * ============================================================================
+ * 
+ * Reusable Compose component for displaying travel time and distance data.
+ * Shows formatted journey information with icons and styling.
+ * 
+ * ============================================================================
+ */
+
 package com.example.routeify.presentation.screen
 
 import androidx.compose.foundation.layout.*
@@ -114,3 +125,5 @@ fun TravelTimeCard(
         }
     }
 }
+
+// --------------------------------------------------End of File----------------------------------------------------------------

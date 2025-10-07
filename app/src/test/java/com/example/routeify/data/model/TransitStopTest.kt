@@ -1,3 +1,14 @@
+/*
+ * ============================================================================
+ * TRANSIT STOP TEST - Data Model Unit Tests
+ * ============================================================================
+ * 
+ * Unit tests validating TransitStop data model functionality.
+ * Tests construction, data integrity, and type validation.
+ * 
+ * ============================================================================
+ */
+
 package com.example.routeify.data.model
 
 import org.junit.Test
@@ -84,3 +95,5 @@ class TransitStopTest {
             types.contains(TransitStopType.LIGHT_RAIL_STATION))
     }
 }
+
+// --------------------------------------------------End of File----------------------------------------------------------------

@@ -1,3 +1,14 @@
+/*
+ * ============================================================================
+ * MAP VIEWMODEL - Interactive Map State Management
+ * ============================================================================
+ * 
+ * ViewModel managing map display state, transit stops, and zoom controls.
+ * Handles Google Maps integration and location-based data loading.
+ * 
+ * ============================================================================
+ */
+
 package com.example.routeify.ui.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
@@ -103,3 +114,5 @@ data class SelectedRouteArgs(
     val destination: com.google.android.gms.maps.model.LatLng,
     val encodedPolyline: String?
 )
+
+// --------------------------------------------------End of File----------------------------------------------------------------

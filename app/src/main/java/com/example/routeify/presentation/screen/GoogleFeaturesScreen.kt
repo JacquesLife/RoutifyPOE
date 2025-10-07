@@ -1,3 +1,14 @@
+/*
+ * ============================================================================
+ * GOOGLE FEATURES SCREEN - Location Services Interface
+ * ============================================================================
+ * 
+ * Compose screen showcasing Google Maps Platform capabilities.
+ * Provides UI for distance calculations, geocoding, and place operations.
+ * 
+ * ============================================================================
+ */
+
 package com.example.routeify.presentation.screen
 
 import android.os.Build
@@ -263,3 +274,5 @@ private fun FeatureCard(
         }
     }
 }
+
+// --------------------------------------------------End of File----------------------------------------------------------------

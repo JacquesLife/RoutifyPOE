@@ -1,3 +1,14 @@
+/*
+ * ============================================================================
+ * ROUTEIFY APPLICATION - App Initialization & Global Configuration
+ * ============================================================================
+ * 
+ * Main application class handling global app initialization.
+ * Configures Room database and provides app-wide dependencies.
+ * 
+ * ============================================================================
+ */
+
 package com.example.routeify
 
 import android.app.Application
@@ -19,3 +30,5 @@ class RoutifyApplication : Application() {
         ).fallbackToDestructiveMigration().build()
     }
 }
+
+// --------------------------------------------------End of File----------------------------------------------------------------

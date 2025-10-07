@@ -1,3 +1,14 @@
+/*
+ * ============================================================================
+ * TRANSIT ROUTE MODEL - Multi-Modal Journey Representation
+ * ============================================================================
+ * 
+ * Comprehensive data classes for representing complex transit routes.
+ * Handles multi-segment journeys with walking, driving, and public transport.
+ * 
+ * ============================================================================
+ */
+
 package com.example.routeify.domain.model
 
 import android.graphics.Color
@@ -107,3 +118,5 @@ data class PlaceSuggestion(
         get() = secondaryText.contains("South Africa", ignoreCase = true) ||
                 secondaryText.contains("Cape Town", ignoreCase = true)
 }
+
+// --------------------------------------------------End of File----------------------------------------------------------------

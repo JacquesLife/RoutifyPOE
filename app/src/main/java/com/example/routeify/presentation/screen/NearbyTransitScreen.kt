@@ -1,3 +1,14 @@
+/*
+ * ============================================================================
+ * NEARBY TRANSIT SCREEN - Public Transportation Discovery
+ * ============================================================================
+ * 
+ * Compose screen for finding and displaying nearby transit stops.
+ * Shows bus stops, train stations, and other public transport options.
+ * 
+ * ============================================================================
+ */
+
 package com.example.routeify.presentation.screen
 
 import androidx.compose.foundation.layout.*
@@ -383,3 +394,5 @@ fun TransitStopCard(
         }
     }
 }
+
+// --------------------------------------------------End of File----------------------------------------------------------------

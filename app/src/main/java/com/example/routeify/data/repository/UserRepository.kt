@@ -1,3 +1,14 @@
+/*
+ * ============================================================================
+ * USER REPOSITORY - Authentication & Profile Management
+ * ============================================================================
+ * 
+ * Repository handling user authentication, registration, and profile data.
+ * Manages password hashing, user validation, and database operations.
+ * 
+ * ============================================================================
+ */
+
 package com.example.routeify.data.repository
 
 import com.example.routeify.data.api.UserDao
@@ -61,4 +72,4 @@ class UserRepository(private val userDao: UserDao) {
     }
 }
 
-
+// --------------------------------------------------End of File----------------------------------------------------------------

@@ -1,3 +1,14 @@
+/*
+ * ============================================================================
+ * PLACE DETAILS SCREEN - Location Information Display
+ * ============================================================================
+ * 
+ * Compose screen for displaying detailed place information.
+ * Shows place data, reviews, photos, and location details from Google Places.
+ * 
+ * ============================================================================
+ */
+
 package com.example.routeify.presentation.screen
 
 import androidx.compose.foundation.layout.*
@@ -352,3 +363,5 @@ private fun DetailRow(
         }
     }
 }
+
+// --------------------------------------------------End of File----------------------------------------------------------------

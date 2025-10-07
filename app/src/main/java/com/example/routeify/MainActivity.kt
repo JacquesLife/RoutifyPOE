@@ -1,3 +1,45 @@
+/*
+ * ============================================================================
+ * MAIN ACTIVITY - Primary App Entry Point & Navigation Host (347+ lines)
+ * ============================================================================
+ * 
+ * The central activity orchestrating the entire Routeify application,
+ * managing complex navigation flows and authentication state.
+ * 
+ * CORE RESPONSIBILITIES:
+ * - Application lifecycle management and initialization
+ * - Jetpack Navigation Compose setup with complex routing
+ * - Authentication flow coordination (local + Google Sign-In)
+ * - Deep linking and intent handling
+ * - Theme and UI configuration management
+ * - Permission management and system integration
+ * 
+ * NAVIGATION ARCHITECTURE:
+ * - NavHost with comprehensive route definitions
+ * - Authentication-aware navigation with conditional routing
+ * - Bottom navigation with tab management
+ * - Navigation drawer integration for complex navigation
+ * - Back stack management and navigation state preservation
+ * 
+ * AUTHENTICATION INTEGRATION:
+ * - Google Sign-In configuration and callback handling
+ * - Local authentication with Room database
+ * - Session management and persistent login state
+ * - Authentication state observation and UI updates
+ * 
+ * KEY FEATURES:
+ * - Edge-to-edge display with proper inset handling
+ * - Material 3 design system implementation
+ * - Dark/light theme support with system integration
+ * - Drawer navigation with user profile integration
+ * - Complex state management across multiple ViewModels
+ * 
+ * This activity serves as the foundation for the entire app experience
+ * and coordinates all major app components and navigation flows.
+ * 
+ * ============================================================================
+ */
+
 package com.example.routeify
 
 import android.os.Bundle
@@ -333,3 +375,5 @@ fun getCurrentTitle(route: String): String {
         else -> "Routeify"
     }
 }
+
+// --------------------------------------------------End of File----------------------------------------------------------------

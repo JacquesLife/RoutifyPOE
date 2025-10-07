@@ -1,3 +1,14 @@
+/*
+ * ============================================================================
+ * TRAVEL TIME MODEL - Journey Distance & Duration Data
+ * ============================================================================
+ * 
+ * Data class for representing travel calculations between two locations.
+ * Stores origin/destination coordinates, addresses, and journey metrics.
+ * 
+ * ============================================================================
+ */
+
 package com.example.routeify.domain.model
 
 import com.google.android.gms.maps.model.LatLng
@@ -23,3 +34,5 @@ data class TravelTime(
     val isQuickTrip: Boolean
         get() = getDurationInMinutes() < 30
 }
+
+// --------------------------------------------------End of File----------------------------------------------------------------

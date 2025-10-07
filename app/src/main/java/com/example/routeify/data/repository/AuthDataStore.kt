@@ -1,3 +1,14 @@
+/*
+ * ============================================================================
+ * AUTH DATASTORE - Persistent Authentication State
+ * ============================================================================
+ * 
+ * DataStore repository for managing user session persistence and login state.
+ * Handles secure storage of authentication preferences across app restarts.
+ * 
+ * ============================================================================
+ */
+
 package com.example.routeify.data.repository
 
 import android.content.Context
@@ -42,4 +53,4 @@ class AuthDataStore(private val context: Context) {
     }
 }
 
-
+// --------------------------------------------------End of File----------------------------------------------------------------

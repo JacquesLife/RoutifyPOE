@@ -1,3 +1,46 @@
+/*
+ * ============================================================================
+ * GOOGLE PLACES ENHANCED REPOSITORY - Core Maps Platform Integration (535+ lines)
+ * ============================================================================
+ * 
+ * The backbone repository class implementing comprehensive Google Maps Platform
+ * APIs, serving as the primary data access layer for all location services.
+ * 
+ * GOOGLE APIS INTEGRATED:
+ * - Distance Matrix API: Multi-point travel time and distance calculations
+ * - Geocoding API: Bidirectional address/coordinate conversion
+ * - Places Autocomplete API: Real-time search suggestions with context
+ * - Place Details API: Comprehensive place information retrieval
+ * - Directions API: Multi-modal route planning with transit optimization
+ * 
+ * CORE CAPABILITIES:
+ * - Intelligent caching and error handling for API responses
+ * - Multi-modal transportation support (driving, walking, transit, cycling)
+ * - Real-time traffic and transit schedule integration
+ * - Advanced data transformation from API models to domain models
+ * - Comprehensive logging and debugging support
+ * - Rate limiting and quota management for API calls
+ * 
+ * ARCHITECTURE PATTERNS:
+ * - Repository pattern with clean separation of concerns
+ * - Coroutine-based asynchronous operations with proper context switching
+ * - Retrofit integration with custom error handling
+ * - Domain model transformation and data mapping
+ * - Thread-safe operations with Dispatchers.IO
+ * 
+ * KEY METHODS:
+ * - calculateDistanceMatrix(): Multi-origin/destination distance calculations
+ * - geocodeAddress()/reverseGeocode(): Address/coordinate conversion
+ * - searchPlaces(): Autocomplete and place discovery
+ * - getPlaceDetails(): Detailed place information retrieval
+ * - getDirections(): Route planning with turn-by-turn navigation
+ * 
+ * This repository powers the core functionality of Routeify and handles
+ * all external API integrations with robust error handling and caching.
+ * 
+ * ============================================================================
+ */
+
 package com.example.routeify.data.repository
 
 import android.util.Log
@@ -521,3 +564,5 @@ class GooglePlacesEnhancedRepository {
             .trim()
     }
 }
+
+// --------------------------------------------------End of File----------------------------------------------------------------

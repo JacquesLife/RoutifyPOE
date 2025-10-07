@@ -1,3 +1,14 @@
+/*
+ * ============================================================================
+ * LOGIN SCREEN - User Authentication Interface
+ * ============================================================================
+ * 
+ * Compose screen for user login and authentication.
+ * Handles credential validation, session creation, and navigation routing.
+ * 
+ * ============================================================================
+ */
+
 package com.example.routeify.ui.screens
 
 import androidx.compose.foundation.background
@@ -221,3 +232,4 @@ fun LoginScreen(
 }
 
 
+// --------------------------------------------------End of File----------------------------------------------------------------

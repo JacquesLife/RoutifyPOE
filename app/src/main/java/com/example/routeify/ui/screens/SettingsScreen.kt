@@ -1,3 +1,14 @@
+/*
+ * ============================================================================
+ * SETTINGS SCREEN - App Configuration Interface
+ * ============================================================================
+ * 
+ * Compose screen for app preferences and configuration options.
+ * Manages permissions, notifications, and user customization settings.
+ * 
+ * ============================================================================
+ */
+
 package com.example.routeify.ui.screens
 
 import android.Manifest
@@ -427,3 +438,5 @@ fun SettingNavigationItem(
         }
     }
 }
+
+// --------------------------------------------------End of File----------------------------------------------------------------

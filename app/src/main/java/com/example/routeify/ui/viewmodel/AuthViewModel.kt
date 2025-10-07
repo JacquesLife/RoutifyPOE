@@ -1,3 +1,14 @@
+/*
+ * ============================================================================
+ * AUTH VIEWMODEL - User Authentication State Management
+ * ============================================================================
+ * 
+ * ViewModel handling user login, registration, and session management.
+ * Manages authentication state and persistent login across app sessions.
+ * 
+ * ============================================================================
+ */
+
 package com.example.routeify.ui.viewmodel
 
 import android.app.Application
@@ -128,4 +139,4 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
     }
 }
 
-
+// --------------------------------------------------End of File----------------------------------------------------------------

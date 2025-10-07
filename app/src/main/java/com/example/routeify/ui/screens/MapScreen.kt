@@ -1,3 +1,42 @@
+/*
+ * ============================================================================
+ * MAP SCREEN - Interactive Transit Map Interface (480+ lines)
+ * ============================================================================
+ * 
+ * Sophisticated map screen providing interactive Google Maps integration
+ * with comprehensive transit information and advanced user interactions.
+ * 
+ * KEY FEATURES:
+ * - Google Maps integration with custom styling and controls
+ * - Real-time transit stop discovery and clustering
+ * - Interactive bottom sheet with transit information
+ * - Location-based services with permission handling
+ * - Custom map markers and overlays for transit stops
+ * - Search functionality with place autocomplete
+ * - Map gesture handling and camera controls
+ * - Transport legend with expandable information
+ * 
+ * TECHNICAL IMPLEMENTATION:
+ * - Bottom Sheet Scaffold for layered UI architecture
+ * - Advanced Compose state management for map interactions
+ * - Custom clustering renderer for performance optimization
+ * - Location permission management with user-friendly prompts
+ * - Integration with MapViewModel for reactive state updates
+ * - Custom map styling and marker icon management
+ * 
+ * UI COMPONENTS:
+ * - GoogleMap with custom configuration and styling
+ * - BottomSheetScaffold for transit information overlay
+ * - TransportLegend for user guidance and information
+ * - Custom FAB for location services and map controls
+ * - Loading states and error handling UI
+ * 
+ * This screen represents one of the most complex UI implementations
+ * in the app, combining native Google Maps with Jetpack Compose.
+ * 
+ * ============================================================================
+ */
+
 package com.example.routeify.ui.screens
 
 import androidx.compose.foundation.layout.*
@@ -468,3 +507,4 @@ private fun ControlsCluster(
     }
 }
 
+// --------------------------------------------------End of File----------------------------------------------------------------

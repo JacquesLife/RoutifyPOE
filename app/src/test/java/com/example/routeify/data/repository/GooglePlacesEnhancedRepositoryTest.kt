@@ -1,3 +1,14 @@
+/*
+ * ============================================================================
+ * GOOGLE PLACES ENHANCED REPOSITORY TEST - Repository Unit Tests
+ * ============================================================================
+ * 
+ * Unit tests for Google Places Enhanced Repository functionality.
+ * Tests API integration, data mapping, and error handling.
+ * 
+ * ============================================================================
+ */
+
 package com.example.routeify.data.repository
 
 import com.google.android.gms.maps.model.LatLng
@@ -100,3 +111,5 @@ class GooglePlacesEnhancedRepositoryTest {
         assertTrue("Valid addresses exist", validAddresses.any { it.isNotEmpty() })
     }
 }
+
+// --------------------------------------------------End of File----------------------------------------------------------------

@@ -1,3 +1,14 @@
+/*
+ * ============================================================================
+ * BUS STOP CLUSTER ITEM - Transit Stop Clustering Data Model
+ * ============================================================================
+ * 
+ * Data class implementing ClusterItem for transit stop map markers.
+ * Wraps TransitStop data for use with Google Maps clustering system.
+ * 
+ * ============================================================================
+ */
+
 package com.example.routeify.utils
 
 import com.example.routeify.data.model.TransitStop
@@ -35,3 +46,5 @@ data class BusStopClusterItem(
     // Accessor for the underlying TransitStop
     fun getTransitStop(): TransitStop = transitStop
 }
+
+// --------------------------------------------------End of File----------------------------------------------------------------

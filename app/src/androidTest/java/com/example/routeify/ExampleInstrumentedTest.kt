@@ -1,3 +1,14 @@
+/*
+ * ============================================================================
+ * EXAMPLE INSTRUMENTED TEST - Android Device Integration Tests
+ * ============================================================================
+ * 
+ * Instrumented tests running on Android device/emulator.
+ * Tests app context, UI components, and device-specific functionality.
+ * 
+ * ============================================================================
+ */
+
 package com.example.routeify
 
 import androidx.test.platform.app.InstrumentationRegistry

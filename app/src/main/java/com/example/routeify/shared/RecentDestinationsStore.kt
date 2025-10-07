@@ -1,3 +1,14 @@
+/*
+ * ============================================================================
+ * RECENT DESTINATIONS STORE - User History Management
+ * ============================================================================
+ * 
+ * Shared state store for managing recently visited places and destinations.
+ * Provides quick access to frequently used locations across the app.
+ * 
+ * ============================================================================
+ */
+
 package com.example.routeify.shared
 
 import androidx.compose.material.icons.Icons
@@ -205,3 +216,5 @@ object RecentDestinationsStore {
         _recentDestinations.value = _recentDestinations.value.filter { it.placeId != placeId }
     }
 }
+
+// --------------------------------------------------End of File----------------------------------------------------------------

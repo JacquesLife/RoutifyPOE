@@ -1,3 +1,14 @@
+/*
+ * ============================================================================
+ * GOOGLE TRANSIT REPOSITORY - Public Transportation Data Layer
+ * ============================================================================
+ * 
+ * Repository for discovering and managing transit stops and transportation hubs.
+ * Integrates with Google Places API to find nearby public transit options.
+ * 
+ * ============================================================================
+ */
+
 package com.example.routeify.data.repository
 
 import android.location.Location
@@ -192,3 +203,5 @@ class GoogleTransitRepository {
     }
 
 }
+
+// --------------------------------------------------End of File----------------------------------------------------------------

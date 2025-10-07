@@ -1,3 +1,14 @@
+/*
+ * ============================================================================
+ * REGISTER SCREEN - User Account Creation Interface
+ * ============================================================================
+ * 
+ * Compose screen for new user registration and account setup.
+ * Handles user input validation, account creation, and initial profile setup.
+ * 
+ * ============================================================================
+ */
+
 package com.example.routeify.ui.screens
 
 import androidx.compose.foundation.background
@@ -266,4 +277,4 @@ fun RegisterScreen(
     }
 }
 
-
+// --------------------------------------------------End of File----------------------------------------------------------------

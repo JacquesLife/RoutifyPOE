@@ -1,3 +1,14 @@
+/*
+ * ============================================================================
+ * PROFILE SCREEN - User Account Management Interface
+ * ============================================================================
+ * 
+ * Compose screen for displaying and editing user profile information.
+ * Shows account details, recent activity, and profile customization options.
+ * 
+ * ============================================================================
+ */
+
 package com.example.routeify.ui.screens
 
 import androidx.compose.foundation.background
@@ -279,3 +290,5 @@ private fun PreferenceSwitch(title: String, subtitle: String, icon: androidx.com
         }
     }
 }
+
+// --------------------------------------------------End of File----------------------------------------------------------------

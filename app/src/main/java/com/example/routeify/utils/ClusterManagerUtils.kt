@@ -1,3 +1,14 @@
+/*
+ * ============================================================================
+ * CLUSTER MANAGER UTILS - Compose Map Clustering Integration
+ * ============================================================================
+ * 
+ * Utility functions for integrating ClusterManager with Jetpack Compose.
+ * Handles marker clustering lifecycle within Compose environment.
+ * 
+ * ============================================================================
+ */
+
 package com.example.routeify.utils
 
 import androidx.compose.runtime.Composable
@@ -45,3 +56,5 @@ fun ClusterManagerEffect(
         }
     }
 }
+
+// --------------------------------------------------End of File----------------------------------------------------------------

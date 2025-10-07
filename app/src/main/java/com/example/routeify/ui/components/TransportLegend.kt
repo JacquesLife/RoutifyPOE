@@ -1,3 +1,14 @@
+/*
+ * ============================================================================
+ * TRANSPORT LEGEND - Transit Mode Information Component
+ * ============================================================================
+ * 
+ * Reusable Compose component displaying transportation mode legend.
+ * Shows visual guide for different transit types and their icons.
+ * 
+ * ============================================================================
+ */
+
 package com.example.routeify.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
@@ -211,3 +222,5 @@ private fun LegendItem(
         }
     }
 }
+
+// --------------------------------------------------End of File----------------------------------------------------------------

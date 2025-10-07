@@ -1,3 +1,14 @@
+/*
+ * ============================================================================
+ * TYPOGRAPHY THEME - Text Styling & Font Configuration
+ * ============================================================================
+ * 
+ * Defines Material 3 typography scale for consistent text styling.
+ * Configures font sizes, weights, and line heights across the app.
+ * 
+ * ============================================================================
+ */
+
 package com.example.routeify.ui.theme
 
 import androidx.compose.material3.Typography
@@ -32,3 +43,5 @@ val Typography = Typography(
     )
     */
 )
+
+// --------------------------------------------------End of File----------------------------------------------------------------

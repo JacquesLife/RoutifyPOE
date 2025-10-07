@@ -1,3 +1,14 @@
+/*
+ * ============================================================================
+ * USER MODEL - Authentication & Profile Data
+ * ============================================================================
+ * 
+ * Room entity for storing user authentication and profile information.
+ * Handles user registration, login, and profile management.
+ * 
+ * ============================================================================
+ */
+
 package com.example.routeify.data.model
 
 import androidx.room.Entity
@@ -20,4 +31,4 @@ data class User(
     val passwordHash: String
 )
 
-
+// --------------------------------------------------End of File----------------------------------------------------------------

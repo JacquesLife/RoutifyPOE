@@ -1,3 +1,14 @@
+/*
+ * ============================================================================
+ * BUS STOP CLUSTER RENDERER - Map Marker Clustering Utility
+ * ============================================================================
+ * 
+ * Custom renderer for clustering transit stop markers on Google Maps.
+ * Handles visual grouping of nearby stops for better map performance.
+ * 
+ * ============================================================================
+ */
+
 package com.example.routeify.utils
 
 import android.content.Context
@@ -50,3 +61,5 @@ class BusStopClusterRenderer(
         }
     }
 }
+
+// --------------------------------------------------End of File----------------------------------------------------------------

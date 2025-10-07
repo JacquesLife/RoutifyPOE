@@ -1,3 +1,42 @@
+/*
+ * ============================================================================
+ * ROUTE PLANNER SCREEN - Core Journey Planning Interface (1500+ lines)
+ * ============================================================================
+ * 
+ * The primary and most complex screen in Routeify, handling comprehensive
+ * route planning functionality with advanced UI components and interactions.
+ * 
+ * MAIN FEATURES:
+ * - Origin/destination input with Google Places autocomplete
+ * - Multi-modal transportation options (driving, walking, transit, cycling)
+ * - Real-time route calculation and optimization
+ * - Turn-by-turn navigation instructions with visual indicators
+ * - Interactive route visualization with step-by-step breakdowns
+ * - Smart suggestions integration for recommended routes
+ * - Recent destinations and favorite locations management
+ * - Transportation mode switching with dynamic UI updates
+ * - Accessibility support and responsive design
+ * 
+ * ARCHITECTURE:
+ * - Complex state management with multiple ViewModels
+ * - Extensive use of Jetpack Compose animations and transitions
+ * - Integration with Google Maps Platform APIs
+ * - Real-time data updates and error handling
+ * - Modular component design for maintainability
+ * 
+ * KEY COMPONENTS:
+ * - PlaceAutocompleteField: Smart search with predictions
+ * - RouteOptionCards: Transportation mode selection
+ * - TurnByTurnInstructions: Navigation step display
+ * - RouteVisualization: Interactive route mapping
+ * - SmartSuggestionCards: AI-powered recommendations
+ * 
+ * This file represents the core user experience of the Routeify app
+ * and contains the most sophisticated UI logic and user interactions.
+ * 
+ * ============================================================================
+ */
+
 package com.example.routeify.presentation.screen
 
 import android.os.Build
@@ -1490,3 +1529,5 @@ private fun openInGoogleMaps(
     val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, uri)
     context.startActivity(intent)
 }
+
+// --------------------------------------------------End of File----------------------------------------------------------------

@@ -1,3 +1,14 @@
+/*
+ * ============================================================================
+ * HOME SCREEN - Main Dashboard Interface
+ * ============================================================================
+ * 
+ * Primary Compose screen with app navigation and feature overview.
+ * Provides quick access to core features and recent destinations.
+ * 
+ * ============================================================================
+ */
+
 package com.example.routeify.ui.screens
 
 import androidx.compose.foundation.background
@@ -247,3 +258,5 @@ private fun DestinationCard(
         )
     }
 }
+
+// --------------------------------------------------End of File----------------------------------------------------------------

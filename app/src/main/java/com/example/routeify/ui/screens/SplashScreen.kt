@@ -1,3 +1,14 @@
+/*
+ * ============================================================================
+ * SPLASH SCREEN - App Startup & Loading Interface
+ * ============================================================================
+ * 
+ * Initial Compose screen with app branding and loading animation.
+ * Handles app initialization and smooth transition to main screens.
+ * 
+ * ============================================================================
+ */
+
 package com.example.routeify.ui.screens
 
 import androidx.compose.animation.core.animateFloatAsState
@@ -100,4 +111,4 @@ fun SplashScreen(onFinished: () -> Unit) {
     }
 }
 
-
+// --------------------------------------------------End of File----------------------------------------------------------------

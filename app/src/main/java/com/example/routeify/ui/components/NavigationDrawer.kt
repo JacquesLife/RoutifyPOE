@@ -1,3 +1,14 @@
+/*
+ * ============================================================================
+ * NAVIGATION DRAWER - App Navigation Component
+ * ============================================================================
+ * 
+ * Reusable Compose component for side navigation menu.
+ * Provides quick access to main app screens and user profile.
+ * 
+ * ============================================================================
+ */
+
 package com.example.routeify.ui.components
 
 import androidx.compose.foundation.background
@@ -159,3 +170,5 @@ private fun DrawerHeader(username: String?, email: String?) {
         }
     }
 }
+
+// --------------------------------------------------End of File----------------------------------------------------------------

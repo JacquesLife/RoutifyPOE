@@ -1,3 +1,14 @@
+/*
+ * ============================================================================
+ * TRAVEL TIME TEST - Domain Model Unit Tests
+ * ============================================================================
+ * 
+ * Unit tests for TravelTime domain model functionality.
+ * Tests journey calculations, coordinate handling, and data validation.
+ * 
+ * ============================================================================
+ */
+
 package com.example.routeify.domain.model
 
 import com.google.android.gms.maps.model.LatLng
@@ -194,3 +205,5 @@ class TravelTimeTest {
         assertEquals(0, travelTime.durationValue)
     }
 }
+
+// --------------------------------------------------End of File----------------------------------------------------------------
