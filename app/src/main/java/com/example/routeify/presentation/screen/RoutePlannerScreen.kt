@@ -593,11 +593,10 @@ fun RoutePlannerScreen(
                         route = route,
                         routeNumber = index + 1,
                         fromLocation = fromLocation,
+                        toLocation = toLocation,
                         context = context,
                         onViewOnMap = { onRouteSelected(route) },
-                        onOpenInGoogleMaps = { 
-                            openInGoogleMaps(route, fromLocation, toLocation, context)
-                        }
+                        onOpenInGoogleMaps = createOpenInGoogleMapsLambda(route, fromLocation, toLocation, context)
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                 }
@@ -829,6 +828,7 @@ private fun TransitRouteCard(
     route: TransitRoute,
     routeNumber: Int,
     fromLocation: String,
+    toLocation: String,
     context: android.content.Context,
     onViewOnMap: () -> Unit = {},
     onOpenInGoogleMaps: () -> Unit = {}
@@ -1433,4 +1433,13 @@ private fun openInGoogleMaps(
     val uri = android.net.Uri.parse("https://www.google.com/maps/dir/?api=1&origin=$from&destination=$to&travelmode=transit")
     val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, uri)
     context.startActivity(intent)
+}
+
+private fun createOpenInGoogleMapsLambda(
+    route: TransitRoute,
+    fromLocation: String,
+    toLocation: String,
+    context: android.content.Context
+): () -> Unit {
+    return { openInGoogleMaps(route, fromLocation, toLocation, context) }
 }
