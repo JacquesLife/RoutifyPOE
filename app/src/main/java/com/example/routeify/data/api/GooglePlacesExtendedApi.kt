@@ -1,3 +1,19 @@
+/**
+ * Extended Google Places API interface providing comprehensive location and transit services
+ * 
+ * This interface wraps multiple Google Maps Platform APIs:
+ * - Distance Matrix API: Calculate travel times and distances
+ * - Geocoding API: Convert addresses to coordinates
+ * - Places Autocomplete API: Provide search suggestions
+ * - Place Details API: Get detailed place information
+ * - Directions API: Generate transit routes with step-by-step directions
+ * 
+ * All endpoints require a valid Google Places API key configured in BuildConfig
+ * 
+ * references:
+ * - <a href="https://developers.google.com/maps/documentation">Google Maps Platform Documentation</a>
+ */
+
 package com.example.routeify.data.api
 
 import com.google.gson.annotations.SerializedName
@@ -7,9 +23,12 @@ import retrofit2.http.Query
 interface GooglePlacesExtendedApi {
 
     companion object {
+        // Base URL for all Google Maps Platform APIs
         const val BASE_URL = "https://maps.googleapis.com/maps/api/"
     }
 
+
+     //Calculate travel times and distances between multiple origins and destinations
     @GET("distancematrix/json")
     suspend fun getDistanceMatrix(
         @Query("origins") origins: String,
@@ -18,12 +37,16 @@ interface GooglePlacesExtendedApi {
         @Query("key") apiKey: String
     ): GoogleDistanceMatrixResponse
 
+    
+    //Convert a human-readable address into geographic coordinates
     @GET("geocode/json")
     suspend fun geocodeAddress(
         @Query("address") address: String,
         @Query("key") apiKey: String
     ): GoogleGeocodingResponse
 
+    
+    // Get place predictions for autocomplete functionality
     @GET("place/autocomplete/json")
     suspend fun getPlaceAutocomplete(
         @Query("input") input: String,
@@ -33,6 +56,8 @@ interface GooglePlacesExtendedApi {
         @Query("components") components: String? = null
     ): GoogleAutocompleteResponse
 
+
+    // Get detailed information about a specific place using its place ID
     @GET("place/details/json")
     suspend fun getPlaceDetails(
         @Query("place_id") placeId: String,
@@ -40,6 +65,8 @@ interface GooglePlacesExtendedApi {
         @Query("fields") fields: String = "geometry,formatted_address,name"
     ): GooglePlaceDetailsResponse
 
+
+    // Generate turn-by-turn directions between two locations with transit options
     @GET("directions/json")
     suspend fun getDirections(
         @Query("origin") origin: String,
@@ -53,14 +80,17 @@ interface GooglePlacesExtendedApi {
 }
 
 // ============================================================================
-// SHARED MODELS
+// SHARED MODELS - Core data structures used across multiple API responses
 // ============================================================================
 
+ // Geographic coordinates representing a specific location
 data class GoogleLocation(
     val lat: Double,
     val lng: Double
 )
 
+
+ // Precise positioning data for mapping and navigation
 data class GoogleGeometry(
     val location: GoogleLocation,
     @SerializedName("location_type")
@@ -68,29 +98,39 @@ data class GoogleGeometry(
     val bounds: GoogleBounds? = null
 )
 
+
+ // viewport regions and place boundaries (NE and SW corners)
 data class GoogleBounds(
     val northeast: GoogleLocation,
     val southwest: GoogleLocation
 )
 
+
+// Distance measurement with human-readable text and precise value
 data class GoogleDistance(
     val text: String,
     val value: Int
 )
 
+
+// Accounts for traffic conditions and transit schedules form travel time
 data class GoogleDuration(
     val text: String,
     val value: Int
 )
 
+// Encoded polyline string representing a path or route geometry
 data class GooglePolyline(
+    /** Encoded polyline string */
     val points: String
 )
 
 // ============================================================================
-// DISTANCE MATRIX
+// DISTANCE MATRIX API - Calculate travel times between multiple locations
 // ============================================================================
 
+
+// Response from Distance Matrix API containing travel data for origin-destination pairs
 data class GoogleDistanceMatrixResponse(
     @SerializedName("destination_addresses")
     val destinationAddresses: List<String>,
@@ -102,10 +142,12 @@ data class GoogleDistanceMatrixResponse(
     val errorMessage: String? = null
 )
 
+// Single row in distance matrix representing one origin point
 data class GoogleDistanceMatrixRow(
     val elements: List<GoogleDistanceMatrixElement>
 )
 
+// Individual element containing travel data between one origin-destination pair
 data class GoogleDistanceMatrixElement(
     val distance: GoogleDistance? = null,
     val duration: GoogleDuration? = null,
@@ -113,9 +155,10 @@ data class GoogleDistanceMatrixElement(
 )
 
 // ============================================================================
-// GEOCODING
+// GEOCODING API - Convert addresses to coordinates and vice versa
 // ============================================================================
 
+// Response from Geocoding API containing location results for an address query
 data class GoogleGeocodingResponse(
     val results: List<GoogleGeocodingResult>,
     val status: String,
@@ -123,6 +166,7 @@ data class GoogleGeocodingResponse(
     val errorMessage: String? = null
 )
 
+// Individual geocoding result containing location data for an address
 data class GoogleGeocodingResult(
     @SerializedName("formatted_address")
     val formattedAddress: String,
@@ -133,9 +177,10 @@ data class GoogleGeocodingResult(
 )
 
 // ============================================================================
-// AUTOCOMPLETE
+// PLACES AUTOCOMPLETE API - Provide search suggestions as user types
 // ============================================================================
 
+// Response from Places Autocomplete API containing place predictions
 data class GoogleAutocompleteResponse(
     val status: String,
     val predictions: List<GoogleAutocompletePrediction>,
@@ -143,6 +188,7 @@ data class GoogleAutocompleteResponse(
     val errorMessage: String? = null
 )
 
+// Individual place prediction with structured formatting for display
 data class GoogleAutocompletePrediction(
     val description: String,
     @SerializedName("place_id")
@@ -153,6 +199,7 @@ data class GoogleAutocompletePrediction(
     val types: List<String>? = null
 )
 
+// Structured formatting for displaying autocomplete results with emphasis
 data class GoogleStructuredFormatting(
     @SerializedName("main_text")
     val mainText: String,
@@ -160,15 +207,17 @@ data class GoogleStructuredFormatting(
     val secondaryText: String
 )
 
+// Individual term within an autocomplete prediction
 data class GoogleTerm(
     val offset: Int,
     val value: String
 )
 
 // ============================================================================
-// PLACE DETAILS
+// PLACE DETAILS API - Get comprehensive information about specific places
 // ============================================================================
 
+// Response from Place Details API containing complete place information
 data class GooglePlaceDetailsResponse(
     val status: String,
     val result: GooglePlaceDetailsResult? = null,
@@ -176,6 +225,8 @@ data class GooglePlaceDetailsResponse(
     val errorMessage: String? = null
 )
 
+
+// Essential place details result containing basic location information
 data class GooglePlaceDetailsResult(
     val geometry: GoogleGeometry,
     @SerializedName("formatted_address")
@@ -184,9 +235,10 @@ data class GooglePlaceDetailsResult(
 )
 
 // ============================================================================
-// DIRECTIONS
+// DIRECTIONS API - Calculate routes and navigation instructions
 // ============================================================================
 
+// Response from Directions API containing route options and metadata
 data class GoogleDirectionsResponse(
     val status: String,
     val routes: List<GoogleRoute>,
@@ -196,6 +248,7 @@ data class GoogleDirectionsResponse(
     val availableTravelModes: List<String>? = null
 )
 
+// Individual route option with summary, legs, and overview polyline
 data class GoogleRoute(
     val summary: String,
     val legs: List<GoogleLeg>,
@@ -205,6 +258,7 @@ data class GoogleRoute(
     val warnings: List<String>? = null
 )
 
+// Single leg of a route containing distance, duration, and navigation steps
 data class GoogleLeg(
     val distance: GoogleDistance,
     val duration: GoogleDuration,
@@ -219,6 +273,7 @@ data class GoogleLeg(
     val steps: List<GoogleStep>
 )
 
+// Individual navigation step within a route leg
 data class GoogleStep(
     @SerializedName("travel_mode")
     val travelMode: String,
@@ -235,7 +290,10 @@ data class GoogleStep(
     val polyline: GooglePolyline? = null
 )
 
+
+ // Transit-specific information for public transportation steps
 data class GoogleTransitDetails(
+
     @SerializedName("departure_stop")
     val departureStop: GoogleTransitStop,
     @SerializedName("arrival_stop")
@@ -250,11 +308,13 @@ data class GoogleTransitDetails(
     val headsign: String? = null
 )
 
+// Basic information about a transit stop or station
 data class GoogleTransitStop(
     val name: String,
     val location: GoogleLocation
 )
 
+// Scheduled time information for transit departures and arrivals
 data class GoogleTransitTime(
     val text: String,
     val value: Long,
@@ -262,6 +322,7 @@ data class GoogleTransitTime(
     val timeZone: String
 )
 
+// Detailed information about a transit line including vehicle and agency data
 data class GoogleTransitLine(
     val name: String,
     @SerializedName("short_name")
@@ -273,12 +334,14 @@ data class GoogleTransitLine(
     val agencies: List<GoogleTransitAgency>? = null
 )
 
+// Vehicle type and branding information for a transit line
 data class GoogleTransitVehicle(
     val name: String,
     val type: String,
     val icon: String? = null
 )
 
+// Information about a transit agency operating a transit line
 data class GoogleTransitAgency(
     val name: String,
     val url: String? = null,
