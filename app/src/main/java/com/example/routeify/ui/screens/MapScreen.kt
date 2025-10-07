@@ -138,6 +138,7 @@ fun MapScreen() {
             ),
             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
         ) {
+            //
             Column(
                 modifier = Modifier.padding(20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -150,8 +151,6 @@ fun MapScreen() {
                 )
                 Spacer(modifier = Modifier.height(4.dp))
 
-
-
             }
         }
 
@@ -159,6 +158,7 @@ fun MapScreen() {
         // Map with clustering
         val capeTabCity = LatLng(-33.9249, 18.4241) // Cape Town coordinates
         val cameraPositionState = rememberCameraPositionState {
+            // Set the initial camera position to Cape Town
             position = CameraPosition.fromLatLngZoom(capeTabCity, 11f)
         }
 
