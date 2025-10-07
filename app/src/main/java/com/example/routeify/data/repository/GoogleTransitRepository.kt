@@ -131,6 +131,53 @@ class GoogleTransitRepository {
     }
 
     /**
+     * Find the nearest transit stops to a given location
+     */
+    suspend fun findNearestTransitStops(
+        latitude: Double,
+        longitude: Double,
+        maxDistanceMeters: Int = 1000, // 1km default
+        maxResults: Int = 5
+    ): Result<List<TransitStop>> {
+        return withContext(Dispatchers.IO) {
+            try {
+                Log.d("GoogleTransit", "🔍 Finding nearest transit stops to $latitude,$longitude")
+                
+                // Get transit stops in a reasonable radius
+                val radiusMeters = maxDistanceMeters.coerceAtMost(5000) // Max 5km
+                val allStopsResult = getTransitStops(latitude, longitude, radiusMeters)
+                
+                if (allStopsResult.isFailure) {
+                    return@withContext allStopsResult
+                }
+                
+                val allStops = allStopsResult.getOrThrow()
+                
+                // Calculate distances and sort by proximity
+                val stopsWithDistance = allStops.map { stop ->
+                    val distance = calculateDistance(latitude, longitude, stop.latitude, stop.longitude)
+                    stop to distance
+                }.filter { (_, distance) ->
+                    distance * 1000 <= maxDistanceMeters // Convert km to meters
+                }.sortedBy { (_, distance) -> distance }
+                
+                val nearestStops = stopsWithDistance.take(maxResults).map { (stop, _) -> stop }
+                
+                Log.d("GoogleTransit", "✅ Found ${nearestStops.size} nearest transit stops within ${maxDistanceMeters}m")
+                nearestStops.forEach { stop ->
+                    val distance = calculateDistance(latitude, longitude, stop.latitude, stop.longitude)
+                    Log.d("GoogleTransit", "   📍 ${stop.name}: ${String.format("%.0f", distance * 1000)}m")
+                }
+                
+                Result.success(nearestStops)
+            } catch (e: Exception) {
+                Log.e("GoogleTransit", "❌ Error finding nearest transit stops", e)
+                Result.failure(e)
+            }
+        }
+    }
+
+    /**
      * Calculate distance between two points using Android's built-in method
      * Returns distance in kilometers
      */
