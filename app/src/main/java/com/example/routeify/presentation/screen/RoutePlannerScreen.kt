@@ -35,6 +35,8 @@ import com.example.routeify.domain.model.PlaceSuggestion
 import com.example.routeify.domain.model.RouteSegment
 import com.example.routeify.domain.model.TransitRoute
 import com.example.routeify.presentation.viewmodel.GoogleFeaturesViewModel
+import com.example.routeify.shared.RecentDestinationsStore
+import com.example.routeify.shared.DestinationIconType
 
 data class PresetLocation(
     val id: String,
@@ -80,7 +82,8 @@ data class ValidationResult(
 fun RoutePlannerScreen(
     viewModel: GoogleFeaturesViewModel = viewModel(),
     onBackClick: () -> Unit = {},
-    onRouteSelected: (TransitRoute) -> Unit = {}
+    onRouteSelected: (TransitRoute) -> Unit = {},
+    initialDestination: String? = null
 ) {
     val context = LocalContext.current
 
@@ -94,7 +97,7 @@ fun RoutePlannerScreen(
     val errorMessage by viewModel.errorMessage
 
     var fromLocation by remember { mutableStateOf("") }
-    var toLocation by remember { mutableStateOf("") }
+    var toLocation by remember { mutableStateOf(initialDestination ?: "") }
     var showFromDropdown by remember { mutableStateOf(false) }
     var showToDropdown by remember { mutableStateOf(false) }
     var selectedFromPlace by remember { mutableStateOf<PlaceSuggestion?>(null) }
@@ -598,7 +601,20 @@ fun RoutePlannerScreen(
                         fromLocation = fromLocation,
                         toLocation = toLocation,
                         context = context,
-                        onViewOnMap = { onRouteSelected(route) }
+                        onViewOnMap = { 
+                            // Save destinations to recent destinations store
+                            selectedToPlace?.let { toPlace ->
+                                route.endLocation?.let { endLocation ->
+                                    RecentDestinationsStore.addDestinationFromPlaceSuggestion(
+                                        placeSuggestion = toPlace,
+                                        latitude = endLocation.latitude,
+                                        longitude = endLocation.longitude,
+                                        iconType = determineIconType(toPlace.description)
+                                    )
+                                }
+                            }
+                            onRouteSelected(route) 
+                        }
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                 }
@@ -1422,6 +1438,26 @@ private fun getTransitIcon(vehicleType: String): androidx.compose.ui.graphics.ve
         "TRAM", "LIGHT_RAIL" -> Icons.Default.Tram
         "WALKING" -> Icons.Default.DirectionsWalk
         else -> Icons.Default.DirectionsTransit
+    }
+}
+
+/**
+ * Helper function to determine icon type based on place description
+ */
+private fun determineIconType(description: String): DestinationIconType {
+    val lowerDescription = description.lowercase()
+    return when {
+        lowerDescription.contains("airport") -> DestinationIconType.AIRPORT
+        lowerDescription.contains("station") && lowerDescription.contains("train") -> DestinationIconType.TRAIN_STATION
+        lowerDescription.contains("station") && lowerDescription.contains("bus") -> DestinationIconType.BUS_STATION
+        lowerDescription.contains("university") || lowerDescription.contains("college") -> DestinationIconType.UNIVERSITY
+        lowerDescription.contains("hospital") || lowerDescription.contains("medical") -> DestinationIconType.HOSPITAL
+        lowerDescription.contains("shopping") || lowerDescription.contains("mall") || lowerDescription.contains("waterfront") -> DestinationIconType.SHOPPING
+        lowerDescription.contains("restaurant") || lowerDescription.contains("cafe") -> DestinationIconType.RESTAURANT
+        lowerDescription.contains("mountain") || lowerDescription.contains("park") || lowerDescription.contains("attraction") -> DestinationIconType.TOURIST_ATTRACTION
+        lowerDescription.contains("work") || lowerDescription.contains("office") -> DestinationIconType.WORK
+        lowerDescription.contains("home") -> DestinationIconType.HOME
+        else -> DestinationIconType.OTHER
     }
 }
 

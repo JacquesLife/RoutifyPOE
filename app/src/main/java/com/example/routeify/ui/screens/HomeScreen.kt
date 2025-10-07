@@ -1,7 +1,10 @@
 package com.example.routeify.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -16,9 +19,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.routeify.ui.theme.RouteifyBlue500
 import com.example.routeify.ui.theme.RouteifyGreen500
+import com.example.routeify.shared.RecentDestinationsStore
+import com.example.routeify.shared.RecentDestination
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(
+    onDestinationClick: (RecentDestination) -> Unit = {},
+    onSearchClick: () -> Unit = {},
+    onCurrentLocationClick: () -> Unit = {}
+) {
     Column(modifier = Modifier.fillMaxSize()) {
         // Header with gradient, app name, search, and location shortcut
         Column(
@@ -49,7 +58,9 @@ fun HomeScreen() {
                 OutlinedTextField(
                     value = "",
                     onValueChange = {},
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable { onSearchClick() },
                     placeholder = { Text("Where to?", color = MaterialTheme.colorScheme.onSurfaceVariant) },
                     singleLine = true,
                     leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
@@ -59,18 +70,19 @@ fun HomeScreen() {
                         focusedContainerColor = Color.White,
                         unfocusedBorderColor = Color.Transparent,
                         focusedBorderColor = RouteifyGreen500
-                    )
+                    ),
+                    readOnly = true
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 FilledIconButton(
-                    onClick = { /* current location */ },
+                    onClick = onCurrentLocationClick,
                     modifier = Modifier.size(56.dp),
                     colors = IconButtonDefaults.filledIconButtonColors(
                         containerColor = Color.White.copy(alpha = 0.2f),
                         contentColor = Color.White
                     )
                 ) {
-                    Icon(Icons.Default.LocationOn, contentDescription = null)
+                    Icon(Icons.Default.LocationOn, contentDescription = "Use current location")
                 }
             }
         }
@@ -97,25 +109,69 @@ fun HomeScreen() {
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            DestinationCard("Claremont Station", "Train Station", Icons.Default.Train)
-            DestinationCard("V&A Waterfront", "Shopping Centre", Icons.Default.ShoppingBag)
-            DestinationCard("University of Cape Town", "University", Icons.Default.School)
-            DestinationCard("Cape Town International Airport", "Airport", Icons.Default.Flight)
-            DestinationCard("Table Mountain", "Tourist Attraction", Icons.Default.Landscape)
+            // Dynamic list of recent destinations
+            val recentDestinations by RecentDestinationsStore.recentDestinations.collectAsState()
+            
+            if (recentDestinations.isEmpty()) {
+                // Show empty state
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant
+                    )
+                ) {
+                    Column(
+                        modifier = Modifier.padding(24.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Icon(
+                            Icons.Default.History,
+                            contentDescription = null,
+                            modifier = Modifier.size(48.dp),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Text(
+                            "No recent destinations",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            "Start planning routes to see your recent destinations here",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            } else {
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    items(recentDestinations) { destination ->
+                        DestinationCard(
+                            destination = destination,
+                            onClick = { onDestinationClick(destination) }
+                        )
+                    }
+                }
+            }
         }
     }
 }
 
 @Composable
 private fun DestinationCard(
-    title: String,
-    subtitle: String,
-    icon: androidx.compose.ui.graphics.vector.ImageVector
+    destination: RecentDestination,
+    onClick: () -> Unit
 ) {
+    val icon = RecentDestinationsStore.getIconForType(destination.iconType)
+    
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 6.dp),
+            .padding(vertical = 6.dp)
+            .clickable { onClick() },
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
@@ -141,22 +197,31 @@ private fun DestinationCard(
             },
             headlineContent = {
                 Text(
-                    title,
+                    destination.name,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Medium
                 )
             },
             supportingContent = {
-                Text(
-                    subtitle,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                Column {
+                    Text(
+                        destination.address,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    if (destination.visitCount > 1) {
+                        Text(
+                            "Visited ${destination.visitCount} times",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                        )
+                    }
+                }
             },
             trailingContent = {
                 Icon(
                     Icons.Default.ChevronRight,
-                    contentDescription = null,
+                    contentDescription = "Navigate to ${destination.name}",
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
