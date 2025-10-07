@@ -1,5 +1,6 @@
 package com.example.routeify.ui.viewmodel
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.routeify.data.model.TransitStop
@@ -24,7 +25,9 @@ data class MapUiState(
  * 
  * Google handles all the complexity for us! 🎉
  */
-class MapViewModel : ViewModel() {
+class MapViewModel(
+    private val savedStateHandle: SavedStateHandle
+) : ViewModel() {
     
     private val repository = GoogleTransitRepository()
     
@@ -32,7 +35,34 @@ class MapViewModel : ViewModel() {
     val uiState: StateFlow<MapUiState> = _uiState.asStateFlow()
     
     init {
+        // Try to read route args if provided
+        val fromLat = savedStateHandle.get<String>("fromLat")?.toDoubleOrNull()
+        val fromLng = savedStateHandle.get<String>("fromLng")?.toDoubleOrNull()
+        val toLat = savedStateHandle.get<String>("toLat")?.toDoubleOrNull()
+        val toLng = savedStateHandle.get<String>("toLng")?.toDoubleOrNull()
+        val poly = savedStateHandle.get<String>("poly")
+
+        if (fromLat != null && fromLng != null && toLat != null && toLng != null) {
+            _uiState.value = _uiState.value.copy(error = null)
+        }
+
         loadTransitData()
+    }
+
+    fun getSelectedRouteArgs(): SelectedRouteArgs? {
+        val fromLat = savedStateHandle.get<String>("fromLat")?.toDoubleOrNull()
+        val fromLng = savedStateHandle.get<String>("fromLng")?.toDoubleOrNull()
+        val toLat = savedStateHandle.get<String>("toLat")?.toDoubleOrNull()
+        val toLng = savedStateHandle.get<String>("toLng")?.toDoubleOrNull()
+        val poly = savedStateHandle.get<String>("poly")
+
+        return if (fromLat != null && fromLng != null && toLat != null && toLng != null) {
+            SelectedRouteArgs(
+                origin = com.google.android.gms.maps.model.LatLng(fromLat, fromLng),
+                destination = com.google.android.gms.maps.model.LatLng(toLat, toLng),
+                encodedPolyline = poly
+            )
+        } else null
     }
     
     /**
@@ -86,3 +116,9 @@ class MapViewModel : ViewModel() {
  * - Better error handling
  * - Automatic rate limiting
  */
+
+data class SelectedRouteArgs(
+    val origin: com.google.android.gms.maps.model.LatLng,
+    val destination: com.google.android.gms.maps.model.LatLng,
+    val encodedPolyline: String?
+)

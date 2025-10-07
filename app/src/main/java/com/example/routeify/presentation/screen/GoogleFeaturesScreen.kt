@@ -1,5 +1,7 @@
 package com.example.routeify.presentation.screen
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -16,11 +18,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.routeify.data.model.TransitStop
 import com.example.routeify.presentation.viewmodel.GoogleFeaturesViewModel
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GoogleFeaturesScreen(
     viewModel: GoogleFeaturesViewModel = viewModel(),
-    onBackClick: () -> Unit = {}
+    onBackClick: () -> Unit = {},
+    onRouteSelectedNavigateToMap: (String) -> Unit = {}
 ) {
     var selectedStop by remember { mutableStateOf<TransitStop?>(null) }
     var currentScreen by remember { mutableStateOf("main") }
@@ -29,7 +33,25 @@ fun GoogleFeaturesScreen(
         "route_planner" -> {
             RoutePlannerScreen(
                 viewModel = viewModel,
-                onBackClick = { currentScreen = "main" }
+                onBackClick = { currentScreen = "main" },
+                onRouteSelected = { route ->
+                    val fromLat = route.startLocation?.latitude?.toString()
+                    val fromLng = route.startLocation?.longitude?.toString()
+                    val toLat = route.endLocation?.latitude?.toString()
+                    val toLng = route.endLocation?.longitude?.toString()
+                    val poly = route.overviewPolyline
+                    val encodedPoly = poly?.let { java.net.URLEncoder.encode(it, "UTF-8") }
+                    val routeStr = buildString {
+                        append("map")
+                        append("?")
+                        if (fromLat != null) append("fromLat=$fromLat&")
+                        if (fromLng != null) append("fromLng=$fromLng&")
+                        if (toLat != null) append("toLat=$toLat&")
+                        if (toLng != null) append("toLng=$toLng&")
+                        if (encodedPoly != null) append("poly=$encodedPoly")
+                    }.trimEnd('&')
+                    onRouteSelectedNavigateToMap(routeStr)
+                }
             )
         }
         "nearby_transit" -> {
@@ -85,7 +107,7 @@ private fun MainGoogleFeaturesScreen(
             }
             
             Text(
-                text = "🚀 Google Services",
+                text = " Google Services",
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(start = 8.dp)
@@ -94,16 +116,16 @@ private fun MainGoogleFeaturesScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(
-            text = "Discover powerful transit and navigation features powered by Google APIs",
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(bottom = 24.dp)
-        )
+//        Text(
+//            text = "Discover powerful transit and navigation features powered by Google APIs",
+//            style = MaterialTheme.typography.bodyLarge,
+//            color = MaterialTheme.colorScheme.onSurfaceVariant,
+//            modifier = Modifier.padding(bottom = 24.dp)
+//        )
         
         // Feature Cards
         FeatureCard(
-            title = "🗺️ Route Planner",
+            title = "🗺 Route Planner",
             description = "Plan your journey with real-time travel times and multiple transport options",
             icon = Icons.Default.Directions,
             onClick = { onFeatureClick("route_planner") }
@@ -112,7 +134,7 @@ private fun MainGoogleFeaturesScreen(
         Spacer(modifier = Modifier.height(12.dp))
         
         FeatureCard(
-            title = "🚌 Nearby Transit",
+            title = " Nearby Transit",
             description = "Find transit stops, bus stations, and train stations near you",
             icon = Icons.Default.DirectionsBus,
             onClick = { onFeatureClick("nearby_transit") }
@@ -121,7 +143,7 @@ private fun MainGoogleFeaturesScreen(
         Spacer(modifier = Modifier.height(12.dp))
         
         FeatureCard(
-            title = "⭐ Smart Suggestions",
+            title = " Smart Suggestions",
             description = "Get personalized route recommendations based on your travel patterns",
             icon = Icons.Default.Psychology,
             onClick = { /* Navigate to smart suggestions */ }
@@ -129,32 +151,7 @@ private fun MainGoogleFeaturesScreen(
         
         Spacer(modifier = Modifier.height(24.dp))
         
-        // Quick Stats Card
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer
-            )
-        ) {
-            Column(
-                modifier = Modifier.padding(20.dp)
-            ) {
-                Text(
-                    text = "🔥 Powered by Google",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-                
-                Spacer(modifier = Modifier.height(8.dp))
-                
-                Text(
-                    text = "• Real-time travel data\n• Accurate place information\n• Global coverage\n• Reliable and fast",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-            }
-        }
+
         
         Spacer(modifier = Modifier.height(16.dp))
         

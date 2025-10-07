@@ -1,6 +1,7 @@
 package com.example.routeify.domain.model
 
 import android.graphics.Color
+import com.google.android.gms.maps.model.LatLng
 
 /**
  * Represents a complete transit route with multiple segments
@@ -10,7 +11,10 @@ data class TransitRoute(
     val totalDistance: String,
     val totalDuration: String,
     val durationValue: Int, // in seconds
-    val segments: List<RouteSegment>
+    val segments: List<RouteSegment>,
+    val overviewPolyline: String? = null,
+    val startLocation: LatLng? = null,
+    val endLocation: LatLng? = null
 ) {
     fun getDurationInMinutes(): Int = durationValue / 60
 
