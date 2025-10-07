@@ -3,9 +3,7 @@ package com.example.routeify.domain.model
 import android.graphics.Color
 import com.google.android.gms.maps.model.LatLng
 
-/**
- * Represents a complete transit route with multiple segments
- */
+// Data class representing a transit route with multiple segments
 data class TransitRoute(
     val summary: String,
     val totalDistance: String,
@@ -16,6 +14,7 @@ data class TransitRoute(
     val startLocation: LatLng? = null,
     val endLocation: LatLng? = null
 ) {
+    // Convert duration from seconds to minutes
     fun getDurationInMinutes(): Int = durationValue / 60
 
     val primaryTransitMode: String
@@ -28,9 +27,7 @@ data class TransitRoute(
         get() = segments.count { it.transitInfo != null } - 1
 }
 
-/**
- * Represents a segment of a route
- */
+// Data class representing a single segment of a transit route
 data class RouteSegment(
     val instruction: String,
     val distance: String,
@@ -45,9 +42,7 @@ data class RouteSegment(
         get() = transitInfo != null
 }
 
-/**
- * Transit-specific information
- */
+// Data class representing detailed transit information for a segment
 data class TransitInfo(
     val lineName: String,
     val lineShortName: String?,
@@ -59,6 +54,7 @@ data class TransitInfo(
     val numStops: Int,
     val headsign: String?
 ) {
+    // Get a user-friendly display name for the transit line
     fun getDisplayName(): String {
         return lineShortName?.takeIf { it.isNotBlank() } ?: lineName
     }
@@ -73,7 +69,7 @@ data class TransitInfo(
             }
         }
     }
-
+    // Get a user-friendly vehicle type name
     fun getVehicleDisplayName(): String {
         return when (vehicleType.uppercase()) {
             "BUS" -> "Bus"
@@ -89,6 +85,7 @@ data class TransitInfo(
         }
     }
 
+    // Get a summary of the number of stops
     fun getStopsSummary(): String {
         return when (numStops) {
             0 -> "Direct"
@@ -98,15 +95,14 @@ data class TransitInfo(
     }
 }
 
-/**
- * Place suggestion from autocomplete
- */
+// Data class representing a place suggestion from autocomplete
 data class PlaceSuggestion(
     val placeId: String,
     val description: String,
     val mainText: String,
     val secondaryText: String
 ) {
+    // Simple heuristic to identify major places (e.g., cities)
     val isMajorPlace: Boolean
         get() = secondaryText.contains("South Africa", ignoreCase = true) ||
                 secondaryText.contains("Cape Town", ignoreCase = true)

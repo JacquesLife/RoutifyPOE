@@ -11,6 +11,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.routeify.domain.model.TravelTime
 
+// Card to display travel time and distance information
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TravelTimeCard(
@@ -58,6 +59,7 @@ fun TravelTimeCard(
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    // Icon and label
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -101,6 +103,7 @@ fun TravelTimeCard(
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
+                    // Distance value
                     Text(
                         text = travelTime.distance,
                         style = MaterialTheme.typography.bodyLarge,

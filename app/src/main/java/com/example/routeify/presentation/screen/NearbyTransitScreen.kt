@@ -16,17 +16,21 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.routeify.data.model.TransitStop
 import com.example.routeify.presentation.viewmodel.GoogleFeaturesViewModel
 
+// Screen to search and display nearby transit stops
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+// Composable function for the Nearby Transit screen
 fun NearbyTransitScreen(
     viewModel: GoogleFeaturesViewModel = viewModel(),
     onBackClick: () -> Unit = {},
     onStopClick: (TransitStop) -> Unit = {}
 ) {
+    // Observe ViewModel state
     val searchResults by viewModel.searchResults
     val isLoading by viewModel.isLoading
     val errorMessage by viewModel.errorMessage
     
+    // Local UI state
     var searchRadius by remember { mutableIntStateOf(1000) }
     var isSearchExpanded by remember { mutableStateOf(false) }
 
@@ -40,10 +44,11 @@ fun NearbyTransitScreen(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // Back button
             IconButton(onClick = onBackClick) {
                 Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
             }
-            
+            // Title
             Text(
                 text = "🚌 Nearby Transit",
                 style = MaterialTheme.typography.headlineMedium,
@@ -62,15 +67,17 @@ fun NearbyTransitScreen(
                 modifier = Modifier.padding(16.dp)
             ) {
                 Row(
+                    // Search radius header with expand/collapse
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
+                        // Search radius label
                         text = "Search Radius: ${searchRadius}m",
                         style = MaterialTheme.typography.titleMedium
                     )
-                    
+                    // Expand/collapse button
                     IconButton(
                         onClick = { isSearchExpanded = !isSearchExpanded }
                     ) {
@@ -80,7 +87,7 @@ fun NearbyTransitScreen(
                         )
                     }
                 }
-
+                // Expanded search options
                 if (isSearchExpanded) {
                     Spacer(modifier = Modifier.height(16.dp))
                     
@@ -89,6 +96,7 @@ fun NearbyTransitScreen(
                         text = "Search within ${searchRadius}m",
                         style = MaterialTheme.typography.bodyMedium
                     )
+                    // Radius Slider
                     Slider(
                         value = searchRadius.toFloat(),
                         onValueChange = { searchRadius = it.toInt() },
@@ -104,6 +112,7 @@ fun NearbyTransitScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
+                        // Quick select buttons
                         listOf(500, 1000, 2000, 5000).forEach { radius ->
                             FilterChip(
                                 onClick = { searchRadius = radius },
@@ -131,6 +140,7 @@ fun NearbyTransitScreen(
                 ) {
                     if (isLoading) {
                         Row(
+                            // Loading state
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
@@ -145,6 +155,7 @@ fun NearbyTransitScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
+                            // Search icon
                             Icon(Icons.Default.Search, contentDescription = null)
                             Text("Find Nearby Transit")
                         }
@@ -164,16 +175,19 @@ fun NearbyTransitScreen(
                 )
             ) {
                 Row(
+                    // Error message content
                     modifier = Modifier.padding(16.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Icon(
+                        // Error icon
                         Icons.Default.Warning,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onErrorContainer
                     )
                     Text(
+                        // Error text
                         text = error,
                         color = MaterialTheme.colorScheme.onErrorContainer
                     )
@@ -189,27 +203,33 @@ fun NearbyTransitScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(
+                    // Results header
                     modifier = Modifier.padding(16.dp)
                 ) {
                     Row(
+                        // Results header
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Icon(
+                            // Location icon
                             Icons.Default.LocationOn,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.primary
                         )
                         Text(
+                            // Results count
                             text = "Found ${searchResults.size} transit stops",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )
                     }
-                    
+
+                    // Results description
                     Spacer(modifier = Modifier.height(8.dp))
                     
                     Text(
+                        // Instructional text
                         text = "Tap on any stop to see details",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -220,6 +240,7 @@ fun NearbyTransitScreen(
             Spacer(modifier = Modifier.height(16.dp))
             
             LazyColumn(
+                // List of transit stops
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(searchResults) { stop ->
@@ -232,15 +253,18 @@ fun NearbyTransitScreen(
         } else if (!isLoading && errorMessage == null) {
             // Empty state
             Card(
+                // Empty state card
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(
+                    // Empty state content
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(32.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Icon(
+                        // Bus icon
                         Icons.Default.DirectionsBus,
                         contentDescription = null,
                         modifier = Modifier.size(48.dp),
@@ -250,12 +274,14 @@ fun NearbyTransitScreen(
                     Spacer(modifier = Modifier.height(16.dp))
                     
                     Text(
+                        // No results text
                         text = "No results yet",
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     
                     Text(
+                        // Prompt to search
                         text = "Search for nearby transit stops to get started",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -266,6 +292,7 @@ fun NearbyTransitScreen(
     }
 }
 
+// Card to display individual transit stop info
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TransitStopCard(
@@ -273,22 +300,24 @@ fun TransitStopCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    // Clickable transit stop
     Card(
         onClick = onClick,
         modifier = modifier.fillMaxWidth()
     ) {
         Row(
+            // Stop info row
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Stop Icon
             Card(
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer
                 )
             ) {
+                // Stop icon
                 Icon(
                     Icons.Default.DirectionsBus,
                     contentDescription = null,

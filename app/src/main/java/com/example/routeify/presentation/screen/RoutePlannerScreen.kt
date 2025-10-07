@@ -38,6 +38,7 @@ import com.example.routeify.presentation.viewmodel.GoogleFeaturesViewModel
 import com.example.routeify.shared.RecentDestinationsStore
 import com.example.routeify.shared.DestinationIconType
 
+// Determine icon type based on description keywords
 data class PresetLocation(
     val id: String,
     val name: String,
@@ -45,12 +46,14 @@ data class PresetLocation(
     val icon: androidx.compose.ui.graphics.vector.ImageVector
 )
 
+// Time selection modes
 enum class TimeSelectionMode {
     LEAVE_NOW,
     DEPART_AT,
     ARRIVE_BY
 }
 
+// Transit modes
 enum class TransitMode {
     BUS,
     TRAIN,
@@ -58,24 +61,28 @@ enum class TransitMode {
     WALK
 }
 
+// Route preferences
 enum class RoutePreference {
     FASTEST,
     FEWEST_TRANSFERS,
     LEAST_WALKING
 }
 
+// Filters data class
 data class RouteFilters(
     val transitModes: Set<TransitMode> = emptySet(),
     val preference: RoutePreference? = null,
     val wheelchairAccessible: Boolean = false
 )
 
+// Validation result data class
 data class ValidationResult(
     val isValid: Boolean,
     val message: String? = null,
     val icon: androidx.compose.ui.graphics.vector.ImageVector? = null
 )
 
+// Main composable function for Route Planner screen
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -161,6 +168,7 @@ fun RoutePlannerScreen(
         }
     }
 
+    // Autocomplete suggestions
     LaunchedEffect(fromLocation) {
         if (fromLocation.isNotEmpty() && selectedFromPlace?.description != fromLocation) {
             viewModel.getFromAutocompleteSuggestions(fromLocation)
@@ -168,6 +176,7 @@ fun RoutePlannerScreen(
         }
     }
 
+    // Autocomplete suggestions
     LaunchedEffect(toLocation) {
         if (toLocation.isNotEmpty() && selectedToPlace?.description != toLocation) {
             viewModel.getToAutocompleteSuggestions(toLocation)
@@ -175,6 +184,7 @@ fun RoutePlannerScreen(
         }
     }
 
+    // Main UI
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -201,12 +211,14 @@ fun RoutePlannerScreen(
             }
         }
 
+        // Filters
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp)
         ) {
+            // From input
             Column(modifier = Modifier.fillMaxWidth()) {
                 OutlinedTextField(
                     value = fromLocation,
@@ -242,11 +254,13 @@ fun RoutePlannerScreen(
                     singleLine = true
                 )
 
+                // Dropdown for "From" suggestions
                 AnimatedVisibility(
                     visible = showFromDropdown && (fromSuggestions.isNotEmpty() || (fromLocation.isNotEmpty() && !isLoadingFromSuggestions)),
                     enter = expandVertically() + fadeIn(),
                     exit = shrinkVertically() + fadeOut()
                 ) {
+                    // Suggestions dropdown
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -305,9 +319,11 @@ fun RoutePlannerScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Box(
+                // Swap button
                 modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center
             ) {
+                // Swap button
                 IconButton(
                     onClick = {
                         val temp = fromLocation
@@ -329,6 +345,7 @@ fun RoutePlannerScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // To input
             Column(modifier = Modifier.fillMaxWidth()) {
                 OutlinedTextField(
                     value = toLocation,
@@ -343,12 +360,14 @@ fun RoutePlannerScreen(
                     },
                     trailingIcon = {
                         Row {
+                            // Loading indicator
                             if (isLoadingToSuggestions) {
                                 CircularProgressIndicator(
                                     modifier = Modifier.size(20.dp),
                                     strokeWidth = 2.dp,
                                     color = MaterialTheme.colorScheme.primary
                                 )
+                                // Clear button
                             } else if (toLocation.isNotEmpty()) {
                                 IconButton(onClick = {
                                     toLocation = ""
@@ -360,21 +379,25 @@ fun RoutePlannerScreen(
                             }
                         }
                     },
+                    // Text field for "To" location
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true
                 )
 
+                // Dropdown for "To" suggestions
                 AnimatedVisibility(
                     visible = showToDropdown && (toSuggestions.isNotEmpty() || (toLocation.isNotEmpty() && !isLoadingToSuggestions)),
                     enter = expandVertically() + fadeIn(),
                     exit = shrinkVertically() + fadeOut()
                 ) {
+                    // Suggestions dropdown
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 4.dp),
                         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                     ) {
+                        // Suggestions list
                         LazyColumn(
                             modifier = Modifier.heightIn(max = 200.dp)
                         ) {
@@ -447,49 +470,9 @@ fun RoutePlannerScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-//            Row(
-//                modifier = Modifier.fillMaxWidth(),
-//                horizontalArrangement = Arrangement.spacedBy(8.dp)
-//            ) {
-//                OutlinedButton(
-//                    onClick = {
-//                        fromLocation = "Cape Town City Centre"
-//                        toLocation = "V&A Waterfront"
-//                        selectedFromPlace = null
-//                        selectedToPlace = null
-//
-//                        // Add to recent searches
-//                        val newRecentSearches = (listOf(fromLocation, toLocation) + recentSearches)
-//                            .distinct()
-//                            .take(5)
-//                        recentSearches = newRecentSearches
-//                    },
-//                    modifier = Modifier.weight(1f)
-//                ) {
-//                    Text("🏙️ City → Waterfront", style = MaterialTheme.typography.bodySmall)
-//                }
-//
-//                OutlinedButton(
-//                    onClick = {
-//                        fromLocation = "Cape Town City Centre"
-//                        toLocation = "Cape Town Airport"
-//                        selectedFromPlace = null
-//                        selectedToPlace = null
-//
-//                        // Add to recent searches
-//                        val newRecentSearches = (listOf(fromLocation, toLocation) + recentSearches)
-//                            .distinct()
-//                            .take(5)
-//                        recentSearches = newRecentSearches
-//                    },
-//                    modifier = Modifier.weight(1f)
-//                ) {
-//                    Text("✈️ City → Airport", style = MaterialTheme.typography.bodySmall)
-//                }
-//            }
-
             Spacer(modifier = Modifier.height(24.dp))
 
+            // Search button
             Button(
                 onClick = {
                     keyboardController?.hide()
@@ -519,6 +502,7 @@ fun RoutePlannerScreen(
                         }
                     }.joinToString("|")
 
+                    // Fetch routes
                     viewModel.getTransitRoutes(
                         fromLocation,
                         toLocation,
@@ -529,6 +513,7 @@ fun RoutePlannerScreen(
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
+                // Button content
                 if (isLoadingRoutes) {
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -542,10 +527,12 @@ fun RoutePlannerScreen(
                         Text("Finding routes...")
                     }
                 } else {
+                    // Button content
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+                        // Icon
                         Icon(Icons.Default.Search, contentDescription = null)
                         Text("Find Transit Routes")
                     }
@@ -559,6 +546,7 @@ fun RoutePlannerScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Error message
             errorMessage?.let { error ->
                 Card(
                     modifier = Modifier.fillMaxWidth(),
@@ -566,6 +554,7 @@ fun RoutePlannerScreen(
                         containerColor = MaterialTheme.colorScheme.errorContainer
                     )
                 ) {
+                    // Error icon
                     Row(
                         modifier = Modifier.padding(16.dp),
                         verticalAlignment = Alignment.CenterVertically,
@@ -583,9 +572,11 @@ fun RoutePlannerScreen(
                         )
                     }
                 }
+                // Spacer
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
+            // Transit routes list
             if (transitRoutes.isNotEmpty()) {
                 Text(
                     text = "Available Routes (${transitRoutes.size})",
@@ -594,6 +585,7 @@ fun RoutePlannerScreen(
                     modifier = Modifier.padding(bottom = 12.dp)
                 )
 
+                // List of routes
                 transitRoutes.forEachIndexed { index, route ->
                     TransitRouteCard(
                         route = route,
@@ -619,41 +611,6 @@ fun RoutePlannerScreen(
                     Spacer(modifier = Modifier.height(12.dp))
                 }
             }
-
-//            if (transitRoutes.isEmpty() && !isLoadingRoutes && errorMessage == null) {
-//                Card(
-//                    modifier = Modifier.fillMaxWidth(),
-//                    colors = CardDefaults.cardColors(
-//                        containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
-//                    )
-//                ) {
-//                    Row(
-//                        modifier = Modifier.padding(16.dp),
-//                        verticalAlignment = Alignment.CenterVertically,
-//                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-//                    ) {
-//                        Icon(
-//                            Icons.Default.Info,
-//                            contentDescription = null,
-//                            tint = MaterialTheme.colorScheme.primary
-//                        )
-//                        Column {
-//                            Text(
-//                                text = "How to use:",
-//                                style = MaterialTheme.typography.titleSmall,
-//                                fontWeight = FontWeight.Bold,
-//                                color = MaterialTheme.colorScheme.onSurface
-//                            )
-//                            Spacer(modifier = Modifier.height(4.dp))
-//                            Text(
-//                                text = "• Type to see location suggestions\n• Select from dropdown or continue typing\n• Click 'Find Transit Routes' to see bus and train options",
-//                                style = MaterialTheme.typography.bodySmall,
-//                                color = MaterialTheme.colorScheme.onSurfaceVariant
-//                            )
-//                        }
-//                    }
-//                }
-//            }
         }
     }
 
@@ -670,12 +627,14 @@ fun RoutePlannerScreen(
     }
 }
 
+// Preset chips row
 @Composable
 private fun PresetChipsRow(
     presets: List<PresetLocation>,
     recentSearches: List<String>,
     onPresetClick: (String) -> Unit
 ) {
+    // Horizontal scrollable row of chips
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(horizontal = 4.dp)
@@ -726,6 +685,7 @@ private fun PresetChipsRow(
     }
 }
 
+// Suggestion item in dropdown
 @Composable
 private fun SuggestionItem(
     suggestion: PlaceSuggestion,
@@ -768,12 +728,14 @@ private fun SuggestionItem(
     Divider()
 }
 
+// Exact address item in dropdown
 @Composable
 private fun ExactAddressItem(
     address: String,
     onClick: () -> Unit
 ) {
     Row(
+        // Exact address option
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
@@ -782,11 +744,13 @@ private fun ExactAddressItem(
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Icon(
+            // Edit icon
             Icons.Default.Edit,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier.size(20.dp)
         )
+        // Address text
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = "Use this exact address",
@@ -804,6 +768,7 @@ private fun ExactAddressItem(
     Divider()
 }
 
+// Highlight matched text in suggestions
 private fun androidx.compose.ui.text.AnnotatedString.Builder.highlightMatchedText(
     text: String,
     query: String
@@ -817,6 +782,7 @@ private fun androidx.compose.ui.text.AnnotatedString.Builder.highlightMatchedTex
     val lowerQuery = query.lowercase()
     var startIndex = 0
 
+    // Loop to find and highlight all matches
     while (true) {
         val matchIndex = lowerText.indexOf(lowerQuery, startIndex)
         if (matchIndex == -1) {
@@ -841,6 +807,7 @@ private fun androidx.compose.ui.text.AnnotatedString.Builder.highlightMatchedTex
     }
 }
 
+// Validation hint card
 @Composable
 private fun TransitRouteCard(
     route: TransitRoute,
@@ -850,6 +817,7 @@ private fun TransitRouteCard(
     context: android.content.Context,
     onViewOnMap: () -> Unit = {}
 ) {
+    // Card for each transit route
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
@@ -861,11 +829,13 @@ private fun TransitRouteCard(
             modifier = Modifier.padding(16.dp)
         ) {
             Row(
+                // Route header with number, mode, duration, and distance
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(
+                    // Route number and primary transit mode
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
@@ -874,6 +844,7 @@ private fun TransitRouteCard(
                         color = MaterialTheme.colorScheme.primary
                     ) {
                         Text(
+                            // Route number badge
                             text = "$routeNumber",
                             modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                             color = MaterialTheme.colorScheme.onPrimary,
@@ -881,6 +852,7 @@ private fun TransitRouteCard(
                         )
                     }
 
+                    // Primary transit mode icon
                     Icon(
                         imageVector = getTransitIcon(route.primaryTransitMode),
                         contentDescription = null,
@@ -888,6 +860,7 @@ private fun TransitRouteCard(
                     )
                 }
 
+                // Total duration and distance
                 Column(horizontalAlignment = Alignment.End) {
                     Text(
                         text = route.totalDuration,
@@ -903,12 +876,14 @@ private fun TransitRouteCard(
                 }
             }
 
+            // Spacer between route info and segments
             Spacer(modifier = Modifier.height(12.dp))
             Divider()
             Spacer(modifier = Modifier.height(12.dp))
 
             route.segments.forEachIndexed { index, segment ->
                 RouteSegmentItem(
+                    // Individual route segment
                     segment = segment,
                     isLast = index == route.segments.lastIndex
                 )
@@ -926,6 +901,7 @@ private fun TransitRouteCard(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
+                // View on Map button
                 Button(
                     onClick = onViewOnMap,
                     modifier = Modifier.weight(1f)
@@ -943,15 +919,18 @@ private fun TransitRouteCard(
                     }
                 }
 
+                // Open in Google Maps button
                 OutlinedButton(
                     onClick = { openInGoogleMaps(route, fromLocation, toLocation, context) },
                     modifier = Modifier.weight(1f)
                 ) {
                     Row(
+                        // Open in Google Maps button
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         Icon(
+                            // External link icon
                             Icons.Default.OpenInNew,
                             contentDescription = null,
                             modifier = Modifier.size(18.dp)
@@ -964,19 +943,23 @@ private fun TransitRouteCard(
     }
 }
 
+// Individual route segment item
 @Composable
 private fun RouteSegmentItem(
     segment: RouteSegment,
     isLast: Boolean
 ) {
     Row(
+        // Row for each route segment
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Column(
+            // Icon and line for segment
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.width(40.dp)
         ) {
+            // Transit mode icon or walking icon
             if (segment.transitInfo != null) {
                 Surface(
                     shape = RoundedCornerShape(4.dp),
@@ -992,6 +975,7 @@ private fun RouteSegmentItem(
                         color = Color.White
                     )
                 }
+                // Icon for transit mode
             } else {
                 Icon(
                     Icons.Default.DirectionsWalk,
@@ -1001,6 +985,7 @@ private fun RouteSegmentItem(
                 )
             }
 
+            // Vertical line connecting segments
             if (!isLast) {
                 Box(
                     modifier = Modifier
@@ -1011,14 +996,17 @@ private fun RouteSegmentItem(
             }
         }
 
+        // Segment details
         Column(modifier = Modifier.weight(1f)) {
             if (segment.transitInfo != null) {
                 val info = segment.transitInfo
 
+                // Transit segment details
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
+                    // Transit mode icon
                     Icon(
                         imageVector = getTransitIcon(info.vehicleType),
                         contentDescription = null,
@@ -1032,18 +1020,23 @@ private fun RouteSegmentItem(
                     )
                 }
 
+                // Spacer
                 Spacer(modifier = Modifier.height(4.dp))
 
+                // Additional details
                 Text(
                     text = "From: ${info.departureStop}",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+                // Arrival stop
                 Text(
                     text = "To: ${info.arrivalStop}",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+
+                // Number of stops and duration
                 Text(
                     text = "${info.numStops} stops • ${segment.duration}",
                     style = MaterialTheme.typography.bodySmall,
@@ -1051,6 +1044,7 @@ private fun RouteSegmentItem(
                     fontWeight = FontWeight.Medium
                 )
 
+                // Headsign if available
                 info.headsign?.let {
                     Text(
                         text = "→ $it",
@@ -1059,6 +1053,7 @@ private fun RouteSegmentItem(
                         fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
                     )
                 }
+                // Spacer
             } else {
                 Text(
                     text = segment.instruction,
@@ -1074,10 +1069,12 @@ private fun RouteSegmentItem(
     }
 }
 
+// Validation hint card
 @Composable
 private fun ValidationHintCard(
     validationResult: ValidationResult
 ) {
+    // Show validation hint if message is available
     if (validationResult.message != null) {
         Card(
             modifier = Modifier.fillMaxWidth(),
@@ -1089,6 +1086,7 @@ private fun ValidationHintCard(
             ),
             elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
         ) {
+            // Row with icon and message
             Row(
                 modifier = Modifier.padding(12.dp),
                 verticalAlignment = Alignment.CenterVertically,
@@ -1105,6 +1103,7 @@ private fun ValidationHintCard(
                         }
                     )
                 }
+                // Validation message text
                 Text(
                     text = validationResult.message,
                     style = MaterialTheme.typography.bodyMedium,
@@ -1118,6 +1117,7 @@ private fun ValidationHintCard(
     }
 }
 
+// Filters section with chips and checkbox
 @Composable
 private fun FiltersSection(
     filters: RouteFilters,
@@ -1125,18 +1125,21 @@ private fun FiltersSection(
     onFiltersChange: (RouteFilters) -> Unit,
     onShowFiltersChange: (Boolean) -> Unit
 ) {
+    // Expandable filters section
     Column {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // Section title
             Text(
                 text = "Route Options",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Medium
             )
 
+            // Show/hide filters button
             TextButton(
                 onClick = { onShowFiltersChange(!showFilters) }
             ) {
@@ -1159,10 +1162,12 @@ private fun FiltersSection(
                 modifier = Modifier.padding(bottom = 8.dp)
             )
 
+            // Transit mode chips
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 contentPadding = PaddingValues(horizontal = 4.dp)
             ) {
+                // Transit mode chips
                 items(TransitMode.values()) { mode ->
                     FilterChip(
                         onClick = {
@@ -1173,6 +1178,7 @@ private fun FiltersSection(
                             }
                             onFiltersChange(filters.copy(transitModes = newModes))
                         },
+                        // Chip label with icon and name
                         label = {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
@@ -1200,6 +1206,7 @@ private fun FiltersSection(
                 modifier = Modifier.padding(bottom = 8.dp)
             )
 
+            // Route preference chips
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 contentPadding = PaddingValues(horizontal = 4.dp)
@@ -1241,8 +1248,9 @@ private fun FiltersSection(
             }
         }
     }
-}
+}  
 
+// Get icon for transit mode
 @Composable
 private fun getTransitModeIcon(mode: TransitMode): androidx.compose.ui.graphics.vector.ImageVector {
     return when (mode) {
@@ -1253,6 +1261,7 @@ private fun getTransitModeIcon(mode: TransitMode): androidx.compose.ui.graphics.
     }
 }
 
+// Get name for transit mode
 private fun getTransitModeName(mode: TransitMode): String {
     return when (mode) {
         TransitMode.BUS -> "Bus"
@@ -1262,6 +1271,7 @@ private fun getTransitModeName(mode: TransitMode): String {
     }
 }
 
+// Get name for route preference
 private fun getRoutePreferenceName(preference: RoutePreference): String {
     return when (preference) {
         RoutePreference.FASTEST -> "Fastest"
@@ -1270,6 +1280,7 @@ private fun getRoutePreferenceName(preference: RoutePreference): String {
     }
 }
 
+// Time selection section with segmented control and time picker
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun TimeSelectionSection(
@@ -1337,6 +1348,7 @@ private fun TimeSelectionSection(
     }
 }
 
+// Simple date and time picker dialog
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun TimePickerDialog(
@@ -1347,6 +1359,7 @@ private fun TimePickerDialog(
     var selectedDate by remember { mutableStateOf(initialDateTime.toLocalDate()) }
     var selectedTime by remember { mutableStateOf(initialDateTime.toLocalTime()) }
 
+    // Dialog for date and time selection
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("Select Date & Time") },
@@ -1378,6 +1391,7 @@ private fun TimePickerDialog(
                     }
                 }
 
+                // Spacer
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
@@ -1397,6 +1411,7 @@ private fun TimePickerDialog(
                         )
                     }.flatten()
 
+                    // Time chips
                     items(times) { time ->
                         FilterChip(
                             onClick = { selectedTime = time },
@@ -1411,6 +1426,7 @@ private fun TimePickerDialog(
                 }
             }
         },
+        // Confirm button
         confirmButton = {
             TextButton(
                 onClick = {
@@ -1429,6 +1445,7 @@ private fun TimePickerDialog(
     )
 }
 
+// Get icon for transit vehicle type
 @Composable
 private fun getTransitIcon(vehicleType: String): androidx.compose.ui.graphics.vector.ImageVector {
     return when (vehicleType.uppercase()) {
@@ -1441,9 +1458,7 @@ private fun getTransitIcon(vehicleType: String): androidx.compose.ui.graphics.ve
     }
 }
 
-/**
- * Helper function to determine icon type based on place description
- */
+// Helper to determine icon type based on description
 private fun determineIconType(description: String): DestinationIconType {
     val lowerDescription = description.lowercase()
     return when {
@@ -1461,12 +1476,14 @@ private fun determineIconType(description: String): DestinationIconType {
     }
 }
 
+// Open route in Google Maps
 private fun openInGoogleMaps(
     route: TransitRoute,
     fromLocation: String,
     toLocation: String,
     context: android.content.Context
 ) {
+    // Construct Google Maps URL with origin, destination, and travel mode
     val from = route.startLocation?.let { "${it.latitude},${it.longitude}" } ?: fromLocation
     val to = route.endLocation?.let { "${it.latitude},${it.longitude}" } ?: toLocation
     val uri = android.net.Uri.parse("https://www.google.com/maps/dir/?api=1&origin=$from&destination=$to&travelmode=transit")

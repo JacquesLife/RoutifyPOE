@@ -2,8 +2,8 @@ package com.example.routeify.domain.smartsuggestions
 
 import com.example.routeify.domain.model.RouteSuggestion
 
-class SmartSuggesstionsUseCases {
-
+class SmartSuggestionsUseCases {
+    
     private val engine = SmartSuggestionEngine()
 
     fun getBestRouteSuggestion(suggestions: List<RouteSuggestion>): RouteSuggestion? {

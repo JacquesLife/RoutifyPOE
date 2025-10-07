@@ -29,8 +29,7 @@ fun PlaceDetailsScreen(
     val isLoading by viewModel.isLoading
     val errorMessage by viewModel.errorMessage
     
-    // Note: PlaceDetails functionality removed since TransitStop doesn't have placeId
-
+    // Main scrollable column
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -45,11 +44,14 @@ fun PlaceDetailsScreen(
                     overflow = TextOverflow.Ellipsis
                 )
             },
+
+            // Back button
             navigationIcon = {
                 IconButton(onClick = onBackClick) {
                     Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                 }
             },
+            // Directions button
             actions = {
                 IconButton(onClick = onDirectionsClick) {
                     Icon(Icons.Default.Directions, contentDescription = "Get directions")
@@ -57,6 +59,7 @@ fun PlaceDetailsScreen(
             }
         )
 
+        // Content
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
@@ -86,6 +89,7 @@ fun PlaceDetailsScreen(
                             )
                         }
                         
+                        // Stop name and vicinity
                         Column(
                             modifier = Modifier.weight(1f)
                         ) {
@@ -95,6 +99,7 @@ fun PlaceDetailsScreen(
                                 fontWeight = FontWeight.Bold
                             )
                             
+                            // Vicinity if available
                             stop.vicinity?.let { vicinity ->
                                 Text(
                                     text = vicinity,

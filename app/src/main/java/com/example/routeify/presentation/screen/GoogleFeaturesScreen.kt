@@ -18,20 +18,25 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.routeify.data.model.TransitStop
 import com.example.routeify.presentation.viewmodel.GoogleFeaturesViewModel
 
+// Main screen for Google Features
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+// Main composable function for Google Features screen
 fun GoogleFeaturesScreen(
     viewModel: GoogleFeaturesViewModel = viewModel(),
     onBackClick: () -> Unit = {},
     onRouteSelectedNavigateToMap: (String) -> Unit = {},
     initialDestination: String? = null
 ) {
+    // Simple state to manage navigation between features
     var selectedStop by remember { mutableStateOf<TransitStop?>(null) }
     var currentScreen by remember { mutableStateOf(if (initialDestination != null) "route_planner" else "main") }
 
+    // Navigate between different feature screens
     when (currentScreen) {
         "route_planner" -> {
+            // Route planner screen with navigation callback and initial destination
             RoutePlannerScreen(
                 viewModel = viewModel,
                 onBackClick = { currentScreen = "main" },
@@ -56,6 +61,7 @@ fun GoogleFeaturesScreen(
                 }
             )
         }
+        // Screen for nearby transit stops with callbacks for navigation and stop selection
         "nearby_transit" -> {
             NearbyTransitScreen(
                 viewModel = viewModel,
@@ -66,6 +72,7 @@ fun GoogleFeaturesScreen(
                 }
             )
         }
+        // Screen for place details with back and directions callbacks
         "place_details" -> {
             selectedStop?.let { stop ->
                 PlaceDetailsScreen(
@@ -76,6 +83,7 @@ fun GoogleFeaturesScreen(
                 )
             }
         }
+        // Main features overview screen
         else -> {
             MainGoogleFeaturesScreen(
                 onBackClick = onBackClick,
@@ -87,6 +95,7 @@ fun GoogleFeaturesScreen(
     }
 }
 
+// Overview screen listing Google-powered features
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun MainGoogleFeaturesScreen(
@@ -118,13 +127,6 @@ private fun MainGoogleFeaturesScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-//        Text(
-//            text = "Discover powerful transit and navigation features powered by Google APIs",
-//            style = MaterialTheme.typography.bodyLarge,
-//            color = MaterialTheme.colorScheme.onSurfaceVariant,
-//            modifier = Modifier.padding(bottom = 24.dp)
-//        )
-        
         // Feature Cards
         FeatureCard(
             title = "🗺 Route Planner",
@@ -132,9 +134,11 @@ private fun MainGoogleFeaturesScreen(
             icon = Icons.Default.Directions,
             onClick = { onFeatureClick("route_planner") }
         )
-        
+
+        // Nearby Transit
         Spacer(modifier = Modifier.height(12.dp))
-        
+
+        // Nearby Transit
         FeatureCard(
             title = " Nearby Transit",
             description = "Find transit stops, bus stations, and train stations near you",
@@ -142,8 +146,10 @@ private fun MainGoogleFeaturesScreen(
             onClick = { onFeatureClick("nearby_transit") }
         )
         
+        // Smart Suggestions
         Spacer(modifier = Modifier.height(12.dp))
         
+        // Smart Suggestions
         FeatureCard(
             title = " Smart Suggestions",
             description = "Get personalized route recommendations based on your travel patterns",
@@ -165,16 +171,19 @@ private fun MainGoogleFeaturesScreen(
             )
         ) {
             Row(
+                // Privacy notice content
                 modifier = Modifier.padding(16.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
+                // Privacy icon
                 Icon(
                     Icons.Default.Security,
                     contentDescription = null,
                     modifier = Modifier.size(20.dp),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+                // Privacy text
                 Text(
                     text = "Your privacy is protected. Location data is only used for transit planning.",
                     style = MaterialTheme.typography.bodySmall,
@@ -185,6 +194,7 @@ private fun MainGoogleFeaturesScreen(
     }
 }
 
+// Reusable card component for each feature
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun FeatureCard(
@@ -194,11 +204,13 @@ private fun FeatureCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    // Feature card content
     Card(
         onClick = onClick,
         modifier = modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
+        // Feature card content
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -206,11 +218,13 @@ private fun FeatureCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Card(
+                // Icon background
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.secondaryContainer
                 )
             ) {
-                Icon(
+                // Icon
+                Icon( 
                     icon,
                     contentDescription = null,
                     modifier = Modifier.padding(16.dp),
@@ -223,6 +237,7 @@ private fun FeatureCard(
             Column(
                 modifier = Modifier.weight(1f)
             ) {
+                // Title
                 Text(
                     text = title,
                     style = MaterialTheme.typography.titleMedium,
@@ -230,7 +245,8 @@ private fun FeatureCard(
                 )
                 
                 Spacer(modifier = Modifier.height(4.dp))
-                
+
+                // Description
                 Text(
                     text = description,
                     style = MaterialTheme.typography.bodyMedium,
@@ -239,6 +255,7 @@ private fun FeatureCard(
             }
             
             Icon(
+                // Expand icon
                 Icons.Default.ChevronRight,
                 contentDescription = "Open feature",
                 tint = MaterialTheme.colorScheme.onSurfaceVariant

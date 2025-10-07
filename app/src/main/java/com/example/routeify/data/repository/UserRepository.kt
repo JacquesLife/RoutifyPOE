@@ -6,6 +6,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.security.MessageDigest
 
+// Repository for managing user data and authentication
 class UserRepository(private val userDao: UserDao) {
     suspend fun register(email: String, username: String, password: String): Result<User> = withContext(Dispatchers.IO) {
         val existingEmail = userDao.findByEmail(email)
@@ -17,6 +18,7 @@ class UserRepository(private val userDao: UserDao) {
         Result.success(user.copy(id = id))
     }
 
+    // Login with email or username
     suspend fun loginWithEmail(email: String, password: String): Result<User> = withContext(Dispatchers.IO) {
         val user = userDao.findByEmail(email)
         if (user == null || user.passwordHash != hash(password)) {
@@ -25,6 +27,7 @@ class UserRepository(private val userDao: UserDao) {
         Result.success(user)
     }
 
+    // Login with email or username
     suspend fun loginWithUsername(username: String, password: String): Result<User> = withContext(Dispatchers.IO) {
         val user = userDao.findByUsername(username)
         if (user == null || user.passwordHash != hash(password)) {
@@ -33,6 +36,7 @@ class UserRepository(private val userDao: UserDao) {
         Result.success(user)
     }
 
+    // Upsert user for SSO login (e.g., Google)
     suspend fun upsertSsoUser(email: String, username: String): Result<User> = withContext(Dispatchers.IO) {
         val existingEmail = userDao.findByEmail(email)
         if (existingEmail != null) return@withContext Result.success(existingEmail)
@@ -43,12 +47,14 @@ class UserRepository(private val userDao: UserDao) {
         Result.success(user.copy(id = id))
     }
 
+    // Recursively generate a unique username by appending numbers
     private suspend fun generateUniqueUsername(base: String, attempt: Int = 1): String {
         val candidate = if (attempt == 1) base else "$base$attempt"
         val exists = userDao.findByUsername(candidate) != null
         return if (!exists) candidate else generateUniqueUsername(base, attempt + 1)
     }
 
+    // Simple SHA-256 hashing for passwords (not for production use)
     private fun hash(value: String): String {
         val bytes = MessageDigest.getInstance("SHA-256").digest(value.toByteArray())
         return bytes.joinToString("") { "%02x".format(it) }
