@@ -314,8 +314,9 @@ class GooglePlacesEnhancedRepository {
             )
             
             if (walkingResult.isSuccess) {
-                val walkingRoute = walkingResult.getOrThrow()
-                val leg = walkingRoute.legs.firstOrNull()
+                val walkingResponse = walkingResult.getOrThrow()
+                val route = walkingResponse.routes.firstOrNull()
+                val leg = route?.legs?.firstOrNull()
                 
                 if (leg != null) {
                     RouteSegment(

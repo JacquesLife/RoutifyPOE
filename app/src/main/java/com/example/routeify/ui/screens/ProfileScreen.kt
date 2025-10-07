@@ -119,23 +119,6 @@ fun ProfileScreen(authViewModel: AuthViewModel = viewModel()) {
                 leading = Icons.Default.LocationOn
             )
 
-            SectionTitle("Preferences")
-
-            PreferenceSwitch(
-                title = "Push Notifications",
-                subtitle = "Get alerts for delays and updates",
-                icon = Icons.Default.Notifications
-            )
-            PreferenceSwitch(
-                title = "Dark Mode",
-                subtitle = "Switch to dark theme",
-                icon = Icons.Default.DarkMode
-            )
-            PreferenceSwitch(
-                title = "Accessibility",
-                subtitle = "High contrast and large text",
-                icon = Icons.Default.Star
-            )
 
             SectionTitle("Account")
             Card(

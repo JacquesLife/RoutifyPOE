@@ -287,12 +287,12 @@ fun SettingsScreen() {
 
                 HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)
 
-                SettingNavigationItem(
-                    icon = Icons.Default.Info,
-                    title = "About",
-                    value = "Version 1.0.0",
-                    onClick = { /* Handle about */ }
-                )
+//                SettingNavigationItem(
+//                    icon = Icons.Default.Info,
+//                    title = "About",
+//                    value = "Version 1.0.0",
+//                    onClick = { /* Handle about */ }
+//                )
             }
         }
     }
