@@ -595,8 +595,7 @@ fun RoutePlannerScreen(
                         fromLocation = fromLocation,
                         toLocation = toLocation,
                         context = context,
-                        onViewOnMap = { onRouteSelected(route) },
-                        onOpenInGoogleMaps = createOpenInGoogleMapsLambda(route, fromLocation, toLocation, context)
+                        onViewOnMap = { onRouteSelected(route) }
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                 }
@@ -830,8 +829,7 @@ private fun TransitRouteCard(
     fromLocation: String,
     toLocation: String,
     context: android.content.Context,
-    onViewOnMap: () -> Unit = {},
-    onOpenInGoogleMaps: () -> Unit = {}
+    onViewOnMap: () -> Unit = {}
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -927,7 +925,7 @@ private fun TransitRouteCard(
                 }
                 
                 OutlinedButton(
-                    onClick = onOpenInGoogleMaps,
+                    onClick = { openInGoogleMaps(route, fromLocation, toLocation, context) },
                     modifier = Modifier.weight(1f)
                 ) {
                     Row(
@@ -1433,13 +1431,4 @@ private fun openInGoogleMaps(
     val uri = android.net.Uri.parse("https://www.google.com/maps/dir/?api=1&origin=$from&destination=$to&travelmode=transit")
     val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, uri)
     context.startActivity(intent)
-}
-
-private fun createOpenInGoogleMapsLambda(
-    route: TransitRoute,
-    fromLocation: String,
-    toLocation: String,
-    context: android.content.Context
-): () -> Unit {
-    return { openInGoogleMaps(route, fromLocation, toLocation, context) }
 }
