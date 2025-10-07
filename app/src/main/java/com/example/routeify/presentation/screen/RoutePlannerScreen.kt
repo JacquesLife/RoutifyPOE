@@ -23,11 +23,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.routeify.domain.model.PlaceSuggestion
+import com.example.routeify.domain.model.RouteSuggestion
 import com.example.routeify.domain.model.RouteSegment
 import com.example.routeify.domain.model.TransitRoute
 import com.example.routeify.presentation.viewmodel.GoogleFeaturesViewModel
-//Hows ur granny
-//Im dumb
+import com.example.routeify.presentation.screen.SimpleSmartSuggestionCard
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RoutePlannerScreen(
@@ -48,6 +49,7 @@ fun RoutePlannerScreen(
     val transitRoutes by viewModel.transitRoutes
     val isLoadingRoutes by viewModel.isLoadingRoutes
     val errorMessage by viewModel.errorMessage
+    val routeSuggestions by viewModel.routeSuggestions
 
     LaunchedEffect(fromLocation) {
         if (fromLocation.isNotEmpty() && selectedFromPlace?.description != fromLocation) {
@@ -330,6 +332,42 @@ fun RoutePlannerScreen(
                 }
                 Spacer(modifier = Modifier.height(16.dp))
             }
+
+            // Smart Suggestions Section
+            if (routeSuggestions.isNotEmpty()){
+                Spacer(modifier = Modifier.height(8.dp))
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        Icon(
+                            Icons.Default.Lightbulb,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                        Text(
+                            text = "Best Route Recommendation",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                        )
+                    }
+
+                    routeSuggestions.forEachIndexed { index, suggestion ->
+                        SimpleSmartSuggestionCard(
+                            suggestion = suggestion,
+                            routeNumber = index + 1,
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
 
             if (transitRoutes.isNotEmpty()) {
                 Text(

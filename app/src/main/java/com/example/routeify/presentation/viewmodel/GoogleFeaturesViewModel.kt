@@ -128,8 +128,10 @@ class GoogleFeaturesViewModel : ViewModel() {
             )
                 .onSuccess { routes ->
                     transitRoutes.value = routes
-                    if (routes.isEmpty()) {
-                        errorMessage.value = "No transit routes found. Try different locations or check if transit is available."
+                    if (routes.isNotEmpty()) {
+                        val smartSuggestions = smartSuggestions.generateSmartSuggestions(routes)
+                        routeSuggestions.value = smartSuggestions
+                        bestRouteSuggestion.value = smartSuggestions.firstOrNull { it.recommended }
                     }
                 }
                 .onFailure { error ->
@@ -139,6 +141,7 @@ class GoogleFeaturesViewModel : ViewModel() {
 
             isLoadingRoutes.value = false
             isLoading.value = false
+
         }
     }
 
