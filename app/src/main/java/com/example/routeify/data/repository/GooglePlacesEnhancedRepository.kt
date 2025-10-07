@@ -210,13 +210,13 @@ class GooglePlacesEnhancedRepository {
             val originStopsResult = transitRepository.findNearestTransitStops(
                 originCoords.latitude, 
                 originCoords.longitude, 
-                maxDistanceMeters = 1000, // 1km max walk
+                maxDistanceMeters = 5000, // 1km max walk
                 maxResults = 3
             )
             val destinationStopsResult = transitRepository.findNearestTransitStops(
                 destinationCoords.latitude, 
                 destinationCoords.longitude, 
-                maxDistanceMeters = 1000, // 1km max walk
+                maxDistanceMeters = 5000, // 1km max walk
                 maxResults = 3
             )
 
