@@ -43,10 +43,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.rememberBottomSheetScaffoldState
-import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -108,24 +105,8 @@ fun MapScreen() {
     val viewModel: MapViewModel = viewModel()
     val uiState by viewModel.uiState.collectAsState()
     
-    val bottomSheetScaffoldState = rememberBottomSheetScaffoldState()
-    
-    BottomSheetScaffold(
-        scaffoldState = bottomSheetScaffoldState,
-        sheetContent = {
-            // Bottom sheet content will be added here
-            BottomSheetContent()
-        },
-        sheetPeekHeight = 80.dp,
-        sheetContainerColor = MaterialTheme.colorScheme.surface,
-        sheetDragHandle = {
-            BottomSheetDefaults.DragHandle()
-        }
-    ) { paddingValues ->
     Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
+        modifier = Modifier.fillMaxSize()
     ) {
         // Header Card
         Card(
@@ -294,115 +275,6 @@ fun MapScreen() {
 }
 
 
-@Composable
-private fun BottomSheetContent() {
-    var selectedStep by remember { mutableStateOf(-1) }
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-    ) {
-        Text(
-            text = "Step-by-Step Directions",
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-
-        // Placeholder steps (in a real app, these would come from the route data)
-        val steps = listOf(
-            "Walk to Cape Town Station (5 min)",
-            "Take Southern Line to Claremont (15 min)",
-            "Walk to destination (3 min)"
-        )
-
-        steps.forEachIndexed { index, step ->
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 4.dp)
-                    .clickable {
-                        selectedStep = if (selectedStep == index) -1 else index
-                        // TODO: Highlight step on map when implemented
-                    },
-                colors = CardDefaults.cardColors(
-                    containerColor = if (selectedStep == index)
-                        MaterialTheme.colorScheme.primaryContainer
-                    else
-                        MaterialTheme.colorScheme.surface
-                ),
-                elevation = CardDefaults.cardElevation(
-                    defaultElevation = if (selectedStep == index) 4.dp else 1.dp
-                )
-            ) {
-                Row(
-                    modifier = Modifier.padding(12.dp),
-                    verticalAlignment = Alignment.Top
-                ) {
-                    // Step number
-                    Surface(
-                        shape = RoundedCornerShape(12.dp),
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(24.dp)
-                    ) {
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier.fillMaxSize()
-                        ) {
-                            Text(
-                                text = "${index + 1}",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onPrimary,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.width(12.dp))
-
-                    // Step description
-                    Column(
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Text(
-                            text = step,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = if (selectedStep == index)
-                                MaterialTheme.colorScheme.onPrimaryContainer
-                            else
-                                MaterialTheme.colorScheme.onSurface
-                        )
-
-                        if (selectedStep == index) {
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(
-                                text = "Tap to highlight this step on the map",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
-                            )
-                        }
-                    }
-
-                    // Step time
-                    Text(
-                        text = when (index) {
-                            0 -> "5 min"
-                            1 -> "15 min"
-                            2 -> "3 min"
-                            else -> ""
-                        },
-                        style = MaterialTheme.typography.bodySmall,
-                        color = if (selectedStep == index)
-                            MaterialTheme.colorScheme.onPrimaryContainer
-                        else
-                            MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-        }
-    }
-}
 
 @Composable
 private fun ControlsCluster(

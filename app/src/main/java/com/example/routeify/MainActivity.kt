@@ -205,14 +205,6 @@ fun MainApp() {
                         onDestinationClick = { destination ->
                             // Navigate to route planner with the selected destination
                             navController.navigate("route-planner?destination=${destination.name}")
-                        },
-                        onSearchClick = {
-                            // Navigate to route planner for search
-                            navController.navigate("google-features")
-                        },
-                        onCurrentLocationClick = {
-                            // Navigate to map with current location
-                            navController.navigate("map")
                         }
                     ) 
                 }

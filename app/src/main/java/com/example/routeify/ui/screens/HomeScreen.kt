@@ -12,7 +12,6 @@
 package com.example.routeify.ui.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -35,9 +34,7 @@ import com.example.routeify.shared.RecentDestination
 
 @Composable
 fun HomeScreen(
-    onDestinationClick: (RecentDestination) -> Unit = {},
-    onSearchClick: () -> Unit = {},
-    onCurrentLocationClick: () -> Unit = {}
+    onDestinationClick: (RecentDestination) -> Unit = {}
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         // Header with gradient, app name, search, and location shortcut
@@ -65,42 +62,6 @@ fun HomeScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Search bar and current location button
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                OutlinedTextField(
-                    value = "",
-                    onValueChange = {},
-                    modifier = Modifier
-                        .weight(1f)
-                        .clickable { onSearchClick() },
-                    placeholder = { Text("Where to?", color = MaterialTheme.colorScheme.onSurfaceVariant) },
-                    singleLine = true,
-                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-                    shape = RoundedCornerShape(16.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedContainerColor = Color.White,
-                        focusedContainerColor = Color.White,
-                        unfocusedBorderColor = Color.Transparent,
-                        focusedBorderColor = RouteifyGreen500
-                    ),
-                    readOnly = true
-                )
-                // Spacer
-                Spacer(modifier = Modifier.width(12.dp))
-                FilledIconButton(
-                    onClick = onCurrentLocationClick,
-                    modifier = Modifier.size(56.dp),
-                    colors = IconButtonDefaults.filledIconButtonColors(
-                        containerColor = Color.White.copy(alpha = 0.2f),
-                        contentColor = Color.White
-                    )
-                ) {
-                    // Current location icon
-                    Icon(Icons.Default.LocationOn, contentDescription = "Use current location")
-                }
-            }
         }
 
         // Recent destinations section
