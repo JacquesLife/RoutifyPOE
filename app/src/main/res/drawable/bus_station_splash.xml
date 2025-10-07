@@ -1,0 +1,38 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="509"
+    android:viewportHeight="509">
+  <!-- Bus Station Icon - Optimized for Splash Screen -->
+  <path
+      android:pathData="M254.5,254.5m-254.5,0a254.5,254.5 0,1 1,509 0a254.5,254.5 0,1 1,-509 0"
+      android:fillColor="#FF553E"/>
+  <path
+      android:pathData="M358.5,422.5l-208,0l-3.7,10.6l12.4,-5.2l48,0l25.8,9.3l43,0l25.8,-9.3l48,0l12.4,5.2z"
+      android:fillColor="#333842"/>
+  <path
+      android:pathData="M385.8,59.8H123.2c-14.1,0 -26.9,12.5 -32.3,25.5l-6.8,29.3v266.2h340.7V114.6L418,85.3C412.4,72 399.9,59.8 385.8,59.8z"
+      android:fillColor="#F1F3F7"/>
+  <path
+      android:pathData="M84.1,380.8h340.7v41.7h-340.7z"
+      android:fillColor="#646B79"/>
+  <path
+      android:pathData="M92.3,118h324.4v190.9h-324.4z"
+      android:fillColor="#DEDEDF"/>
+  <path
+      android:pathData="M92.3,127.8h324.4v176.7h-324.4z"
+      android:fillColor="#333842"/>
+  <path
+      android:pathData="M97.4,133.4h153.6v164.4h-153.6z"
+      android:fillColor="#6EB1E1"/>
+  <path
+      android:pathData="M258.7,133.4h153.6v164.4h-153.6z"
+      android:fillColor="#6EB1E1"/>
+  <!-- Front wheels -->
+  <path
+      android:pathData="M126.3,401.6c0,4.5 -10.4,8.1 -14.9,8.1s-8.1,-3.6 -8.1,-8.1s3.6,-8.1 8.1,-8.1S126.3,397.1 126.3,401.6z"
+      android:fillColor="#FBD303"/>
+  <path
+      android:pathData="M405.8,401.6c0,4.5 -3.6,8.1 -8.1,8.1s-14.9,-3.6 -14.9,-8.1s10.4,-8.1 14.9,-8.1S405.8,397.1 405.8,401.6z"
+      android:fillColor="#FBD303"/>
+</vector>

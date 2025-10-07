@@ -73,18 +73,18 @@ fun SplashScreen(onFinished: () -> Unit) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.alpha(alpha)) {
             Surface(
                 modifier = Modifier
-                    .size(88.dp)
-                    .shadow(12.dp, CircleShape),
+                    .size(120.dp)
+                    .shadow(16.dp, CircleShape),
                 shape = CircleShape,
                 color = Color.White
             ) {
-                // Logo
+                // Bus Station Logo
                 Box(contentAlignment = Alignment.Center) {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_launcher_foreground),
-                        contentDescription = "Routeify logo",
-                        tint = RouteifyBlue500,
-                        modifier = Modifier.size(36.dp)
+                        painter = painterResource(id = R.drawable.bus_station_splash),
+                        contentDescription = "Routeify Bus Station logo",
+                        tint = androidx.compose.ui.graphics.Color.Unspecified,
+                        modifier = Modifier.size(80.dp)
                     )
                 }
             }

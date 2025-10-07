@@ -4,7 +4,7 @@
  * ============================================================================
  * 
  * Repository for discovering and managing transit stops and transportation hubs.
- * Integrates with Google Places API to find nearby public transit options.
+ * Integrates with Google Places API to find nearby public transit options. 
  *
  * REFERENCES:
  * https://www.youtube.com/watch?v=86NAMO-MVIE
