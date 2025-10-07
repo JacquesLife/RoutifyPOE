@@ -592,6 +592,8 @@ fun RoutePlannerScreen(
                     TransitRouteCard(
                         route = route,
                         routeNumber = index + 1,
+                        fromLocation = fromLocation,
+                        context = context,
                         onViewOnMap = { onRouteSelected(route) },
                         onOpenInGoogleMaps = { 
                             openInGoogleMaps(route, fromLocation, toLocation, context)
@@ -826,6 +828,8 @@ private fun androidx.compose.ui.text.AnnotatedString.Builder.highlightMatchedTex
 private fun TransitRouteCard(
     route: TransitRoute,
     routeNumber: Int,
+    fromLocation: String,
+    context: android.content.Context,
     onViewOnMap: () -> Unit = {},
     onOpenInGoogleMaps: () -> Unit = {}
 ) {
