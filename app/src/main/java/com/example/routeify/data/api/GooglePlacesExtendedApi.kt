@@ -1,18 +1,42 @@
-/**
- * Extended Google Places API interface providing comprehensive location and transit services
+/*
+ * ============================================================================
+ * GOOGLE PLACES EXTENDED API - Comprehensive Maps Platform Integration
+ * ============================================================================
  * 
- * This interface wraps multiple Google Maps Platform APIs:
- * - Distance Matrix API: Calculate travel times and distances
- * - Geocoding API: Convert addresses to coordinates
- * - Places Autocomplete API: Provide search suggestions
- * - Place Details API: Get detailed place information
- * - Directions API: Generate transit routes with step-by-step directions
+ * This file defines the primary Retrofit interface for accessing Google Maps
+ * Platform APIs, providing comprehensive location and routing services.
  * 
- * All endpoints require a valid Google Places API key configured in BuildConfig
+ * PRIMARY PURPOSE:
+ * - Centralizes all Google Maps Platform API endpoints in one interface
+ * - Provides travel time calculations, geocoding, and route planning
+ * - Enables advanced place search and detailed location information
+ * - Powers the core functionality of the Routeify navigation app
  * 
- * references:
- * - <a href="https://developers.google.com/maps/documentation">Google Maps Platform Documentation</a>
+ * GOOGLE APIS INTEGRATED:
+ * - Distance Matrix API: Multi-point travel time and distance calculations
+ * - Geocoding API: Address to coordinate conversion and reverse geocoding
+ * - Places Autocomplete API: Real-time search suggestions and place discovery
+ * - Place Details API: Comprehensive place information with business data
+ * - Directions API: Turn-by-turn navigation with transit route optimization
+ * 
+ * KEY CAPABILITIES:
+ * - Multi-modal transportation support (driving, walking, transit, cycling)
+ * - Real-time traffic and transit schedule integration
+ * - Comprehensive place database with ratings, photos, and contact info
+ * - Smart route optimization with alternative path suggestions
+ * - Location-aware search with context-sensitive results
+ * 
+ * AUTHENTICATION:
+ * All endpoints require a valid Google Places API key configured in the
+ * application.
+ * 
+ * USAGE:
+ * This interface is implemented by GooglePlacesEnhancedRepository and serves
+ * as the backbone for all location-based features in the application.
+ * 
+ * ============================================================================
  */
+
 
 package com.example.routeify.data.api
 

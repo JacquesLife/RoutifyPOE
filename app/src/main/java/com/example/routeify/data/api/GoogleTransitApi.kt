@@ -1,3 +1,36 @@
+/*
+ * ============================================================================
+ * GOOGLE TRANSIT API - Public Transportation Integration
+ * ============================================================================
+ * 
+ * This file defines the Retrofit interface for accessing Google Places API
+ * specifically for public transportation and transit-related functionality.
+ * 
+ * PRIMARY PURPOSE:
+ * - Discovers nearby transit stops and public transportation hubs
+ * - Provides real-time transit information for route planning
+ * - Integrates with Google Places API for accurate location data
+ * 
+ * KEY FEATURES:
+ * - Nearby transit stop discovery with customizable radius
+ * - Support for multiple transit types (bus stops, train stations, etc.)
+ * - Location-based queries using latitude/longitude coordinates
+ * - Structured data models for transit stop information
+ * 
+ * TRANSIT TYPES SUPPORTED:
+ * - Bus stops and bus stations
+ * - Train stations and subway stops
+ * - Light rail and tram stations
+ * - Transit hubs and transportation centers
+ * 
+ * USAGE:
+ * Used by GoogleTransitRepository to fetch transit data for the map view
+ * and route planning features. Enables users to find nearby public
+ * transportation options for their journey planning.
+ * 
+ * ============================================================================
+ */
+
 package com.example.routeify.data.api
 
 import com.google.gson.annotations.SerializedName

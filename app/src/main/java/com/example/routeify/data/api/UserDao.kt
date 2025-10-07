@@ -1,3 +1,35 @@
+/*
+ * ============================================================================
+ * USER DAO - Data Access Object for User Management
+ * ============================================================================
+ * 
+ * This file defines the Data Access Object (DAO) interface for user operations
+ * in the Room database.
+ * 
+ * PRIMARY PURPOSE:
+ * - Provides type-safe database operations for User entities
+ * - Handles user authentication queries and data persistence
+ * - Manages user profile creation, retrieval, and updates
+ * 
+ * KEY OPERATIONS:
+ * - Insert new users with conflict resolution strategy
+ * - Query users by email for authentication
+ * - Retrieve all users for admin/debugging purposes
+ * - Thread-safe database transactions
+ * 
+ * AUTHENTICATION FLOW:
+ * - insertUser(): Creates new user accounts during registration
+ * - getUserByEmail(): Validates user credentials during login
+ * - getAllUsers(): Administrative access to user database
+ * 
+ * USAGE:
+ * This DAO is accessed through the AppDatabase instance and provides
+ * the primary interface for all user-related database operations
+ * throughout the application.
+ * 
+ * ============================================================================
+ */
+
 package com.example.routeify.data.api
 
 import androidx.room.Dao
