@@ -24,6 +24,7 @@ import com.example.routeify.ui.viewmodel.AuthViewModel
 import com.example.routeify.ui.theme.RouteifyBlue500
 import com.example.routeify.ui.theme.RouteifyGreen500
 
+// Login screen composable
 @Composable
 fun LoginScreen(
     onLoginSuccess: () -> Unit,
@@ -49,6 +50,7 @@ fun LoginScreen(
                 .padding(vertical = 48.dp, horizontal = 24.dp),
             contentAlignment = Alignment.Center
         ) {
+            // App icon
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Surface(
                     shape = CircleShape,
@@ -64,6 +66,7 @@ fun LoginScreen(
                         )
                     }
                 }
+                // App title
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = "Welcome Back",
@@ -87,8 +90,10 @@ fun LoginScreen(
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // Email/Username field
             Spacer(modifier = Modifier.height(8.dp))
 
+            // Email/Username field
             OutlinedTextField(
                 value = emailOrUsername,
                 onValueChange = { emailOrUsername = it },
@@ -105,6 +110,7 @@ fun LoginScreen(
             
             Spacer(modifier = Modifier.height(16.dp))
             
+            // Password field
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
@@ -120,6 +126,7 @@ fun LoginScreen(
                 )
             )
 
+            // Show error message if login fails
             if (authState.errorMessage != null) {
                 Spacer(modifier = Modifier.height(12.dp))
                 Card(
@@ -138,6 +145,7 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
             
+            // Sign In button
             Button(
                 onClick = { authViewModel.login(emailOrUsername, password) },
                 modifier = Modifier
@@ -151,8 +159,10 @@ fun LoginScreen(
                 Text("Sign In", style = MaterialTheme.typography.titleMedium)
             }
             
+            // Create Account button
             Spacer(modifier = Modifier.height(12.dp))
             
+            // Outlined button for account creation
             OutlinedButton(
                 onClick = onNavigateToRegister,
                 modifier = Modifier
@@ -163,15 +173,18 @@ fun LoginScreen(
                     contentColor = RouteifyBlue500
                 )
             ) {
+                // Create Account text
                 Text("Create Account", style = MaterialTheme.typography.titleMedium)
             }
             
             Spacer(modifier = Modifier.height(24.dp))
-            
+
+            // Divider with "OR" text
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                // Divider
                 Divider(modifier = Modifier.weight(1f))
                 Text(
                     text = "OR",
@@ -184,6 +197,7 @@ fun LoginScreen(
             
             Spacer(modifier = Modifier.height(24.dp))
             
+            // Google Sign-In button
             OutlinedButton(
                 onClick = onGoogleSignInClick,
                 modifier = Modifier
@@ -191,10 +205,12 @@ fun LoginScreen(
                     .height(56.dp),
                 shape = RoundedCornerShape(12.dp)
             ) {
+                // Google icon and text
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
+                    // Google icon
                     Icon(Icons.Default.AccountCircle, contentDescription = null)
                     Spacer(modifier = Modifier.width(12.dp))
                     Text("Continue with Google", style = MaterialTheme.typography.titleMedium)

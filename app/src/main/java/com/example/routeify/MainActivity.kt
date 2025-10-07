@@ -39,6 +39,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.navigation.navArgument
 
+// Main activity hosting the entire app
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,8 +52,10 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+// Main composable hosting navigation and drawer
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+// Main application composable
 fun MainApp() {
     val navController = rememberNavController()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -69,31 +72,42 @@ fun MainApp() {
             .requestEmail()
             .build()
     }
+    // Lazy initialization of GoogleSignInClient
     val googleClient = remember { GoogleSignIn.getClient(context, gso) }
 
+    // Launcher for Google Sign-In activity
     val googleSignInLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
+        // Handle the result of the Google Sign-In intent
         val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
         try {
+            // Get the signed-in account
             val account: GoogleSignInAccount = task.getResult(ApiException::class.java)
             val email = account.email
             val name = account.displayName
             if (email != null) {
                 authViewModel.ssoSignIn(email, name)
             }
+            // Notify user of successful sign-in
         } catch (e: ApiException) {
             Toast.makeText(context, "Google sign-in failed: ${e.statusCode}", Toast.LENGTH_LONG).show()
         }
     }
 
+    // Determine if the current route is an auth-related screen
     val isAuthRoute = currentRoute in listOf("login", "register", "splash") && !authState.isAuthenticated
 
+    // Main content with optional navigation drawer
     val content: @Composable () -> Unit = {
         Scaffold(
+            // Only show top bar if not on auth routes
             topBar = {
+                // Hide top bar on auth routes
                 if (!isAuthRoute) {
+                    // Show top app bar
                     TopAppBar(
+                        // Dynamic title based on current route
                         title = { Text(getCurrentTitle(currentRoute)) },
                         navigationIcon = {
                             IconButton(onClick = {
@@ -101,12 +115,14 @@ fun MainApp() {
                                     drawerState.open()
                                 }
                             }) {
+                                // Show drawer icon
                                 Icon(
                                     imageVector = Icons.Default.Menu,
                                     contentDescription = "Menu"
                                 )
                             }
                         },
+                        // Theming for the top bar
                         colors = TopAppBarDefaults.topAppBarColors(
                             containerColor = MaterialTheme.colorScheme.primaryContainer,
                             titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -115,12 +131,14 @@ fun MainApp() {
                     )
                 }
             }
+            // Padding to avoid content under top bar
         ) { paddingValues ->
             NavHost(
                 navController = navController,
                 startDestination = "splash",
                 modifier = Modifier.padding(paddingValues)
             ) {
+                // Splash screen as the start destination
                 composable("splash") {
                     SplashScreen {
                         if (authState.isAuthenticated) {
@@ -128,6 +146,7 @@ fun MainApp() {
                                 popUpTo("splash") { inclusive = true }
                                 launchSingleTop = true
                             }
+                            // If already authenticated, go to home
                         } else {
                             navController.navigate("login") {
                                 popUpTo("splash") { inclusive = true }
@@ -136,6 +155,7 @@ fun MainApp() {
                         }
                     }
                 }
+                // Home screen with recent destinations
                 composable("home") { 
                     HomeScreen(
                         onDestinationClick = { destination ->
@@ -152,8 +172,10 @@ fun MainApp() {
                         }
                     ) 
                 }
+                // Profile screen
                 composable("profile") { ProfileScreen() }
                 composable(
+                    // Map screen with optional route parameters
                     route = "map?fromLat={fromLat}&fromLng={fromLng}&toLat={toLat}&toLng={toLng}&poly={poly}",
                     arguments = listOf(
                         navArgument("fromLat") { type = NavType.StringType; nullable = true },
@@ -162,6 +184,7 @@ fun MainApp() {
                         navArgument("toLng") { type = NavType.StringType; nullable = true },
                         navArgument("poly") { type = NavType.StringType; nullable = true }
                     )
+                    // Default to map screen without route if no args
                 ) { MapScreen() }
                 composable("settings") { SettingsScreen() }
                 composable("google-features") {
@@ -173,11 +196,13 @@ fun MainApp() {
                         }
                     )
                 }
+                // Route planner with optional destination parameter
                 composable(
                     route = "route-planner?destination={destination}",
                     arguments = listOf(
                         navArgument("destination") { type = NavType.StringType; nullable = true }
                     )
+                    // Pass the destination argument to the screen
                 ) { backStackEntry ->
                     val destination = backStackEntry.arguments?.getString("destination")
                     GoogleFeaturesScreen(
@@ -189,12 +214,15 @@ fun MainApp() {
                         initialDestination = destination
                     )
                 }
+                // Placeholder screens for other sections
                 composable("favorites") {
                     ScreenPlaceholder("Favorites")
                 }
+                // Placeholder for notifications
                 composable("notifications") {
                     ScreenPlaceholder("Notifications")
                 }
+                // Login screen
                 composable("login") {
                     LoginScreen(
                         onLoginSuccess = {
@@ -212,6 +240,8 @@ fun MainApp() {
                         authViewModel = authViewModel
                     )
                 }
+
+                // Registration screen
                 composable("register") {
                     RegisterScreen(
                         onRegisterSuccess = {
@@ -220,12 +250,15 @@ fun MainApp() {
                                 launchSingleTop = true
                             }
                         },
+                        // Handle Google Sign-In
                         onNavigateToLogin = {
                             navController.navigate("login")
                         },
+                        // Handle Google Sign-In
                         onGoogleSignInClick = {
                             googleSignInLauncher.launch(googleClient.signInIntent)
                         },
+                        // Pass the authViewModel to the screen
                         authViewModel = authViewModel
                     )
                 }
@@ -233,24 +266,31 @@ fun MainApp() {
         }
     }
 
+    // If on auth routes, show content directly without drawer
     if (isAuthRoute) {
         content()
+        // No drawer for auth routes
     } else {
+        // Show drawer for main app content
         AppNavigationDrawer(
             drawerState = drawerState,
             selectedRoute = currentRoute,
             onNavigate = { route ->
+            // Close drawer and navigate
                 navController.navigate(route) {
                     popUpTo(navController.graph.startDestinationId) {
                         saveState = true
                     }
+                    // Close drawer and navigate
                     launchSingleTop = true
                     restoreState = true
                 }
             },
+            // Handle drawer dismissal
             onDismiss = {
                 scope.launch { drawerState.close() }
             },
+            // Handle logout action
             onLogout = {
                 authViewModel.logout()
                 navController.navigate("login") {
@@ -258,6 +298,7 @@ fun MainApp() {
                     launchSingleTop = true
                 }
             },
+            // Pass user info to drawer header
             username = authState.username,
             email = authState.email
         ) {
@@ -266,6 +307,7 @@ fun MainApp() {
     }
 }
 
+// Simple placeholder screen for unimplemented sections
 @Composable
 fun ScreenPlaceholder(title: String) {
     Box(
@@ -279,6 +321,7 @@ fun ScreenPlaceholder(title: String) {
     }
 }
 
+// Get dynamic title based on current route
 fun getCurrentTitle(route: String): String {
     return when (route) {
         "home" -> "Routeify"

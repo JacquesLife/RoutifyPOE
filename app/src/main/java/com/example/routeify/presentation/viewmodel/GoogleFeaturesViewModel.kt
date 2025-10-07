@@ -7,7 +7,7 @@ import com.example.routeify.data.repository.GooglePlacesEnhancedRepository
 import com.example.routeify.data.repository.GoogleTransitRepository
 import com.example.routeify.data.model.TransitStop
 import com.example.routeify.domain.model.TravelTime
-import com.example.routeify.domain.smartsuggestions.SmartSuggesstionsUseCases
+import com.example.routeify.domain.smartsuggestions.SmartSuggestionEngine
 import com.example.routeify.domain.model.RouteSuggestion
 import com.example.routeify.domain.model.*
 import com.google.android.gms.maps.model.LatLng
@@ -23,36 +23,47 @@ class GoogleFeaturesViewModel : ViewModel() {
     // UI State
     var travelTimes = mutableStateOf<List<TravelTime>>(emptyList())
         private set
-    
+
+    // Search results for transit stops
     var searchResults = mutableStateOf<List<TransitStop>>(emptyList())
         private set
-    
+
+    // Loading and error states    
     var isLoading = mutableStateOf(false)
         private set
     
+    // Error message state
     var errorMessage = mutableStateOf<String?>(null)
         private set
 
+    // Autocomplete suggestions
     var fromSuggestions = mutableStateOf<List<PlaceSuggestion>>(emptyList())
         private set
 
+    // Autocomplete suggestions
     var toSuggestions = mutableStateOf<List<PlaceSuggestion>>(emptyList())
         private set
 
+    // Loading states for autocomplete and routes
     var isLoadingFromSuggestions = mutableStateOf(false)
         private set
 
+    // Loading states for autocomplete and routes
     var isLoadingToSuggestions = mutableStateOf(false)
         private set
-
+    
+    // Loading states for autocomplete and routes
     var transitRoutes = mutableStateOf<List<TransitRoute>>(emptyList())
         private set
 
+    // Loading states for autocomplete and routes
     var isLoadingRoutes = mutableStateOf(false)
         private set
 
+    // To debounce autocomplete requests
     private var autocompleteJob: Job? = null
 
+    // Get autocomplete suggestions for "from" input
     fun getFromAutocompleteSuggestions(input: String) {
         autocompleteJob?.cancel()
 
@@ -61,6 +72,7 @@ class GoogleFeaturesViewModel : ViewModel() {
             return
         }
 
+        // Start a new job for autocomplete
         autocompleteJob = viewModelScope.launch {
             delay(300)
             isLoadingFromSuggestions.value = true
@@ -69,6 +81,7 @@ class GoogleFeaturesViewModel : ViewModel() {
                 input = input,
                 location = LatLng(-33.9249, 18.4241)
             )
+                // Handle successful suggestions
                 .onSuccess { suggestions ->
                     fromSuggestions.value = suggestions
                 }
@@ -80,6 +93,7 @@ class GoogleFeaturesViewModel : ViewModel() {
         }
     }
 
+    // Get autocomplete suggestions for "to" input
     fun getToAutocompleteSuggestions(input: String) {
         autocompleteJob?.cancel()
 
@@ -88,6 +102,7 @@ class GoogleFeaturesViewModel : ViewModel() {
             return
         }
 
+        // Start a new job for autocomplete
         autocompleteJob = viewModelScope.launch {
             delay(300)
             isLoadingToSuggestions.value = true
@@ -107,14 +122,17 @@ class GoogleFeaturesViewModel : ViewModel() {
         }
     }
 
+    // Clear suggestions
     fun clearFromSuggestions() {
         fromSuggestions.value = emptyList()
     }
 
+    // Clear suggestions
     fun clearToSuggestions() {
         toSuggestions.value = emptyList()
     }
 
+    // Get transit routes between two locations
     fun getTransitRoutes(
         fromLocation: String, 
         toLocation: String, 
@@ -122,6 +140,7 @@ class GoogleFeaturesViewModel : ViewModel() {
         transitModes: String? = null,
         wheelchairAccessible: Boolean = false
     ) {
+        // Cancel any ongoing route fetch
         viewModelScope.launch {
             isLoadingRoutes.value = true
             isLoading.value = true
@@ -135,6 +154,7 @@ class GoogleFeaturesViewModel : ViewModel() {
                 transitModes = transitModes,
                 wheelchairAccessible = wheelchairAccessible
             )
+            // Handle success and failure
                 .onSuccess { routes ->
                     transitRoutes.value = routes
                     if (routes.isEmpty()) {
@@ -151,17 +171,15 @@ class GoogleFeaturesViewModel : ViewModel() {
         }
     }
 
-    // Smart suggestions use cases
-    private val smartSuggestions = SmartSuggesstionsUseCases()
+    // Smart suggestions engine
+    private val smartSuggestionEngine = SmartSuggestionEngine()
     var routeSuggestions = mutableStateOf<List<RouteSuggestion>>(emptyList())
         private set
     var bestRouteSuggestion = mutableStateOf<RouteSuggestion?>(null)
         private set
 
 
-    /**
-     * Get travel times between locations
-     */
+    // Get travel times between locations
     fun getTravelTimes(origins: List<LatLng>, destinations: List<LatLng>) {
         viewModelScope.launch {
             isLoading.value = true
@@ -179,9 +197,7 @@ class GoogleFeaturesViewModel : ViewModel() {
         }
     }
 
-    /**
-     * Search for nearby transit places using Google Places API
-     */
+    // Search for transit places around a location
     fun searchTransitPlaces(query: String, radiusMeters: Int = 5000) {
         viewModelScope.launch {
             isLoading.value = true
@@ -205,9 +221,7 @@ class GoogleFeaturesViewModel : ViewModel() {
         }
     }
 
-    /**
-     * Convert address to coordinates using geocoding
-     */
+    // Convert address to coordinates using geocoding
     suspend fun geocodeAddress(address: String): LatLng? {
         return repository.geocodeAddress(address)
             .onFailure { error ->
@@ -216,9 +230,7 @@ class GoogleFeaturesViewModel : ViewModel() {
             .getOrNull()
     }
 
-    /**
-     * Plan route between two addresses
-     */
+    // Plan a route using addresses
     fun planRouteWithAddresses(fromAddress: String, toAddress: String) {
         viewModelScope.launch {
             isLoading.value = true

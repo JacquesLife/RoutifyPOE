@@ -46,16 +46,19 @@ fun SplashScreen(onFinished: () -> Unit) {
         onFinished()
     }
 
+    // Gradient background
     val gradient = Brush.horizontalGradient(
         colors = listOf(RouteifyBlue500, RouteifyGreen500)
     )
 
+    // Fullscreen box with centered content
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(gradient),
         contentAlignment = Alignment.Center
     ) {
+        // App logo and name
         Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.alpha(alpha)) {
             Surface(
                 modifier = Modifier
@@ -64,6 +67,7 @@ fun SplashScreen(onFinished: () -> Unit) {
                 shape = CircleShape,
                 color = Color.White
             ) {
+                // Logo
                 Box(contentAlignment = Alignment.Center) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_launcher_foreground),
@@ -76,6 +80,7 @@ fun SplashScreen(onFinished: () -> Unit) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
+            // App name and tagline
             Text(
                 text = "Routeify",
                 color = Color.White,
@@ -85,6 +90,7 @@ fun SplashScreen(onFinished: () -> Unit) {
 
             Spacer(modifier = Modifier.height(8.dp))
 
+            // Tagline
             Text(
                 text = "Smarter Public Transport",
                 color = Color.White.copy(alpha = 0.9f),

@@ -454,7 +454,6 @@ private fun ControlsCluster(
             FloatingActionButton(
                 onClick = { 
                     showTransitLines = !showTransitLines
-                    // TODO: Toggle transit lines visibility when implemented
                 },
                 modifier = Modifier.size(56.dp),
                 containerColor = if (showTransitLines) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface

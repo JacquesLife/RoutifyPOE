@@ -17,17 +17,20 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.routeify.R
 
+// Legend component to explain map icons and current zoom level
 @Composable
 fun TransportLegend(
     modifier: Modifier = Modifier,
-    busStationCount: Int = 0,        // Regular bus stops (transit_station type)
-    trainStationCount: Int = 0,      // Train/subway/light rail stations
-    transitHubCount: Int = 0,        // Major bus terminals (bus_station type)
+    busStationCount: Int = 0,        
+    trainStationCount: Int = 0,      
+    transitHubCount: Int = 0,        
     currentZoom: Float = 11f,
     isLoading: Boolean = false
 ) {
+    // State to manage expansion/collapse of the legend
     var isExpanded by remember { mutableStateOf(true) }
 
+    // Main Card container
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(
@@ -45,10 +48,12 @@ fun TransportLegend(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
+                    // Title
                     text = "Map Legend",
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+                // Toggle button
                 IconButton(onClick = { isExpanded = !isExpanded }) {
                     Icon(
                         imageVector = if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
@@ -64,6 +69,7 @@ fun TransportLegend(
                 enter = expandVertically() + fadeIn(),
                 exit = shrinkVertically() + fadeOut()
             ) {
+                // Legend items
                 Column(
                     modifier = Modifier.padding(top = 12.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -74,6 +80,7 @@ fun TransportLegend(
                                 .size(24.dp)
                                 .align(Alignment.CenterHorizontally)
                         )
+                        // Loading text
                         Text(
                             text = "Loading transport data...",
                             style = MaterialTheme.typography.bodyMedium,
@@ -140,6 +147,7 @@ fun TransportLegend(
     }
 }
 
+// Individual legend item composable
 @Composable
 private fun LegendItem(
     iconRes: Int,
@@ -147,6 +155,7 @@ private fun LegendItem(
     count: Int,
     description: String
 ) {
+    // Row container
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,

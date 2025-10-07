@@ -19,12 +19,14 @@ import androidx.compose.ui.unit.sp
 import com.example.routeify.ui.theme.RouteifyBlue500
 import com.example.routeify.ui.theme.RouteifyGreen500
 
+// Data class representing a navigation item
 data class NavigationItem(
     val title: String,
     val icon: ImageVector,
     val route: String
 )
 
+// Navigation Drawer component
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppNavigationDrawer(
@@ -37,6 +39,7 @@ fun AppNavigationDrawer(
     email: String?,
     content: @Composable () -> Unit
 ) {
+    // List of navigation items
     val items = listOf(
         NavigationItem("Home", Icons.Default.Home, "home"),
         NavigationItem("Map", Icons.Default.Map, "map"),
@@ -47,6 +50,7 @@ fun AppNavigationDrawer(
         NavigationItem("Notifications", Icons.Default.Notifications, "notifications")
     )
 
+    // Modal Navigation Drawer
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -66,6 +70,7 @@ fun AppNavigationDrawer(
                             onNavigate(item.route)
                             onDismiss()
                         },
+                        // Selected item styling
                         colors = NavigationDrawerItemDefaults.colors(
                             selectedContainerColor = RouteifyBlue500.copy(alpha = 0.15f),
                             selectedIconColor = RouteifyBlue500,
@@ -88,6 +93,7 @@ fun AppNavigationDrawer(
                     modifier = Modifier.padding(horizontal = 12.dp)
                 )
 
+                // Logout item
                 NavigationDrawerItem(
                     icon = { Icon(Icons.AutoMirrored.Filled.ExitToApp, contentDescription = "Logout") },
                     label = { Text("Logout") },
@@ -106,6 +112,7 @@ fun AppNavigationDrawer(
     )
 }
 
+// Drawer Header composable
 @Composable
 private fun DrawerHeader(username: String?, email: String?) {
     Box(
@@ -114,12 +121,14 @@ private fun DrawerHeader(username: String?, email: String?) {
             .background(Brush.horizontalGradient(listOf(RouteifyBlue500, RouteifyGreen500)))
             .padding(24.dp)
     ) {
+        // User avatar and info
         Column(horizontalAlignment = Alignment.Start) {
             Surface(
                 shape = CircleShape,
                 color = Color.White,
                 modifier = Modifier.size(64.dp)
             ) {
+                // User initials
                 Box(contentAlignment = Alignment.Center) {
                     val initials = (username ?: "").split(" ")
                         .mapNotNull { it.firstOrNull()?.uppercase() }
@@ -134,6 +143,7 @@ private fun DrawerHeader(username: String?, email: String?) {
                     )
                 }
             }
+            // User information
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = username ?: "Guest",

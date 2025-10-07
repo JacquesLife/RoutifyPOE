@@ -11,9 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-/**
- * Data class representing a recent destination
- */
+// Data class representing a recent destination
 data class RecentDestination(
     val id: String,
     val name: String,
@@ -25,6 +23,7 @@ data class RecentDestination(
     val lastVisited: Long = System.currentTimeMillis(),
     val visitCount: Int = 1
 ) {
+    // Convert to PlaceSuggestion
     fun toPlaceSuggestion(): PlaceSuggestion {
         return PlaceSuggestion(
             placeId = placeId,
@@ -39,9 +38,7 @@ data class RecentDestination(
     }
 }
 
-/**
- * Icon types for different destination categories
- */
+// Enum for different types of destination icons
 enum class DestinationIconType {
     TRAIN_STATION,
     BUS_STATION,
@@ -56,15 +53,14 @@ enum class DestinationIconType {
     OTHER
 }
 
-/**
- * Singleton store for managing recent destinations
- */
+// Singleton object to manage recent destinations
 object RecentDestinationsStore {
     private val _recentDestinations = MutableStateFlow<List<RecentDestination>>(emptyList())
     val recentDestinations: StateFlow<List<RecentDestination>> = _recentDestinations.asStateFlow()
 
     private const val MAX_RECENT_DESTINATIONS = 10
 
+    // Initialize with some dummy data for demonstration
     init {
         // Initialize with some default destinations for demo purposes
         _recentDestinations.value = listOf(
@@ -79,6 +75,7 @@ object RecentDestinationsStore {
                 lastVisited = System.currentTimeMillis() - 86400000, // 1 day ago
                 visitCount = 5
             ),
+            // Second recent destination
             RecentDestination(
                 id = "2",
                 name = "V&A Waterfront",
@@ -90,6 +87,7 @@ object RecentDestinationsStore {
                 lastVisited = System.currentTimeMillis() - 172800000, // 2 days ago
                 visitCount = 3
             ),
+            // Additional dummy destinations
             RecentDestination(
                 id = "3",
                 name = "University of Cape Town",
@@ -101,6 +99,7 @@ object RecentDestinationsStore {
                 lastVisited = System.currentTimeMillis() - 259200000, // 3 days ago
                 visitCount = 8
             ),
+            // Fourth recent destination
             RecentDestination(
                 id = "4",
                 name = "Cape Town International Airport",
@@ -112,6 +111,7 @@ object RecentDestinationsStore {
                 lastVisited = System.currentTimeMillis() - 345600000, // 4 days ago
                 visitCount = 2
             ),
+            // Fifth recent destination
             RecentDestination(
                 id = "5",
                 name = "Table Mountain",
@@ -126,9 +126,7 @@ object RecentDestinationsStore {
         )
     }
 
-    /**
-     * Add a new destination to recent destinations
-     */
+    // Add or update a recent destination
     fun addDestination(destination: RecentDestination) {
         val currentList = _recentDestinations.value
         val existingIndex = currentList.indexOfFirst { it.placeId == destination.placeId }
@@ -156,15 +154,14 @@ object RecentDestinationsStore {
         }
     }
 
-    /**
-     * Add destination from PlaceSuggestion
-     */
+    // Add destination from PlaceSuggestion
     fun addDestinationFromPlaceSuggestion(
         placeSuggestion: PlaceSuggestion,
         latitude: Double,
         longitude: Double,
         iconType: DestinationIconType = DestinationIconType.OTHER
     ) {
+        // Create RecentDestination from PlaceSuggestion
         val destination = RecentDestination(
             id = placeSuggestion.placeId,
             name = placeSuggestion.mainText,
@@ -177,9 +174,7 @@ object RecentDestinationsStore {
         addDestination(destination)
     }
 
-    /**
-     * Get icon for destination type
-     */
+    // Get icon for a destination type
     fun getIconForType(iconType: DestinationIconType): androidx.compose.ui.graphics.vector.ImageVector {
         return when (iconType) {
             DestinationIconType.TRAIN_STATION -> Icons.Default.Train

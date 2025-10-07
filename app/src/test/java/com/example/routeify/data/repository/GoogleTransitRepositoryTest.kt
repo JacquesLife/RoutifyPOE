@@ -5,13 +5,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import org.junit.Assert.*
 
-/**
- * Unit tests for GoogleTransitRepository
- * Tests basic instantiation and method structure
- * 
- * Note: These are basic structural tests.
- * Integration tests would require actual API calls and proper mocking.
- */
+// Unit tests for GoogleTransitRepository
 class GoogleTransitRepositoryTest {
 
     private val repository = GoogleTransitRepository()

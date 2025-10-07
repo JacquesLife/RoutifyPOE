@@ -61,16 +61,19 @@ fun ProfileScreen(authViewModel: AuthViewModel = viewModel()) {
                 )
                 .padding(horizontal = 24.dp, vertical = 32.dp)
         ) {
+            // Profile picture and user info
             Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
                 Surface(
                     shape = CircleShape,
                     color = Color.White,
                     modifier = Modifier.size(80.dp)
                 ) {
+                    // Placeholder for profile image initials
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
+                        // Generate initials from username or default to "GU"
                         val initials = (authState.username ?: "").split(" ")
                             .mapNotNull { it.firstOrNull()?.uppercase() }
                             .joinToString("")
@@ -84,6 +87,7 @@ fun ProfileScreen(authViewModel: AuthViewModel = viewModel()) {
                         )
                     }
                 }
+                // Profile name
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     authState.username ?: "Guest",
@@ -91,6 +95,7 @@ fun ProfileScreen(authViewModel: AuthViewModel = viewModel()) {
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold
                 )
+                // Profile email
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     authState.email ?: "",
@@ -100,6 +105,7 @@ fun ProfileScreen(authViewModel: AuthViewModel = viewModel()) {
             }
         }
 
+        // Settings sections with hardcoded options
         Column(modifier = Modifier.padding(16.dp)) {
             SectionTitle("Saved Routes")
 
@@ -156,6 +162,7 @@ fun ProfileScreen(authViewModel: AuthViewModel = viewModel()) {
     }
 }
 
+// Section title composable
 @Composable
 private fun SectionTitle(text: String) {
     Spacer(modifier = Modifier.height(16.dp))
@@ -168,6 +175,7 @@ private fun SectionTitle(text: String) {
     Spacer(modifier = Modifier.height(12.dp))
 }
 
+// Card for saved routes
 @Composable
 private fun RouteCard(title: String, subtitle: String, leading: androidx.compose.ui.graphics.vector.ImageVector) {
     Card(
@@ -180,6 +188,7 @@ private fun RouteCard(title: String, subtitle: String, leading: androidx.compose
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
+        // Route card content
         ListItem(
             leadingContent = {
                 Surface(
@@ -197,6 +206,7 @@ private fun RouteCard(title: String, subtitle: String, leading: androidx.compose
                     }
                 }
             },
+            // Placeholder for route card content
             headlineContent = {
                 Text(
                     title,
@@ -222,9 +232,11 @@ private fun RouteCard(title: String, subtitle: String, leading: androidx.compose
     }
 }
 
+// Preference switch card
 @Composable
 private fun PreferenceSwitch(title: String, subtitle: String, icon: androidx.compose.ui.graphics.vector.ImageVector) {
     Card(
+        // Preference switch card
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 10.dp),
@@ -240,11 +252,13 @@ private fun PreferenceSwitch(title: String, subtitle: String, icon: androidx.com
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // Icon with circular background
             Surface(
                 shape = CircleShape,
                 color = RouteifyBlue500.copy(alpha = 0.1f),
                 modifier = Modifier.size(44.dp)
             ) {
+                // Icon content
                 Box(contentAlignment = Alignment.Center) {
                     Icon(
                         icon,
@@ -254,6 +268,7 @@ private fun PreferenceSwitch(title: String, subtitle: String, icon: androidx.com
                     )
                 }
             }
+            // Spacer between icon and text
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
@@ -267,6 +282,7 @@ private fun PreferenceSwitch(title: String, subtitle: String, icon: androidx.com
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
+            // Toggle switch
             Switch(
                 checked = false,
                 onCheckedChange = { },

@@ -27,18 +27,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.routeify.ui.theme.RouteifyBlue500
 
+// Settings screen composable
 @Composable
 fun SettingsScreen() {
     var darkModeEnabled by remember { mutableStateOf(false) }
     var autoSyncEnabled by remember { mutableStateOf(true) }
 
+    // Context and lifecycle
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
+    // Check if notifications are enabled
     fun isNotificationsAllowed(): Boolean {
         return NotificationManagerCompat.from(context).areNotificationsEnabled()
     }
 
+    // Check if location permissions are granted
     fun isLocationAllowed(): Boolean {
         val fine = ContextCompat.checkSelfPermission(
             context,
@@ -51,6 +55,7 @@ fun SettingsScreen() {
         return fine || coarse
     }
 
+    // State for switches
     var notificationsEnabled by remember { mutableStateOf(isNotificationsAllowed()) }
     var locationEnabled by remember { mutableStateOf(isLocationAllowed()) }
 
@@ -66,6 +71,7 @@ fun SettingsScreen() {
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
+    // Dialog state
     var showNotificationSettingsDialog by remember { mutableStateOf(false) }
     var showLocationSettingsDialog by remember { mutableStateOf(false) }
 
@@ -89,6 +95,7 @@ fun SettingsScreen() {
         }
     }
 
+    // Functions to open system settings
     fun openAppDetailsSettings() {
         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
             data = Uri.fromParts("package", context.packageName, null)
@@ -97,6 +104,7 @@ fun SettingsScreen() {
         context.startActivity(intent)
     }
 
+    // Open notification settings (different for Android O and above)
     fun openAppNotificationSettings() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
@@ -109,11 +117,13 @@ fun SettingsScreen() {
         }
     }
 
+    // UI Layout
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(20.dp)
     ) {
+        // Screen title
         Text(
             text = "Settings",
             style = MaterialTheme.typography.headlineLarge,
@@ -131,11 +141,13 @@ fun SettingsScreen() {
             modifier = Modifier.padding(vertical = 8.dp)
         )
 
+        // General Settings Card
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
         ) {
+            // General settings content
             Column {
                 SettingSwitchItem(
                     icon = Icons.Default.Notifications,
@@ -144,6 +156,7 @@ fun SettingsScreen() {
                     checked = notificationsEnabled,
                     onCheckedChange = { checked ->
                         if (checked) {
+                            // Request permission
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                                 notificationsPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                             } else {
@@ -157,8 +170,10 @@ fun SettingsScreen() {
                     }
                 )
 
+                // Divider
                 HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)
 
+                // Dark Mode setting
                 SettingSwitchItem(
                     icon = Icons.Default.DarkMode,
                     title = "Dark Mode",
@@ -180,17 +195,20 @@ fun SettingsScreen() {
             modifier = Modifier.padding(vertical = 8.dp)
         )
 
+        // Privacy Settings Card
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
         ) {
+            // Privacy settings content
             Column {
                 SettingSwitchItem(
                     icon = Icons.Default.LocationOn,
                     title = "Location Services",
                     subtitle = "Allow app to access location",
                     checked = locationEnabled,
+                    // Request permissions or show dialog
                     onCheckedChange = { checked ->
                         if (checked) {
                             locationPermissionLauncher.launch(
@@ -206,12 +224,16 @@ fun SettingsScreen() {
                     }
                 )
 
+        // Rationale dialog for notifications
         if (showNotificationSettingsDialog) {
+            // Show rationale dialog
             AlertDialog(
+                // Dismiss on outside touch or back press
                 onDismissRequest = { showNotificationSettingsDialog = false },
                 title = { Text("Turn off notifications") },
                 text = { Text("To disable notifications, change the setting in system settings.") },
                 confirmButton = {
+                    // Deep-link to app notification settings
                     TextButton(onClick = {
                         showNotificationSettingsDialog = false
                         openAppNotificationSettings()
@@ -223,6 +245,7 @@ fun SettingsScreen() {
             )
         }
 
+        // Rationale dialog for location
         if (showLocationSettingsDialog) {
             AlertDialog(
                 onDismissRequest = { showLocationSettingsDialog = false },
@@ -234,12 +257,13 @@ fun SettingsScreen() {
                         openAppDetailsSettings()
                     }) { Text("Open Settings") }
                 },
+                // Dismiss button
                 dismissButton = {
                     TextButton(onClick = { showLocationSettingsDialog = false }) { Text("Cancel") }
                 }
             )
-        }
-
+        }   
+                // Divider
                 HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)
 
                 SettingSwitchItem(
@@ -263,11 +287,13 @@ fun SettingsScreen() {
             modifier = Modifier.padding(vertical = 8.dp)
         )
 
+        // Other Options Card
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
         ) {
+            // Other options content
             Column {
                 SettingNavigationItem(
                     icon = Icons.Default.Language,
@@ -276,6 +302,7 @@ fun SettingsScreen() {
                     onClick = { /* Handle language selection */ }
                 )
 
+                // Divider
                 HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)
 
                 SettingNavigationItem(
@@ -285,6 +312,7 @@ fun SettingsScreen() {
                     onClick = { /* Handle storage */ }
                 )
 
+                // Divider
                 HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)
 
                 SettingNavigationItem(
@@ -298,6 +326,7 @@ fun SettingsScreen() {
     }
 }
 
+// Individual setting item with a switch
 @Composable
 fun SettingSwitchItem(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
@@ -306,12 +335,14 @@ fun SettingSwitchItem(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit
 ) {
+    // Entire row is clickable
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        // Icon
         Icon(
             imageVector = icon,
             contentDescription = title,
@@ -320,6 +351,7 @@ fun SettingSwitchItem(
         )
         Spacer(modifier = Modifier.width(16.dp))
         Column(modifier = Modifier.weight(1f)) {
+            // Title and subtitle
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleMedium,
@@ -331,6 +363,7 @@ fun SettingSwitchItem(
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
+        // Switch
         Switch(
             checked = checked,
             onCheckedChange = onCheckedChange,
@@ -342,6 +375,7 @@ fun SettingSwitchItem(
     }
 }
 
+// Individual setting item that navigates on click
 @Composable
 fun SettingNavigationItem(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
@@ -349,35 +383,42 @@ fun SettingNavigationItem(
     value: String,
     onClick: () -> Unit
 ) {
+    // Entire row is clickable
     Surface(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth()
     ) {
+        // Icon and text
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // Icon
             Icon(
                 imageVector = icon,
                 contentDescription = title,
                 tint = RouteifyBlue500,
                 modifier = Modifier.size(24.dp)
             )
+            // Spacer
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
+                // Title and value
                 Text(
                     text = title,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Medium
                 )
+                // Value text
                 Text(
                     text = value,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
+            // Chevron icon
             Icon(
                 imageVector = Icons.Default.ChevronRight,
                 contentDescription = "Navigate",

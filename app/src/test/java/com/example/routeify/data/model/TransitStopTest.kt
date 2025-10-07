@@ -3,12 +3,10 @@ package com.example.routeify.data.model
 import org.junit.Test
 import org.junit.Assert.*
 
-/**
- * Unit tests for TransitStop model
- * Tests essential data validation and structure
- */
+// Unit tests for the TransitStop data model
 class TransitStopTest {
 
+    // Test creating a TransitStop with valid data
     @Test
     fun `TransitStop should create with valid data`() {
         // Arrange

@@ -9,10 +9,7 @@ import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 
 object MapIconUtils {
-    
-    /**
-     * Get custom marker icon based on transit stop type using your beautiful vector drawables!
-     */
+    // Get appropriate transport icon based on stop type
     fun getTransportIcon(context: Context, stopType: com.example.routeify.data.model.TransitStopType): BitmapDescriptor {
         val drawableRes = when (stopType) {
             com.example.routeify.data.model.TransitStopType.BUS_STATION -> {
@@ -35,9 +32,7 @@ object MapIconUtils {
         return vectorToBitmap(context, drawableRes)
     }
     
-    /**
-     * Convert vector drawable to bitmap descriptor for Google Maps
-     */
+    // Convert vector drawable to BitmapDescriptor for map markers
     private fun vectorToBitmap(context: Context, drawableRes: Int): BitmapDescriptor {
         val vectorDrawable = ContextCompat.getDrawable(context, drawableRes)
         
@@ -45,12 +40,15 @@ object MapIconUtils {
         val width = 96  // 96dp for good visibility
         val height = 96
         
+        // Set bounds to the drawable
         vectorDrawable?.setBounds(0, 0, width, height)
         
+        // Create a bitmap and draw the vector drawable onto it
         val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
         vectorDrawable?.draw(canvas)
         
+        // Return as BitmapDescriptor
         return BitmapDescriptorFactory.fromBitmap(bitmap)
     }
 }

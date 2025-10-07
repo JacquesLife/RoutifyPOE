@@ -5,11 +5,7 @@ import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 
-/**
- * Unit tests for GooglePlacesEnhancedRepository
- * Note: These tests focus on object creation and basic functionality
- * API integration tests would require mocking or integration test environment
- */
+// Unit tests for GooglePlacesEnhancedRepository
 class GooglePlacesEnhancedRepositoryTest {
 
     private lateinit var repository: GooglePlacesEnhancedRepository

@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
+// UI state for the Map screen
 data class MapUiState(
     val transitStops: List<TransitStop> = emptyList(),
     val isLoading: Boolean = false,
@@ -17,20 +18,15 @@ data class MapUiState(
     val currentZoom: Float = 11f
 )
 
-/**
- * 🚀 DRAMATICALLY SIMPLIFIED MapViewModel using Google Transit!
- * 
- * BEFORE: 156 lines with complex zoom logic, caching, debouncing
- * AFTER: 60 lines with simple, clean Google API calls
- * 
- * Google handles all the complexity for us! 🎉
- */
+// ViewModel to manage map and transit data
 class MapViewModel(
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     
+    // Repository for fetching transit data
     private val repository = GoogleTransitRepository()
     
+    // UI state exposed as StateFlow
     private val _uiState = MutableStateFlow(MapUiState())
     val uiState: StateFlow<MapUiState> = _uiState.asStateFlow()
     
@@ -42,13 +38,16 @@ class MapViewModel(
         val toLng = savedStateHandle.get<String>("toLng")?.toDoubleOrNull()
         val poly = savedStateHandle.get<String>("poly")
 
+        // If valid coordinates are present, clear any error state
         if (fromLat != null && fromLng != null && toLat != null && toLng != null) {
             _uiState.value = _uiState.value.copy(error = null)
         }
 
+        // Initial load of transit data
         loadTransitData()
     }
 
+    // Retrieve selected route arguments from saved state
     fun getSelectedRouteArgs(): SelectedRouteArgs? {
         val fromLat = savedStateHandle.get<String>("fromLat")?.toDoubleOrNull()
         val fromLng = savedStateHandle.get<String>("fromLng")?.toDoubleOrNull()
@@ -56,6 +55,7 @@ class MapViewModel(
         val toLng = savedStateHandle.get<String>("toLng")?.toDoubleOrNull()
         val poly = savedStateHandle.get<String>("poly")
 
+        // Return SelectedRouteArgs if all coordinates are valid
         return if (fromLat != null && fromLng != null && toLat != null && toLng != null) {
             SelectedRouteArgs(
                 origin = com.google.android.gms.maps.model.LatLng(fromLat, fromLng),
@@ -65,17 +65,18 @@ class MapViewModel(
         } else null
     }
     
-    /**
-     * Update zoom level - kept for camera state tracking
-     */
+    // Update zoom level in UI state
     fun updateZoom(zoomLevel: Float) {
         _uiState.value = _uiState.value.copy(currentZoom = zoomLevel)
     }
     
+    // Load transit stops from the repository
     private fun loadTransitData() {
+        // Indicate loading state
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, error = null)
             
+            // Fetch transit stops
             repository.getTransitStops()
                 .onSuccess { stops ->
                     _uiState.value = _uiState.value.copy(
@@ -84,6 +85,7 @@ class MapViewModel(
                         error = null
                     )
                 }
+                // Handle failure case
                 .onFailure { exception ->
                     _uiState.value = _uiState.value.copy(
                         transitStops = emptyList(),
@@ -95,28 +97,7 @@ class MapViewModel(
     }
 }
 
-/**
- * 🎯 MIGRATION BENEFITS:
- * 
- * ❌ REMOVED (Google handles this):
- * - Complex zoom-based loading logic
- * - Manual memory management  
- * - Debouncing and job cancellation
- * - Multiple API endpoint coordination
- * - Railway line coordinate conversion
- * - Manual caching and cache invalidation
- * - Performance optimizations
- * 
- * ✅ GAINED:
- * - Real-time transit data
- * - Automatic relevance filtering
- * - Google's infrastructure reliability
- * - Unified global transit system
- * - Much simpler codebase
- * - Better error handling
- * - Automatic rate limiting
- */
-
+// Data class to hold selected route arguments
 data class SelectedRouteArgs(
     val origin: com.google.android.gms.maps.model.LatLng,
     val destination: com.google.android.gms.maps.model.LatLng,

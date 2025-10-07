@@ -36,6 +36,7 @@ fun HomeScreen(
                 .background(Brush.horizontalGradient(listOf(RouteifyBlue500, RouteifyGreen500)))
                 .padding(24.dp)
         ) {
+            /// App Title
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     Icons.Default.NearMe,
@@ -43,6 +44,7 @@ fun HomeScreen(
                     tint = Color.White,
                     modifier = Modifier.size(28.dp)
                 )
+                // App icon
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
                     "Routeify",
@@ -54,6 +56,7 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Search bar and current location button
             Row(verticalAlignment = Alignment.CenterVertically) {
                 OutlinedTextField(
                     value = "",
@@ -73,6 +76,7 @@ fun HomeScreen(
                     ),
                     readOnly = true
                 )
+                // Spacer
                 Spacer(modifier = Modifier.width(12.dp))
                 FilledIconButton(
                     onClick = onCurrentLocationClick,
@@ -82,16 +86,19 @@ fun HomeScreen(
                         contentColor = Color.White
                     )
                 ) {
+                    // Current location icon
                     Icon(Icons.Default.LocationOn, contentDescription = "Use current location")
                 }
             }
         }
 
+        // Recent destinations section
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 20.dp, vertical = 16.dp)
         ) {
+            // Section title and subtitle
             Text(
                 "Recent Destinations",
                 style = MaterialTheme.typography.titleLarge,
@@ -101,6 +108,7 @@ fun HomeScreen(
             
             Spacer(modifier = Modifier.height(4.dp))
             
+            // Section subtitle
             Text(
                 "Your frequently visited places",
                 style = MaterialTheme.typography.bodyMedium,
@@ -124,18 +132,21 @@ fun HomeScreen(
                         modifier = Modifier.padding(24.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
+                        // Empty state icon and text
                         Icon(
                             Icons.Default.History,
                             contentDescription = null,
                             modifier = Modifier.size(48.dp),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
+                        // Empty state text
                         Spacer(modifier = Modifier.height(12.dp))
                         Text(
                             "No recent destinations",
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
+                        // Empty state description
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             "Start planning routes to see your recent destinations here",
@@ -145,6 +156,7 @@ fun HomeScreen(
                     }
                 }
             } else {
+                // List of recent destinations
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
@@ -160,11 +172,13 @@ fun HomeScreen(
     }
 }
 
+// Card for individual recent destination
 @Composable
 private fun DestinationCard(
     destination: RecentDestination,
     onClick: () -> Unit
 ) {
+    // Get appropriate icon based on destination type
     val icon = RecentDestinationsStore.getIconForType(destination.iconType)
     
     Card(
@@ -178,6 +192,7 @@ private fun DestinationCard(
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
+        // List item layout
         ListItem(
             leadingContent = {
                 Surface(
@@ -195,6 +210,7 @@ private fun DestinationCard(
                     }
                 }
             },
+            // Destination name, address, and visit count
             headlineContent = {
                 Text(
                     destination.name,
@@ -202,6 +218,7 @@ private fun DestinationCard(
                     fontWeight = FontWeight.Medium
                 )
             },
+            // Address and visit count
             supportingContent = {
                 Column {
                     Text(
@@ -209,6 +226,7 @@ private fun DestinationCard(
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
+                    // Show visit count if more than once
                     if (destination.visitCount > 1) {
                         Text(
                             "Visited ${destination.visitCount} times",
@@ -218,6 +236,7 @@ private fun DestinationCard(
                     }
                 }
             },
+            // Trailing chevron icon
             trailingContent = {
                 Icon(
                     Icons.Default.ChevronRight,

@@ -7,15 +7,14 @@ import androidx.compose.ui.platform.LocalContext
 import com.google.android.gms.maps.GoogleMap
 import com.google.maps.android.clustering.ClusterManager
 
-/**
- * Creates and manages a cluster manager for bus stops
- */
+// Utility functions for managing ClusterManager in a Compose environment
 @Composable
 fun rememberClusterManager(
     map: GoogleMap?
 ): ClusterManager<BusStopClusterItem>? {
     val context = LocalContext.current
     
+    // Remember the ClusterManager instance
     return remember(map) {
         map?.let { googleMap ->
             ClusterManager<BusStopClusterItem>(context, googleMap).apply {
@@ -31,14 +30,13 @@ fun rememberClusterManager(
     }
 }
 
-/**
- * Effect to update cluster items when bus stops change
- */
+// Effect to update ClusterManager with new items
 @Composable
 fun ClusterManagerEffect(
     clusterManager: ClusterManager<BusStopClusterItem>?,
     items: List<BusStopClusterItem>
 ) {
+    // Update the ClusterManager whenever items change
     LaunchedEffect(clusterManager, items) {
         clusterManager?.let { manager ->
             manager.clearItems()

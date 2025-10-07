@@ -314,6 +314,8 @@ fun PlaceDetailsScreen(
     }
 }
 
+
+// Reusable detail row component
 @Composable
 private fun DetailRow(
     icon: androidx.compose.ui.graphics.vector.ImageVector,

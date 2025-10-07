@@ -39,7 +39,8 @@ object MockRouteData {
         price = "R 12.50",
         transportModes = listOf(StepType.WALK, StepType.TRAIN, StepType.WALK)
     )
-    
+
+    // Hardcoded list of routes for UI testing
     val mockRoutes = listOf(
         Route(
             id = "1",

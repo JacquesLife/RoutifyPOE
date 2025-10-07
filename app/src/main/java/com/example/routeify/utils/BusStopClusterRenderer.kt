@@ -8,9 +8,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.maps.android.clustering.ClusterManager
 import com.google.maps.android.clustering.view.DefaultClusterRenderer
 
-/**
- * Custom cluster renderer for bus stops with custom icons
- */
+// Custom renderer for bus stop clusters on the map
 class BusStopClusterRenderer(
     private val context: Context,
     map: GoogleMap,

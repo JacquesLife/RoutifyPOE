@@ -27,6 +27,7 @@ import com.example.routeify.ui.viewmodel.AuthViewModel
 import com.example.routeify.ui.theme.RouteifyBlue500
 import com.example.routeify.ui.theme.RouteifyGreen500
 
+// Registration screen composable
 @Composable
 fun RegisterScreen(
     onRegisterSuccess: () -> Unit,
@@ -34,6 +35,7 @@ fun RegisterScreen(
     onGoogleSignInClick: () -> Unit,
     authViewModel: AuthViewModel = viewModel()
 ) {
+    // Observe authentication state
     val authState by authViewModel.authState.collectAsState()
 
     var email by remember { mutableStateOf("") }
@@ -41,6 +43,7 @@ fun RegisterScreen(
     var password by remember { mutableStateOf("") }
     var confirm by remember { mutableStateOf("") }
 
+    // Navigate on successful registration
     LaunchedEffect(authState.isAuthenticated) {
         if (authState.isAuthenticated) onRegisterSuccess()
     }
@@ -54,12 +57,14 @@ fun RegisterScreen(
                 .padding(vertical = 40.dp, horizontal = 24.dp),
             contentAlignment = Alignment.Center
         ) {
+            // Header content
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Surface(
                     shape = CircleShape,
                     color = Color.White.copy(alpha = 0.2f),
                     modifier = Modifier.size(72.dp)
                 ) {
+                    // Placeholder for profile image
                     Box(contentAlignment = Alignment.Center) {
                         Icon(
                             imageVector = Icons.Default.NearMe,
@@ -69,6 +74,7 @@ fun RegisterScreen(
                         )
                     }
                 }
+                // Profile name and subtitle
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(
                     text = "Create Account",
@@ -95,6 +101,7 @@ fun RegisterScreen(
         ) {
             Spacer(modifier = Modifier.height(8.dp))
 
+            // Email input field
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
@@ -108,9 +115,11 @@ fun RegisterScreen(
                     focusedLabelColor = RouteifyBlue500
                 )
             )
-            
+
+            // Username input field
             Spacer(modifier = Modifier.height(12.dp))
-            
+
+            // Username input field
             OutlinedTextField(
                 value = username,
                 onValueChange = { username = it },
@@ -125,8 +134,10 @@ fun RegisterScreen(
                 )
             )
             
+            // Password input field
             Spacer(modifier = Modifier.height(12.dp))
-            
+
+            // Password input field
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
@@ -142,8 +153,10 @@ fun RegisterScreen(
                 )
             )
             
+            // Confirm password input field
             Spacer(modifier = Modifier.height(12.dp))
-            
+
+            // Confirm password input field
             OutlinedTextField(
                 value = confirm,
                 onValueChange = { confirm = it },
@@ -159,6 +172,7 @@ fun RegisterScreen(
                 )
             )
 
+            // Display error message if any
             if (authState.errorMessage != null) {
                 Spacer(modifier = Modifier.height(12.dp))
                 Card(
@@ -176,7 +190,8 @@ fun RegisterScreen(
             }
 
             Spacer(modifier = Modifier.height(20.dp))
-            
+
+            // Register button
             Button(
                 onClick = { authViewModel.register(email, username, password, confirm) },
                 modifier = Modifier
@@ -190,8 +205,10 @@ fun RegisterScreen(
                 Text("Create Account", style = MaterialTheme.typography.titleMedium)
             }
             
+            // Navigation to login and Google sign-in
             Spacer(modifier = Modifier.height(12.dp))
             
+            // Navigate to login screen
             OutlinedButton(
                 onClick = onNavigateToLogin,
                 modifier = Modifier
@@ -207,10 +224,12 @@ fun RegisterScreen(
             
             Spacer(modifier = Modifier.height(20.dp))
             
+            // Divider with "OR" text
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                // Divider for "OR" text
                 Divider(modifier = Modifier.weight(1f))
                 Text(
                     text = "OR",
@@ -223,6 +242,7 @@ fun RegisterScreen(
             
             Spacer(modifier = Modifier.height(20.dp))
             
+            // Google sign-in button
             OutlinedButton(
                 onClick = onGoogleSignInClick,
                 modifier = Modifier
@@ -230,6 +250,7 @@ fun RegisterScreen(
                     .height(56.dp),
                 shape = RoundedCornerShape(12.dp)
             ) {
+                // Google sign-in content
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center

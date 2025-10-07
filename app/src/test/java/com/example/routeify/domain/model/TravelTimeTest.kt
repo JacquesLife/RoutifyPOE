@@ -5,7 +5,8 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class TravelTimeTest {
-
+    
+    // Unit tests for TravelTime data model
     @Test
     fun `TravelTime constructor creates valid object`() {
         // Arrange
