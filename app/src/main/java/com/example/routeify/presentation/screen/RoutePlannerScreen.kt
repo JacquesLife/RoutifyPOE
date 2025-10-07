@@ -40,6 +40,11 @@
 package com.example.routeify.presentation.screen
 
 import android.os.Build
+import android.content.Intent
+import android.speech.RecognizerIntent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import java.util.*
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.*
 import androidx.compose.foundation.background
@@ -121,6 +126,32 @@ data class ValidationResult(
     val icon: androidx.compose.ui.graphics.vector.ImageVector? = null
 )
 
+@Composable
+private fun rememberVoiceInputLauncher(
+    onResult: (String) -> Unit
+): androidx.activity.result.ActivityResultLauncher<Intent> {
+    return rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val spokenText = result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+            ?.firstOrNull()
+        if (spokenText != null) {
+            onResult(spokenText)
+        }
+    }
+}
+
+private fun createVoiceInputIntent(prompt: String): Intent {
+    return Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+        putExtra(
+            RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+            RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+        )
+        putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
+        putExtra(RecognizerIntent.EXTRA_PROMPT, prompt)
+    }
+}
+
 // Main composable function for Route Planner screen
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -148,6 +179,19 @@ fun RoutePlannerScreen(
     var showToDropdown by remember { mutableStateOf(false) }
     var selectedFromPlace by remember { mutableStateOf<PlaceSuggestion?>(null) }
     var selectedToPlace by remember { mutableStateOf<PlaceSuggestion?>(null) }
+
+    // Voice input launchers
+    val fromVoiceLauncher = rememberVoiceInputLauncher { spokenText ->
+        fromLocation = spokenText
+        selectedFromPlace = null
+        showFromDropdown = false
+    }
+
+    val toVoiceLauncher = rememberVoiceInputLauncher { spokenText ->
+        toLocation = spokenText
+        selectedToPlace = null
+        showToDropdown = false
+    }
 
     // Recent searches state (in a real app, this would be stored in DataStore)
     var recentSearches by remember { mutableStateOf(listOf("Cape Town Airport", "V&A Waterfront", "Canal Walk")) }
@@ -272,6 +316,18 @@ fun RoutePlannerScreen(
                     },
                     trailingIcon = {
                         Row {
+                            // Voice input button
+                            IconButton(onClick = {
+                                val intent = createVoiceInputIntent("Where are you starting from?")
+                                fromVoiceLauncher.launch(intent)
+                            }) {
+                                Icon(
+                                    Icons.Default.Mic,
+                                    contentDescription = "Voice input",
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
+
                             if (isLoadingFromSuggestions) {
                                 CircularProgressIndicator(
                                     modifier = Modifier.size(20.dp),
@@ -399,14 +455,24 @@ fun RoutePlannerScreen(
                     },
                     trailingIcon = {
                         Row {
-                            // Loading indicator
+                            // Voice input button
+                            IconButton(onClick = {
+                                val intent = createVoiceInputIntent("Where do you want to go?")
+                                toVoiceLauncher.launch(intent)
+                            }) {
+                                Icon(
+                                    Icons.Default.Mic,
+                                    contentDescription = "Voice input",
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
+
                             if (isLoadingToSuggestions) {
                                 CircularProgressIndicator(
                                     modifier = Modifier.size(20.dp),
                                     strokeWidth = 2.dp,
                                     color = MaterialTheme.colorScheme.primary
                                 )
-                                // Clear button
                             } else if (toLocation.isNotEmpty()) {
                                 IconButton(onClick = {
                                     toLocation = ""
