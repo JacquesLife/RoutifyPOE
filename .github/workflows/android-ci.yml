@@ -24,6 +24,12 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
+      # Create local.properties with dummy API key for CI builds
+      - name: Create local.properties for CI
+        run: |
+          echo "sdk.dir=$ANDROID_HOME" > local.properties
+          echo "GOOGLE_MAPS_API_KEY=dummy_key_for_ci_build" >> local.properties
+
       # Cache Gradle dependencies for faster builds
       - name: Cache Gradle packages
         uses: actions/cache@v4
