@@ -1,5 +1,6 @@
 package com.example.routeify.ui.map
 
+import androidx.lifecycle.SavedStateHandle
 import com.example.routeify.ui.viewmodel.MapViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -18,10 +19,12 @@ class MapViewModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var viewModel: MapViewModel
+    private lateinit var savedStateHandle: SavedStateHandle
 
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
+        savedStateHandle = SavedStateHandle()
         // Note: Don't instantiate viewModel here as it triggers network calls
     }
 
@@ -33,7 +36,7 @@ class MapViewModelTest {
     @Test
     fun `updateZoom should update zoom level correctly`() {
         // Arrange
-        viewModel = MapViewModel()
+        viewModel = MapViewModel(savedStateHandle)
         val newZoom = 15f
 
         // Act
@@ -47,7 +50,7 @@ class MapViewModelTest {
     @Test
     fun `updateZoom should accept various zoom levels`() {
         // Arrange
-        viewModel = MapViewModel()
+        viewModel = MapViewModel(savedStateHandle)
         val zoomLevels = listOf(5f, 10f, 15f, 20f)
 
         zoomLevels.forEach { zoomLevel ->
