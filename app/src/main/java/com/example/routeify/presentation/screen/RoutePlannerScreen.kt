@@ -30,6 +30,10 @@
  * - TurnByTurnInstructions: Navigation step display
  * - RouteVisualization: Interactive route mapping
  * - SmartSuggestionCards: AI-powered recommendations
+ *
+ * REFERENCES:
+ * - https://developers.google.com/maps/documentation/directions/overview
+ * - https://developers.google.com/android/reference/com/google/android/gms/location/package-summary
  * 
  * This file represents the core user experience of the Routeify app
  * and contains the most sophisticated UI logic and user interactions.
