@@ -154,3 +154,5 @@ fun SimpleSmartSuggestionCard(
         }
     }
 }
+
+//Android, 2025. Card | Jetpack Compose. [online] Android Developers. Available at: <https://developer.android.com/develop/ui/compose/components/card>. [Accessed 7 October 2025].

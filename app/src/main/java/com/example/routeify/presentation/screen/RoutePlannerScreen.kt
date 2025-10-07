@@ -354,7 +354,7 @@ fun RoutePlannerScreen(
                             fontWeight = FontWeight.Bold,
                         )
                     }
-
+                    // Listing of route suggestions
                     routeSuggestions.forEachIndexed { index, suggestion ->
                         SimpleSmartSuggestionCard(
                             suggestion = suggestion,
@@ -657,3 +657,5 @@ private fun getTransitIcon(vehicleType: String): androidx.compose.ui.graphics.ve
         else -> Icons.Default.DirectionsTransit
     }
 }
+
+//Android, 2025b. Compose layout basics | Jetpack Compose. [online] Android Developers. Available at: <https://developer.android.com/develop/ui/compose/layouts/basics>. [Accessed 6 October 2025].

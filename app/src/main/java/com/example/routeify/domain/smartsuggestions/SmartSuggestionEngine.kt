@@ -42,3 +42,6 @@ class SmartSuggestionEngine{
         }
     }
 }
+
+// Developer, A., 2025. Domain layer. [online] Android Developers. Available at: <https://developer.android.com/topic/architecture/domain-layer>. [Accessed 6 October 2025].
+// Android Cookies, 2023. Clean Architecture: Business Logic, Domain Layer & Use Cases. [online] YouTube. Available at: <https://www.youtube.com/watch?v=HI0U8gHuFmk> [Accessed 7 October 2025].
