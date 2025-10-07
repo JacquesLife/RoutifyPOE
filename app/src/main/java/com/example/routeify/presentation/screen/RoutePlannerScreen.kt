@@ -39,17 +39,32 @@
 
 package com.example.routeify.presentation.screen
 
-import android.os.Build
 import android.content.Intent
+import android.os.Build
 import android.speech.RecognizerIntent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import java.util.*
 import androidx.annotation.RequiresApi
-import androidx.compose.animation.*
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -58,29 +73,75 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.automirrored.filled.DirectionsWalk
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.DirectionsBus
+import androidx.compose.material.icons.filled.DirectionsTransit
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Map
+import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material.icons.filled.MyLocation
+import androidx.compose.material.icons.filled.Place
+import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Subway
+import androidx.compose.material.icons.filled.SwapVert
+import androidx.compose.material.icons.filled.Train
+import androidx.compose.material.icons.filled.Tram
+import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.filled.Work
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DividerDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import com.example.routeify.domain.model.PlaceSuggestion
 import com.example.routeify.domain.model.RouteSegment
 import com.example.routeify.domain.model.TransitRoute
 import com.example.routeify.presentation.viewmodel.GoogleFeaturesViewModel
-import com.example.routeify.shared.RecentDestinationsStore
 import com.example.routeify.shared.DestinationIconType
+import com.example.routeify.shared.RecentDestinationsStore
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.Locale
+import androidx.core.net.toUri
 
 // Determine icon type based on description keywords
 data class PresetLocation(
@@ -559,7 +620,6 @@ fun RoutePlannerScreen(
                 timeSelectionMode = timeSelectionMode,
                 selectedDateTime = selectedDateTime,
                 onModeChange = { timeSelectionMode = it },
-                onDateTimeChange = { selectedDateTime = it },
                 onTimePickerClick = { showTimePicker = true }
             )
 
@@ -598,14 +658,14 @@ fun RoutePlannerScreen(
                     }
 
                     // Convert filters to API parameters
-                    val transitModes = routeFilters.transitModes.map { mode ->
+                    val transitModes = routeFilters.transitModes.joinToString("|") { mode ->
                         when (mode) {
                             TransitMode.BUS -> "bus"
                             TransitMode.TRAIN -> "train"
                             TransitMode.TRAM -> "tram"
                             TransitMode.WALK -> "walking"
                         }
-                    }.joinToString("|")
+                    }
 
                     // Fetch routes
                     viewModel.getTransitRoutes(
@@ -830,7 +890,7 @@ private fun SuggestionItem(
             }
         }
     }
-    Divider()
+    HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)
 }
 
 // Exact address item in dropdown
@@ -870,7 +930,7 @@ private fun ExactAddressItem(
             )
         }
     }
-    Divider()
+    HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)
 }
 
 // Highlight matched text in suggestions
@@ -983,7 +1043,7 @@ private fun TransitRouteCard(
 
             // Spacer between route info and segments
             Spacer(modifier = Modifier.height(12.dp))
-            Divider()
+            HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)
             Spacer(modifier = Modifier.height(12.dp))
 
             route.segments.forEachIndexed { index, segment ->
@@ -998,7 +1058,7 @@ private fun TransitRouteCard(
             }
 
             Spacer(modifier = Modifier.height(16.dp))
-            Divider()
+            HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)
             Spacer(modifier = Modifier.height(12.dp))
 
             // Action buttons
@@ -1036,7 +1096,7 @@ private fun TransitRouteCard(
                     ) {
                         Icon(
                             // External link icon
-                            Icons.Default.OpenInNew,
+                            Icons.AutoMirrored.Filled.OpenInNew,
                             contentDescription = null,
                             modifier = Modifier.size(18.dp)
                         )
@@ -1083,7 +1143,7 @@ private fun RouteSegmentItem(
                 // Icon for transit mode
             } else {
                 Icon(
-                    Icons.Default.DirectionsWalk,
+                    Icons.AutoMirrored.Filled.DirectionsWalk,
                     contentDescription = null,
                     modifier = Modifier.size(24.dp),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
@@ -1273,7 +1333,7 @@ private fun FiltersSection(
                 contentPadding = PaddingValues(horizontal = 4.dp)
             ) {
                 // Transit mode chips
-                items(TransitMode.values()) { mode ->
+                items(TransitMode.entries.toTypedArray()) { mode ->
                     FilterChip(
                         onClick = {
                             val newModes = if (mode in filters.transitModes) {
@@ -1316,7 +1376,7 @@ private fun FiltersSection(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 contentPadding = PaddingValues(horizontal = 4.dp)
             ) {
-                items(RoutePreference.values()) { preference ->
+                items(RoutePreference.entries.toTypedArray()) { preference ->
                     FilterChip(
                         onClick = {
                             val newPreference = if (filters.preference == preference) {
@@ -1362,7 +1422,7 @@ private fun getTransitModeIcon(mode: TransitMode): androidx.compose.ui.graphics.
         TransitMode.BUS -> Icons.Default.DirectionsBus
         TransitMode.TRAIN -> Icons.Default.Train
         TransitMode.TRAM -> Icons.Default.Tram
-        TransitMode.WALK -> Icons.Default.DirectionsWalk
+        TransitMode.WALK -> Icons.AutoMirrored.Filled.DirectionsWalk
     }
 }
 
@@ -1392,7 +1452,6 @@ private fun TimeSelectionSection(
     timeSelectionMode: TimeSelectionMode,
     selectedDateTime: LocalDateTime,
     onModeChange: (TimeSelectionMode) -> Unit,
-    onDateTimeChange: (LocalDateTime) -> Unit,
     onTimePickerClick: () -> Unit
 ) {
     Column {
@@ -1408,7 +1467,7 @@ private fun TimeSelectionSection(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            TimeSelectionMode.values().forEach { mode ->
+            TimeSelectionMode.entries.forEach { mode ->
                 FilterChip(
                     onClick = { onModeChange(mode) },
                     label = {
@@ -1558,7 +1617,7 @@ private fun getTransitIcon(vehicleType: String): androidx.compose.ui.graphics.ve
         "TRAIN", "HEAVY_RAIL", "RAIL" -> Icons.Default.Train
         "SUBWAY", "METRO_RAIL" -> Icons.Default.Subway
         "TRAM", "LIGHT_RAIL" -> Icons.Default.Tram
-        "WALKING" -> Icons.Default.DirectionsWalk
+        "WALKING" -> Icons.AutoMirrored.Filled.DirectionsWalk
         else -> Icons.Default.DirectionsTransit
     }
 }
@@ -1591,8 +1650,9 @@ private fun openInGoogleMaps(
     // Construct Google Maps URL with origin, destination, and travel mode
     val from = route.startLocation?.let { "${it.latitude},${it.longitude}" } ?: fromLocation
     val to = route.endLocation?.let { "${it.latitude},${it.longitude}" } ?: toLocation
-    val uri = android.net.Uri.parse("https://www.google.com/maps/dir/?api=1&origin=$from&destination=$to&travelmode=transit")
-    val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, uri)
+    val uri =
+        "https://www.google.com/maps/dir/?api=1&origin=$from&destination=$to&travelmode=transit".toUri()
+    val intent = Intent(Intent.ACTION_VIEW, uri)
     context.startActivity(intent)
 }
 

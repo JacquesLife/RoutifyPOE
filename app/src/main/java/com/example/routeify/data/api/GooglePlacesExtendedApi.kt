@@ -33,7 +33,13 @@
  * USAGE:
  * This interface is implemented by GooglePlacesEnhancedRepository and serves
  * as the backbone for all location-based features in the application.
- * 
+ *
+ * REFERENCES:
+ * https://developers.google.com/maps/get-started
+ * https://developers.google.com/maps/documentation/distance-matrix/overview
+ * https://developers.google.com/maps/documentation/geocoding/overview
+ * https://developers.google.com/maps/documentation/places/web-service/place-id#refresh-id
+ * https://www.youtube.com/watch?v=gnvbxMfuZc0
  * ============================================================================
  */
 

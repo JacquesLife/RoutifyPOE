@@ -5,7 +5,10 @@
  * 
  * Unit tests validating TransitStop data model functionality.
  * Tests construction, data integrity, and type validation.
- * 
+ *
+ * REFERENCES:
+ * https://developer.android.com/develop/ui/compose/testing
+ * https://developer.android.com/jetpack/compose/testing
  * ============================================================================
  */
 
@@ -81,7 +84,7 @@ class TransitStopTest {
     @Test
     fun `TransitStopType enum should have all expected values`() {
         // Assert all transit stop types exist
-        val types = TransitStopType.values()
+        val types = TransitStopType.entries.toTypedArray()
         
         assertTrue("Should contain BUS_STATION", 
             types.contains(TransitStopType.BUS_STATION))

@@ -5,7 +5,9 @@
  * 
  * Repository for discovering and managing transit stops and transportation hubs.
  * Integrates with Google Places API to find nearby public transit options.
- * 
+ *
+ * REFERENCES:
+ * https://www.youtube.com/watch?v=86NAMO-MVIE
  * ============================================================================
  */
 
@@ -45,34 +47,34 @@ class GoogleTransitRepository {
                 // Validate radius (Google Places API max is 50,000 meters)
                 val validRadius = radiusMeters.coerceIn(1, 50000)
                 if (validRadius != radiusMeters) {
-                    Log.w("GoogleTransit", "⚠️ Radius adjusted from $radiusMeters to $validRadius meters")
+                    Log.w("GoogleTransit", "Radius adjusted from $radiusMeters to $validRadius meters")
                 }
                 
                 // Detailed logging for debugging
-                Log.d("GoogleTransit", "🚀 Starting Google Places API request...")
-                Log.d("GoogleTransit", "📍 Location: $centerLat,$centerLng")
-                Log.d("GoogleTransit", "📏 Search Radius: ${validRadius}m (${validRadius/1000.0}km)")
-                Log.d("GoogleTransit", "🔑 API Key available: ${apiKey.take(10)}...")
+                Log.d("GoogleTransit", "Starting Google Places API request...")
+                Log.d("GoogleTransit", "Location: $centerLat,$centerLng")
+                Log.d("GoogleTransit", "Search Radius: ${validRadius}m (${validRadius/1000.0}km)")
+                Log.d("GoogleTransit", "API Key available: ${apiKey.take(10)}...")
                 
                 val location = "$centerLat,$centerLng"
                 
                 // Get all types of transit stops with detailed logging
-                Log.d("GoogleTransit", "🚌 Fetching bus stations...")
+                Log.d("GoogleTransit", "Fetching bus stations...")
                 val busStops = api.getNearbyTransitStops(location, validRadius, "bus_station", apiKey)
-                Log.d("GoogleTransit", "✅ Bus stations response: ${busStops.results.size} results, status: ${busStops.status}")
+                Log.d("GoogleTransit", "Bus stations response: ${busStops.results.size} results, status: ${busStops.status}")
                 
-                Log.d("GoogleTransit", "🚇 Fetching subway stations...")
+                Log.d("GoogleTransit", "Fetching subway stations...")
                 val subwayStops = api.getNearbyTransitStops(location, validRadius, "subway_station", apiKey)
-                Log.d("GoogleTransit", "✅ Subway stations response: ${subwayStops.results.size} results, status: ${subwayStops.status}")
+                Log.d("GoogleTransit", "Subway stations response: ${subwayStops.results.size} results, status: ${subwayStops.status}")
                 
-                Log.d("GoogleTransit", "🚏 Fetching transit stations...")
+                Log.d("GoogleTransit", "Fetching transit stations...")
                 val transitStops = api.getNearbyTransitStops(location, validRadius, "transit_station", apiKey)
-                Log.d("GoogleTransit", "✅ Transit stations response: ${transitStops.results.size} results, status: ${transitStops.status}")
+                Log.d("GoogleTransit", "Transit stations response: ${transitStops.results.size} results, status: ${transitStops.status}")
                 
                 // Check for API errors
                 listOf(busStops, subwayStops, transitStops).forEach { response ->
                     if (response.status != "OK" && response.status != "ZERO_RESULTS") {
-                        Log.e("GoogleTransit", "❌ API Error: ${response.status}")
+                        Log.e("GoogleTransit", "API Error: ${response.status}")
                         return@withContext Result.failure(Exception("Google Places API error: ${response.status}"))
                     }
                 }
@@ -81,7 +83,7 @@ class GoogleTransitRepository {
                 val allApiResults = (busStops.results + subwayStops.results + transitStops.results)
                     .distinctBy { it.placeId } // Remove duplicates
                 
-                Log.d("GoogleTransit", "📊 Total API results before filtering: ${allApiResults.size}")
+                Log.d("GoogleTransit", "Total API results before filtering: ${allApiResults.size}")
                 
                 val processedStops = allApiResults.mapNotNull { googlePlace ->
                     // Calculate distance from center point for verification
@@ -95,9 +97,9 @@ class GoogleTransitRepository {
                     
                     // Client-side radius filtering as backup
                     if (distanceMeters <= validRadius) {
-                        Log.d("GoogleTransit", "✅ Including: ${googlePlace.name}")
-                        Log.d("GoogleTransit", "   📏 Distance: ${String.format("%.2f", distance)}km (${distanceMeters}m) - WITHIN radius")
-                        Log.d("GoogleTransit", "   🏷️ Types: ${googlePlace.types}")
+                        Log.d("GoogleTransit", "Including: ${googlePlace.name}")
+                        Log.d("GoogleTransit", "Distance: ${String.format("%.2f", distance)}km (${distanceMeters}m) - WITHIN radius")
+                        Log.d("GoogleTransit", "Types: ${googlePlace.types}")
                         
                         // Map GooglePlace to TransitStop
                         TransitStop(
@@ -111,21 +113,21 @@ class GoogleTransitRepository {
                         )
                     } else {
                         // Exclude places outside the radius
-                        Log.d("GoogleTransit", "❌ Excluding: ${googlePlace.name}")
-                        Log.d("GoogleTransit", "   📏 Distance: ${String.format("%.2f", distance)}km (${distanceMeters}m) - OUTSIDE radius (${validRadius}m)")
+                        Log.d("GoogleTransit", "Excluding: ${googlePlace.name}")
+                        Log.d("GoogleTransit", "Distance: ${String.format("%.2f", distance)}km (${distanceMeters}m) - OUTSIDE radius (${validRadius}m)")
                         null
                     }
                 }
                 
-                Log.d("GoogleTransit", "📊 Final filtered results: ${processedStops.size} (from ${allApiResults.size} API results)")
+                Log.d("GoogleTransit", "Final filtered results: ${processedStops.size} (from ${allApiResults.size} API results)")
                 
-                Log.d("GoogleTransit", "🎉 Successfully returning ${processedStops.size} total transit stops")
+                Log.d("GoogleTransit", "Successfully returning ${processedStops.size} total transit stops")
                 Result.success(processedStops)
                 
             // Note: Pagination handling (next_page_token) can be added here for more results
             } catch (e: Exception) {
-                Log.e("GoogleTransit", "💥 Failed to fetch transit stops", e)
-                Log.e("GoogleTransit", "💥 Error details: ${e.message}")
+                Log.e("GoogleTransit", "Failed to fetch transit stops", e)
+                Log.e("GoogleTransit", "Error details: ${e.message}")
                 e.printStackTrace()
                 Result.failure(e)
             }
@@ -177,15 +179,15 @@ class GoogleTransitRepository {
 
                 val nearestStops = stopsWithDistance.take(maxResults).map { (stop, _) -> stop }
 
-                Log.d("GoogleTransit", "✅ Found ${nearestStops.size} nearest transit stops within ${maxDistanceMeters}m")
+                Log.d("GoogleTransit", "Found ${nearestStops.size} nearest transit stops within ${maxDistanceMeters}m")
                 nearestStops.forEach { stop ->
                     val distance = calculateDistance(latitude, longitude, stop.latitude, stop.longitude)
-                    Log.d("GoogleTransit", "   📍 ${stop.name}: ${String.format("%.0f", distance * 1000)}m")
+                    Log.d("GoogleTransit", " ${stop.name}: ${String.format("%.0f", distance * 1000)}m")
                 }
 
                 Result.success(nearestStops)
             } catch (e: Exception) {
-                Log.e("GoogleTransit", "❌ Error finding nearest transit stops", e)
+                Log.e("GoogleTransit", "Error finding nearest transit stops", e)
                 Result.failure(e)
             }
         }

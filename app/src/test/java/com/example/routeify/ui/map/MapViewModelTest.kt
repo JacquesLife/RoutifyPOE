@@ -36,7 +36,6 @@ class MapViewModelTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         savedStateHandle = SavedStateHandle()
-        // Note: Don't instantiate viewModel here as it triggers network calls
     }
 
     @After

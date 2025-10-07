@@ -5,7 +5,10 @@
  * 
  * Utility functions for creating custom map markers and icons.
  * Handles bitmap conversion and styled marker generation for maps.
- * 
+ *
+ * REFERENCES:
+ *
+ * https://developers.google.com/maps/documentation/android-sdk/utility
  * ============================================================================
  */
 

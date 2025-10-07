@@ -56,9 +56,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Layers
-import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.Navigation
 import androidx.compose.material.icons.filled.Refresh
@@ -271,72 +269,23 @@ fun MapScreen() {
         // Update cluster items when data changes
         ClusterManagerEffect(clusterManager, clusterItems)
 
-        // Bottom info card
-        Card(
+        // Professional Transport Legend
+        TransportLegend(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer
-            ),
-            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-        ) {
-            Column(
-                modifier = Modifier.padding(20.dp)
-            ) {
-                Text(
-                    text = "Transport Data",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer
+            busStationCount = if (uiState.isLoading) 0 else uiState.transitStops.count { it.stopType == TransitStopType.BUS_STATION },
+            trainStationCount = if (uiState.isLoading) 0 else uiState.transitStops.count { 
+                it.stopType in listOf(
+                    TransitStopType.TRAIN_STATION,
+                    TransitStopType.SUBWAY_STATION,
+                    TransitStopType.LIGHT_RAIL_STATION
                 )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = buildString {
-                        if (uiState.isLoading) {
-                            appendLine("⏳ Optimizing transport data load...")
-                        } else {
-                            val totalStops = uiState.transitStops.size
-                            val busStops = uiState.transitStops.count { it.stopType == TransitStopType.BUS_STATION }
-                            val railStops = uiState.transitStops.count { 
-                                it.stopType in listOf(
-                                    TransitStopType.TRAIN_STATION,
-                                    TransitStopType.SUBWAY_STATION,
-                                    TransitStopType.LIGHT_RAIL_STATION
-                                )
-                            }
-                            val transitHubs = uiState.transitStops.count { it.stopType == TransitStopType.TRANSIT_STATION }
-                            
-                            appendLine("🚌 $busStops bus stations")
-                            appendLine("🚂 $railStops rail stations")
-                            appendLine("� $transitHubs transit hubs")
-                            appendLine("� Total items: $totalStops")
-                            appendLine("�🔍 Zoom: ${String.format("%.1f", currentZoom)}")
-                            
-                            // Debug information
-                            if (totalStops == 0) {
-                                appendLine("⚠️ No data loaded - check API")
-                            }
-                            
-                            // Balanced zoom thresholds for better visibility
-                            when {
-                                currentZoom < 9f -> appendLine("🔵 Major hubs only (20 rail stations)")
-                                currentZoom < 11f -> appendLine("🟡 Default view (25 bus + 15 rail)")
-                                currentZoom < 13f -> appendLine("🟠 Medium detail (40 bus + 20 rail)")
-                                currentZoom < 15f -> appendLine("🟢 High detail (60 bus + 25 rail)")
-                                else -> appendLine("🔴 Maximum detail (80 bus + 30 rail)")
-                            }
-                        }
-                        appendLine("• Real-time data from Google Places API")
-                        appendLine("• Automatic caching and optimization")
-                        appendLine("• 🔵 Clustered points • Tap to expand")
-                    },
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer
-                )
-            }
-        }
+            },
+            transitHubCount = if (uiState.isLoading) 0 else uiState.transitStops.count { it.stopType == TransitStopType.TRANSIT_STATION },
+            currentZoom = currentZoom,
+            isLoading = uiState.isLoading
+        )
         }
         
         // Controls Cluster (FAB Group)
@@ -460,7 +409,6 @@ private fun ControlsCluster(
     viewModel: MapViewModel,
     uiState: MapUiState
 ) {
-    var mapStyle by remember { mutableStateOf(false) } // false = Day, true = Night
     var showTransitLines by remember { mutableStateOf(true) }
     
     Box(
@@ -473,22 +421,6 @@ private fun ControlsCluster(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            // Map style toggle
-            FloatingActionButton(
-                onClick = { 
-                    mapStyle = !mapStyle
-                    // TODO: Apply map style to GoogleMap when implemented
-                },
-                modifier = Modifier.size(56.dp),
-                containerColor = if (mapStyle) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.surface
-            ) {
-                Icon(
-                    if (mapStyle) Icons.Default.LightMode else Icons.Default.DarkMode,
-                    contentDescription = if (mapStyle) "Day mode" else "Night mode",
-                    tint = if (mapStyle) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.onSurface
-                )
-            }
-            
             // Layers toggle
             FloatingActionButton(
                 onClick = { 

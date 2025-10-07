@@ -5,7 +5,9 @@
  * 
  * Custom renderer for clustering transit stop markers on Google Maps.
  * Handles visual grouping of nearby stops for better map performance.
- * 
+ *
+ * REFERENCES:
+ * https://developers.google.com/maps/documentation/android-sdk/utility/marker-clustering
  * ============================================================================
  */
 

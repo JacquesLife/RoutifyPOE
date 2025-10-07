@@ -37,7 +37,12 @@
  * 
  * This repository powers the core functionality of Routeify and handles
  * all external API integrations with robust error handling and caching.
- * 
+ *
+ * REFERENCES:
+ * https://developers.google.com/maps/documentation/places/web-service/nearby-search
+ * https://square.github.io/retrofit/
+ * https://developers.google.com/maps/documentation/distance-matrix/overview
+ *
  * ============================================================================
  */
 

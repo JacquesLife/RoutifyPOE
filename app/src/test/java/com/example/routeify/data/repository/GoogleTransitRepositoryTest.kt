@@ -33,10 +33,10 @@ class GoogleTransitRepositoryTest {
         // In a real scenario, you'd mock the HTTP client
         
         try {
-            val result = repository.getTransitStops()
+            repository.getTransitStops()
             // If we get here, the method executed (success or failure)
             assertTrue("Method should execute", true)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             // Expected in unit test environment without network
             assertTrue("Method should throw exception in test environment", true)
         }
@@ -47,14 +47,14 @@ class GoogleTransitRepositoryTest {
         // This test verifies method signature
         
         try {
-            val result = repository.getTransitStops(
+            repository.getTransitStops(
                 centerLat = -33.9249,
                 centerLng = 18.4241,
                 radiusMeters = 5000
             )
             // If we get here, the method executed
             assertTrue("Method with parameters should execute", true)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             // Expected in unit test environment without network
             assertTrue("Method should be callable with parameters", true)
         }
@@ -76,7 +76,7 @@ class GoogleTransitRepositoryTest {
         }
 
         // Verify enum has at least our expected values
-        val allTypes = TransitStopType.values()
+        val allTypes = TransitStopType.entries.toTypedArray()
         assertTrue("Should have at least 5 stop types", allTypes.size >= 5)
     }
 }

@@ -27,7 +27,10 @@
  * Used by GoogleTransitRepository to fetch transit data for the map view
  * and route planning features. Enables users to find nearby public
  * transportation options for their journey planning.
- * 
+ *
+ * REFERENCES:
+ * https://developers.google.com/maps/documentation/routes/transit-route
+ * https://developers.google.com/maps/documentation/places/web-service/nearby-search
  * ============================================================================
  */
 

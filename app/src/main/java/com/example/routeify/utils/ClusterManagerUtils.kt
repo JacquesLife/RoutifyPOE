@@ -5,7 +5,9 @@
  * 
  * Utility functions for integrating ClusterManager with Jetpack Compose.
  * Handles marker clustering lifecycle within Compose environment.
- * 
+ *
+ * REFERENCES:
+ * https://developers.google.com/maps/documentation/android-sdk/utility/marker-clustering
  * ============================================================================
  */
 
