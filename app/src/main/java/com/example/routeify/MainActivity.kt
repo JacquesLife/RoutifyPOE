@@ -23,6 +23,7 @@ import com.example.routeify.ui.screens.ProfileScreen
 import com.example.routeify.ui.screens.SettingsScreen
 import com.example.routeify.ui.screens.LoginScreen
 import com.example.routeify.ui.screens.RegisterScreen
+import com.example.routeify.shared.RecentDestination
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.routeify.ui.viewmodel.AuthViewModel
 import com.example.routeify.presentation.screen.GoogleFeaturesScreen
@@ -135,7 +136,22 @@ fun MainApp() {
                         }
                     }
                 }
-                composable("home") { HomeScreen() }
+                composable("home") { 
+                    HomeScreen(
+                        onDestinationClick = { destination ->
+                            // Navigate to route planner with the selected destination
+                            navController.navigate("route-planner?destination=${destination.name}")
+                        },
+                        onSearchClick = {
+                            // Navigate to route planner for search
+                            navController.navigate("google-features")
+                        },
+                        onCurrentLocationClick = {
+                            // Navigate to map with current location
+                            navController.navigate("map")
+                        }
+                    ) 
+                }
                 composable("profile") { ProfileScreen() }
                 composable(
                     route = "map?fromLat={fromLat}&fromLng={fromLng}&toLat={toLat}&toLng={toLng}&poly={poly}",
@@ -155,6 +171,22 @@ fun MainApp() {
                                 launchSingleTop = true
                             }
                         }
+                    )
+                }
+                composable(
+                    route = "route-planner?destination={destination}",
+                    arguments = listOf(
+                        navArgument("destination") { type = NavType.StringType; nullable = true }
+                    )
+                ) { backStackEntry ->
+                    val destination = backStackEntry.arguments?.getString("destination")
+                    GoogleFeaturesScreen(
+                        onRouteSelectedNavigateToMap = { routeString ->
+                            navController.navigate(routeString) {
+                                launchSingleTop = true
+                            }
+                        },
+                        initialDestination = destination
                     )
                 }
                 composable("favorites") {

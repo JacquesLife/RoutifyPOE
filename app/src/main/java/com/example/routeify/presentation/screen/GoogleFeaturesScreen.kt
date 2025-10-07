@@ -24,16 +24,18 @@ import com.example.routeify.presentation.viewmodel.GoogleFeaturesViewModel
 fun GoogleFeaturesScreen(
     viewModel: GoogleFeaturesViewModel = viewModel(),
     onBackClick: () -> Unit = {},
-    onRouteSelectedNavigateToMap: (String) -> Unit = {}
+    onRouteSelectedNavigateToMap: (String) -> Unit = {},
+    initialDestination: String? = null
 ) {
     var selectedStop by remember { mutableStateOf<TransitStop?>(null) }
-    var currentScreen by remember { mutableStateOf("main") }
+    var currentScreen by remember { mutableStateOf(if (initialDestination != null) "route_planner" else "main") }
 
     when (currentScreen) {
         "route_planner" -> {
             RoutePlannerScreen(
                 viewModel = viewModel,
                 onBackClick = { currentScreen = "main" },
+                initialDestination = initialDestination,
                 onRouteSelected = { route ->
                     val fromLat = route.startLocation?.latitude?.toString()
                     val fromLng = route.startLocation?.longitude?.toString()
