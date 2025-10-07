@@ -16,6 +16,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.Layers
+import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material.icons.filled.MyLocation
+import androidx.compose.material.icons.filled.Navigation
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.Straighten
+import androidx.compose.material.icons.filled.TransferWithinAStation
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -36,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.routeify.data.model.TransitStopType
 import com.example.routeify.ui.components.TransportLegend
+import com.example.routeify.ui.viewmodel.MapUiState
 import com.example.routeify.ui.viewmodel.MapViewModel
 import com.example.routeify.utils.BusStopClusterItem
 import com.example.routeify.utils.ClusterManagerEffect
@@ -100,12 +112,8 @@ fun MapScreen() {
                     color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
                 Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = if (uiState.isLoading) "Loading transport data..." else "Custom icons for bus stops & train stations",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-                
+
+
 
             }
         }
@@ -301,7 +309,7 @@ fun MapScreen() {
 @Composable
 private fun BottomSheetContent() {
     var selectedStep by remember { mutableStateOf(-1) }
-    
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -313,27 +321,27 @@ private fun BottomSheetContent() {
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 16.dp)
         )
-        
+
         // Placeholder steps (in a real app, these would come from the route data)
         val steps = listOf(
             "Walk to Cape Town Station (5 min)",
             "Take Southern Line to Claremont (15 min)",
             "Walk to destination (3 min)"
         )
-        
+
         steps.forEachIndexed { index, step ->
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 4.dp)
-                    .clickable { 
+                    .clickable {
                         selectedStep = if (selectedStep == index) -1 else index
                         // TODO: Highlight step on map when implemented
                     },
                 colors = CardDefaults.cardColors(
-                    containerColor = if (selectedStep == index) 
-                        MaterialTheme.colorScheme.primaryContainer 
-                    else 
+                    containerColor = if (selectedStep == index)
+                        MaterialTheme.colorScheme.primaryContainer
+                    else
                         MaterialTheme.colorScheme.surface
                 ),
                 elevation = CardDefaults.cardElevation(
@@ -362,9 +370,9 @@ private fun BottomSheetContent() {
                             )
                         }
                     }
-                    
+
                     Spacer(modifier = Modifier.width(12.dp))
-                    
+
                     // Step description
                     Column(
                         modifier = Modifier.weight(1f)
@@ -372,12 +380,12 @@ private fun BottomSheetContent() {
                         Text(
                             text = step,
                             style = MaterialTheme.typography.bodyMedium,
-                            color = if (selectedStep == index) 
-                                MaterialTheme.colorScheme.onPrimaryContainer 
-                            else 
+                            color = if (selectedStep == index)
+                                MaterialTheme.colorScheme.onPrimaryContainer
+                            else
                                 MaterialTheme.colorScheme.onSurface
                         )
-                        
+
                         if (selectedStep == index) {
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(
@@ -387,7 +395,7 @@ private fun BottomSheetContent() {
                             )
                         }
                     }
-                    
+
                     // Step time
                     Text(
                         text = when (index) {
@@ -397,9 +405,9 @@ private fun BottomSheetContent() {
                             else -> ""
                         },
                         style = MaterialTheme.typography.bodySmall,
-                        color = if (selectedStep == index) 
-                            MaterialTheme.colorScheme.onPrimaryContainer 
-                        else 
+                        color = if (selectedStep == index)
+                            MaterialTheme.colorScheme.onPrimaryContainer
+                        else
                             MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
