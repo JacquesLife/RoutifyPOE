@@ -80,6 +80,8 @@ import com.google.android.gms.common.api.ApiException
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.navigation.navArgument
+import android.os.Build
+import android.os.Build.VERSION_CODES
 
 // Main activity hosting the entire app
 class MainActivity : ComponentActivity() {
@@ -230,13 +232,18 @@ fun MainApp() {
                 ) { MapScreen() }
                 composable("settings") { SettingsScreen() }
                 composable("google-features") {
-                    GoogleFeaturesScreen(
-                        onRouteSelectedNavigateToMap = { routeString ->
-                            navController.navigate(routeString) {
-                                launchSingleTop = true
+                    if (Build.VERSION.SDK_INT >= VERSION_CODES.O) {
+                        GoogleFeaturesScreen(
+                            onRouteSelectedNavigateToMap = { routeString ->
+                                navController.navigate(routeString) {
+                                    launchSingleTop = true
+                                }
                             }
-                        }
-                    )
+                        )
+                    } else {
+                        // Fallback for older devices where GoogleFeatures requires API 26+
+                        ScreenPlaceholder("Google Features (requires Android 8.0+)")
+                    }
                 }
                 // Route planner with optional destination parameter
                 composable(
@@ -247,14 +254,18 @@ fun MainApp() {
                     // Pass the destination argument to the screen
                 ) { backStackEntry ->
                     val destination = backStackEntry.arguments?.getString("destination")
-                    GoogleFeaturesScreen(
-                        onRouteSelectedNavigateToMap = { routeString ->
-                            navController.navigate(routeString) {
-                                launchSingleTop = true
-                            }
-                        },
-                        initialDestination = destination
-                    )
+                    if (Build.VERSION.SDK_INT >= VERSION_CODES.O) {
+                        GoogleFeaturesScreen(
+                            onRouteSelectedNavigateToMap = { routeString ->
+                                navController.navigate(routeString) {
+                                    launchSingleTop = true
+                                }
+                            },
+                            initialDestination = destination
+                        )
+                    } else {
+                        ScreenPlaceholder("Google Features (requires Android 8.0+)")
+                    }
                 }
                 // Placeholder screens for other sections
                 composable("favorites") {

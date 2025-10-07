@@ -139,7 +139,7 @@ fun TransportLegend(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                             )
                             Text(
-                                text = String.format("%.1f", currentZoom),
+                                text = String.format(java.util.Locale.getDefault(), "%.1f", currentZoom),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.primary
                             )

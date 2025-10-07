@@ -419,7 +419,7 @@ class GooglePlacesEnhancedRepository {
 
         return RouteSegment(
             instruction = "Walk from $from to $to",
-            distance = if (distanceMeters < 1000) "${distanceMeters}m" else "${String.format("%.1f", distance)}km",
+            distance = if (distanceMeters < 1000) "${distanceMeters}m" else "${String.format(java.util.Locale.getDefault(), "%.1f", distance)}km",
             duration = "${walkingTimeMinutes} min",
             travelMode = "WALKING"
         )

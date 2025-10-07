@@ -7,6 +7,14 @@ plugins {
     alias(libs.plugins.kotlin.kapt)
 }
 
+// Configure KAPT annotation processor arguments (Room schema export)
+kapt {
+    arguments {
+        // Export Room schema to the module's 'schemas' folder to satisfy lint and tooling
+        arg("room.schemaLocation", "${projectDir}/schemas")
+    }
+}
+
 // Load local.properties
 val localProperties = Properties()
 val localPropertiesFile = rootProject.file("local.properties")
