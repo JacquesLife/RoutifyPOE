@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 
+// User entity representing a user in the database
 @Entity(
     tableName = "users",
     indices = [
@@ -11,6 +12,7 @@ import androidx.room.PrimaryKey
         Index(value = ["username"], unique = true)
     ]
 )
+// Indices to enforce uniqueness on email and username
 data class User(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val email: String,

@@ -1,9 +1,6 @@
 package com.example.routeify.data.model
 
-/**
- * Unified transit stop model for our app
- * Clean and simple - no Google API dependencies
- */
+// Data class representing a transit stop
 data class TransitStop(
     val id: String,
     val name: String,
@@ -14,13 +11,11 @@ data class TransitStop(
     val rating: Double? = null
 )
 
-/**
- * Transit stop types based on Google Places API types
- */
+// Enum representing different types of transit stops
 enum class TransitStopType {
-    BUS_STATION,        // "bus_station"
-    SUBWAY_STATION,     // "subway_station"  
-    TRAIN_STATION,      // "train_station"
-    TRANSIT_STATION,    // "transit_station"
-    LIGHT_RAIL_STATION  // "light_rail_station"
+    BUS_STATION,        
+    SUBWAY_STATION,
+    TRAIN_STATION,
+    TRANSIT_STATION,
+    LIGHT_RAIL_STATION
 }

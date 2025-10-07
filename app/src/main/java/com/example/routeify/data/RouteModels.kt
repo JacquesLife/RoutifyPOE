@@ -1,15 +1,18 @@
 package com.example.routeify.data
 
+// Data class representing a single step in a route
 data class RouteStep(
     val description: String,
     val duration: String,
     val type: StepType
 )
 
+// Enum representing different types of route steps
 enum class StepType {
     WALK, TRAIN, BUS, TAXI
 }
 
+// Data class representing a complete route with multiple steps
 data class Route(
     val id: String,
     val steps: List<RouteStep>,
@@ -29,6 +32,7 @@ object MockRouteData {
             RouteStep("Southern Line to Claremont", "15 min", StepType.TRAIN),
             RouteStep("Walk to destination", "5 min", StepType.WALK)
         ),
+        // Route metadata
         departureTime = "08:45",
         arrivalTime = "09:32",
         totalDuration = "47 min",

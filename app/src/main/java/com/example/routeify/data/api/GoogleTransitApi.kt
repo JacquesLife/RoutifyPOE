@@ -4,8 +4,10 @@ import com.google.gson.annotations.SerializedName
 import retrofit2.http.GET
 import retrofit2.http.Query
 
+// Retrofit interface for Google Places API to fetch nearby transit stops
 interface GoogleTransitApi {
 
+// Fetch nearby transit stops of a specific type within a given radius
     @GET("nearbysearch/json")
     suspend fun getNearbyTransitStops(
         @Query("location") location: String,
@@ -14,11 +16,13 @@ interface GoogleTransitApi {
         @Query("key") apiKey: String
     ): GooglePlacesNearbyResponse
 
+    // Base URL for Google Places API
     companion object {
         const val BASE_URL = "https://maps.googleapis.com/maps/api/place/"
     }
 }
 
+// Data classes for parsing Google Places API responses
 data class GooglePlacesNearbyResponse(
     val results: List<GooglePlace>,
     val status: String,
@@ -26,6 +30,7 @@ data class GooglePlacesNearbyResponse(
     val nextPageToken: String?
 )
 
+// Represents a place returned by the Google Places API
 data class GooglePlace(
     @SerializedName("place_id")
     val placeId: String,
@@ -38,10 +43,12 @@ data class GooglePlace(
     val userRatingsTotal: Int?
 )
 
+// Geometry information including location coordinates
 data class GooglePlaceGeometry(
     val location: GooglePlaceLatLng
 )
 
+// Latitude and longitude of a place
 data class GooglePlaceLatLng(
     val lat: Double,
     val lng: Double

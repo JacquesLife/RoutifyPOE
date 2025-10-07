@@ -11,6 +11,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class GooglePlacesEnhancedRepository {
 
+    // Lazy initialization of the Retrofit API service
     private val api: GooglePlacesExtendedApi by lazy {
         Retrofit.Builder()
             .baseUrl(GooglePlacesExtendedApi.BASE_URL)
@@ -25,10 +26,13 @@ class GooglePlacesEnhancedRepository {
         private const val TAG = "GooglePlacesEnhancedRepo"
     }
 
+    // Fetch place autocomplete suggestions based on user input
     suspend fun getPlaceAutocomplete(
         input: String,
         location: LatLng? = null,
         radiusMeters: Int = 50000
+
+        // Default radius is 50km (max for Google Places API)
     ): Result<List<PlaceSuggestion>> = withContext(Dispatchers.IO) {
         try {
             if (input.length < 2) {
@@ -46,6 +50,7 @@ class GooglePlacesEnhancedRepository {
                 radius = radiusMeters
             )
 
+            // Parse and return suggestions
             if (response.status == "OK") {
                 val suggestions = response.predictions.map { prediction ->
                     PlaceSuggestion(
@@ -56,18 +61,21 @@ class GooglePlacesEnhancedRepository {
                     )
                 }
 
+                // Log the number of suggestions found
                 Log.d(TAG, "Found ${suggestions.size} suggestions")
                 Result.success(suggestions)
             } else {
                 Log.e(TAG, "Autocomplete API error: ${response.status}")
                 Result.success(emptyList())
             }
+            // Return empty list on API errors (e.g., ZERO_RESULTS)
         } catch (e: Exception) {
             Log.e(TAG, "Error getting autocomplete", e)
             Result.success(emptyList())
         }
     }
 
+    // Fetch detailed place information including coordinates
     suspend fun getPlaceDetails(placeId: String): Result<LatLng> = withContext(Dispatchers.IO) {
         try {
             Log.d(TAG, "Getting place details for: $placeId")
@@ -77,33 +85,41 @@ class GooglePlacesEnhancedRepository {
                 apiKey = apiKey
             )
 
+            // Parse and return coordinates
             if (response.status == "OK" && response.result != null) {
                 val location = response.result.geometry.location
                 val latLng = LatLng(location.lat, location.lng)
 
+                // Log the coordinates
                 Log.d(TAG, "Got coordinates: ${latLng.latitude}, ${latLng.longitude}")
                 Result.success(latLng)
             } else {
                 Result.failure(Exception("Could not get place details"))
             }
+            // Return failure on API errors
         } catch (e: Exception) {
             Log.e(TAG, "Error getting place details", e)
             Result.failure(e)
         }
     }
 
+    // Fetch transit directions between origin and destination
     suspend fun getTransitDirections(
         origin: String,
         destination: String,
         departureTime: Long? = null,
         transitModes: String? = null,
         wheelchairAccessible: Boolean = false
+        // transitModes example: "bus|subway|train|tram|rail"
     ): Result<List<TransitRoute>> = withContext(Dispatchers.IO) {
         try {
+            // Log the request parameters
             Log.d(TAG, "Getting transit directions from $origin to $destination")
 
+            // Convert departure time to seconds since epoch or use "now"
             val departureTimeStr = departureTime?.let { (it / 1000).toString() } ?: "now"
 
+            // Call the Directions API
             val response = api.getDirections(
                 origin = origin,
                 destination = destination,
@@ -114,17 +130,21 @@ class GooglePlacesEnhancedRepository {
                 transitMode = transitModes
             )
 
+            // Parse and return transit routes
             if (response.status == "OK" && response.routes.isNotEmpty()) {
                 val transitRoutes = response.routes.mapNotNull { route ->
                     val leg = route.legs.firstOrNull() ?: return@mapNotNull null
 
+                    // Parse route segments
                     val segments = leg.steps.map { step ->
+                        // Clean HTML instructions for better readability
                         RouteSegment(
                             instruction = cleanHtmlInstructions(step.htmlInstructions),
                             distance = step.distance.text,
                             duration = step.duration.text,
                             travelMode = step.travelMode,
                             transitInfo = step.transitDetails?.let { details ->
+                                // Extract transit details if available
                                 TransitInfo(
                                     lineName = details.line.name,
                                     lineShortName = details.line.shortName,
@@ -140,6 +160,7 @@ class GooglePlacesEnhancedRepository {
                         )
                     }
 
+                    // Construct and return the TransitRoute
                     TransitRoute(
                         summary = route.summary,
                         totalDistance = leg.distance.text,
@@ -152,25 +173,30 @@ class GooglePlacesEnhancedRepository {
                     )
                 }
 
+                // Log the number of routes found
                 Log.d(TAG, "Found ${transitRoutes.size} transit routes")
                 Result.success(transitRoutes)
             } else {
+                // Handle error case
                 val errorMsg = response.errorMessage ?: "No transit routes found"
                 Log.e(TAG, "Directions API error: ${response.status} - $errorMsg")
                 Result.failure(Exception(errorMsg))
             }
+            // Return failure on API errors
         } catch (e: Exception) {
             Log.e(TAG, "Error getting directions", e)
             Result.failure(e)
         }
     }
 
+    // Fetch travel times between multiple origins and destinations
     suspend fun getTravelTimes(
         origins: List<LatLng>,
         destinations: List<LatLng>,
         mode: String = "transit"
     ): Result<List<TravelTime>> = withContext(Dispatchers.IO) {
         try {
+            // Log the request parameters
             Log.d(TAG, "Getting travel times for ${origins.size} origins to ${destinations.size} destinations")
 
             val originsString = origins.joinToString("|") { "${it.latitude},${it.longitude}" }
@@ -182,10 +208,11 @@ class GooglePlacesEnhancedRepository {
                 mode = mode,
                 apiKey = apiKey
             )
-
+            // Parse and return travel times
             if (response.status == "OK") {
                 val travelTimes = mutableListOf<TravelTime>()
 
+                // Parse the response rows
                 response.rows.forEachIndexed { originIndex, row ->
                     row.elements.forEachIndexed { destIndex, element ->
                         if (element.status == "OK") {
@@ -205,22 +232,27 @@ class GooglePlacesEnhancedRepository {
                     }
                 }
 
+                // Log the number of travel times found
                 Log.d(TAG, "Successfully retrieved ${travelTimes.size} travel times")
                 Result.success(travelTimes)
             } else {
+                // Handle error case
                 Log.e(TAG, "Distance matrix API error: ${response.status}")
                 Result.failure(Exception("Distance matrix API error: ${response.status}"))
             }
+            // Return failure on API errors
         } catch (e: Exception) {
             Log.e(TAG, "Error getting travel times", e)
             Result.failure(e)
         }
     }
-
+    
+    // Convenience method for single origin-destination travel time
     suspend fun getQuickTravelTime(
         origin: LatLng,
         destination: LatLng
     ): Result<TravelTime> {
+        // Reuse the bulk method for a single pair
         return getTravelTimes(
             origins = listOf(origin),
             destinations = listOf(destination)
@@ -229,6 +261,7 @@ class GooglePlacesEnhancedRepository {
         }
     }
 
+    // Geocode an address to get its coordinates
     suspend fun geocodeAddress(address: String): Result<LatLng> = withContext(Dispatchers.IO) {
         try {
             Log.d(TAG, "Geocoding address: $address")
@@ -238,23 +271,28 @@ class GooglePlacesEnhancedRepository {
                 apiKey = apiKey
             )
 
+            // Parse and return coordinates
             if (response.status == "OK" && response.results.isNotEmpty()) {
                 val location = response.results.first().geometry.location
                 val latLng = LatLng(location.lat, location.lng)
 
+                // Log the geocoding result
                 Log.d(TAG, "Geocoded $address to ${latLng.latitude}, ${latLng.longitude}")
                 Result.success(latLng)
             } else {
+                // Handle error case
                 val error = response.errorMessage ?: "No results found for address: $address"
                 Log.e(TAG, "Geocoding failed: $error")
                 Result.failure(Exception(error))
             }
+            // Return failure on API errors
         } catch (e: Exception) {
             Log.e(TAG, "Error geocoding address: $address", e)
             Result.failure(e)
         }
     }
 
+    // Utility to clean HTML tags from instructions needed for RouteSegment
     private fun cleanHtmlInstructions(html: String): String {
         return html
             .replace("<div[^>]*>", " ")

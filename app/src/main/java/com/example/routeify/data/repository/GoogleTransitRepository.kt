@@ -88,6 +88,7 @@ class GoogleTransitRepository {
                         Log.d("GoogleTransit", "   📏 Distance: ${String.format("%.2f", distance)}km (${distanceMeters}m) - WITHIN radius")
                         Log.d("GoogleTransit", "   🏷️ Types: ${googlePlace.types}")
                         
+                        // Map GooglePlace to TransitStop
                         TransitStop(
                             id = googlePlace.placeId,
                             name = googlePlace.name,
@@ -98,6 +99,7 @@ class GoogleTransitRepository {
                             rating = googlePlace.rating
                         )
                     } else {
+                        // Exclude places outside the radius
                         Log.d("GoogleTransit", "❌ Excluding: ${googlePlace.name}")
                         Log.d("GoogleTransit", "   📏 Distance: ${String.format("%.2f", distance)}km (${distanceMeters}m) - OUTSIDE radius (${validRadius}m)")
                         null
@@ -109,6 +111,7 @@ class GoogleTransitRepository {
                 Log.d("GoogleTransit", "🎉 Successfully returning ${processedStops.size} total transit stops")
                 Result.success(processedStops)
                 
+            // Note: Pagination handling (next_page_token) can be added here for more results
             } catch (e: Exception) {
                 Log.e("GoogleTransit", "💥 Failed to fetch transit stops", e)
                 Log.e("GoogleTransit", "💥 Error details: ${e.message}")
@@ -118,7 +121,7 @@ class GoogleTransitRepository {
         }
     }
     
-
+    // Determine TransitStopType based on Google Place types
     private fun determineStopType(types: List<String>): TransitStopType {
         return when {
             types.contains("bus_station") -> TransitStopType.BUS_STATION
@@ -130,10 +133,7 @@ class GoogleTransitRepository {
         }
     }
 
-    /**
-     * Calculate distance between two points using Android's built-in method
-     * Returns distance in kilometers
-     */
+    // Calculate distance between two lat/lng points in kilometers
     private fun calculateDistance(lat1: Double, lng1: Double, lat2: Double, lng2: Double): Double {
         val results = FloatArray(1)
         Location.distanceBetween(lat1, lng1, lat2, lng2, results)
