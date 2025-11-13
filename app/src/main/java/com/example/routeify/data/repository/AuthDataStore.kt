@@ -27,12 +27,14 @@ class AuthDataStore(private val context: Context) {
         val isAuthenticated = booleanPreferencesKey("is_authenticated")
         val email = stringPreferencesKey("email")
         val username = stringPreferencesKey("username")
+        val biometricEnabled = booleanPreferencesKey("biometric_enabled")
     }
 
 // Flows to observe authentication state and user info
     val isAuthenticatedFlow: Flow<Boolean> = context.authPrefs.data.map { it[Keys.isAuthenticated] ?: false }
     val emailFlow: Flow<String?> = context.authPrefs.data.map { it[Keys.email] }
     val usernameFlow: Flow<String?> = context.authPrefs.data.map { it[Keys.username] }
+    val biometricEnabledFlow: Flow<Boolean> = context.authPrefs.data.map { it[Keys.biometricEnabled] ?: false }
 
     // Set authentication state and user info
     suspend fun setAuthenticated(email: String, username: String) {
@@ -43,12 +45,19 @@ class AuthDataStore(private val context: Context) {
         }
     }
 
-    // Clear authentication state and user info
+    // Clear authentication state but keep user credentials for biometric login
     suspend fun clear() {
         context.authPrefs.edit { prefs ->
             prefs[Keys.isAuthenticated] = false
-            prefs.remove(Keys.email)
-            prefs.remove(Keys.username)
+            // Keep email and username for biometric login to work
+            // Don't clear biometric preference - keep it for next login
+        }
+    }
+    
+    // Set biometric authentication preference
+    suspend fun setBiometricEnabled(enabled: Boolean) {
+        context.authPrefs.edit { prefs ->
+            prefs[Keys.biometricEnabled] = enabled
         }
     }
 }
