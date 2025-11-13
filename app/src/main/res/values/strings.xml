@@ -1,3 +1,35 @@
 <resources>
     <string name="app_name">Routeify</string>
+
+    <string name="settings_title">Settings</string>
+    <string name="settings_general">General</string>
+    <string name="settings_privacy">Privacy &amp; Security</string>
+    <string name="settings_other">Other</string>
+
+    <string name="settings_notifications">Notifications</string>
+    <string name="settings_notifications_subtitle">Enable push notifications</string>
+    <string name="settings_dark_mode">Dark Mode</string>
+    <string name="settings_dark_mode_subtitle">Use dark theme</string>
+
+    <string name="settings_location">Location Services</string>
+    <string name="settings_location_subtitle">Allow app to access location</string>
+    <string name="settings_auto_sync">Auto Sync</string>
+    <string name="settings_auto_sync_subtitle">Sync data automatically</string>
+
+    <string name="settings_language">Language</string>
+    <string name="settings_storage">Storage</string>
+    <string name="settings_storage_value">Clear cache</string>
+
+    <string name="dialog_notifications_title">Turn off notifications</string>
+    <string name="dialog_notifications_message">To disable notifications, change the setting in system settings.</string>
+    <string name="dialog_location_title">Turn off location access</string>
+    <string name="dialog_location_message">To revoke location access, change the permission in system settings.</string>
+    <string name="dialog_language_title">Select Language</string>
+
+    <string name="button_open_settings">Open Settings</string>
+    <string name="button_cancel">Cancel</string>
+    <string name="button_close">Close</string>
+
+    <string name="language_english">English</string>
+    <string name="language_afrikaans">Afrikaans</string>
 </resources>

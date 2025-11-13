@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Routeify</string>
+
+    <string name="settings_title">Instellings</string>
+    <string name="settings_general">Algemeen</string>
+    <string name="settings_privacy">Privaatheid &amp; Sekuriteit</string>
+    <string name="settings_other">Ander</string>
+
+    <string name="settings_notifications">Kennisgewings</string>
+    <string name="settings_notifications_subtitle">Aktiveer stoot kennisgewings</string>
+    <string name="settings_dark_mode">Donker Modus</string>
+    <string name="settings_dark_mode_subtitle">Gebruik donker tema</string>
+
+    <string name="settings_location">Liggingsdienste</string>
+    <string name="settings_location_subtitle">Laat app toe om ligging te gebruik</string>
+    <string name="settings_auto_sync">Outo Sinkroniseer</string>
+    <string name="settings_auto_sync_subtitle">Sinkroniseer data outomaties</string>
+
+    <string name="settings_language">Taal</string>
+    <string name="settings_storage">Berging</string>
+    <string name="settings_storage_value">Maak kas skoon</string>
+
+    <string name="dialog_notifications_title">Skakel kennisgewings af</string>
+    <string name="dialog_notifications_message">Om kennisgewings te deaktiveer, verander die instelling in stelselinstellings.</string>
+    <string name="dialog_location_title">Skakel liggingstoegang af</string>
+    <string name="dialog_location_message">Om liggingstoegang te herroep, verander die toestemming in stelselinstellings.</string>
+    <string name="dialog_language_title">Kies Taal</string>
+
+    <string name="button_open_settings">Maak Instellings Oop</string>
+    <string name="button_cancel">Kanselleer</string>
+    <string name="button_close">Sluit</string>
+
+    <string name="language_english">Engels</string>
+    <string name="language_afrikaans">Afrikaans</string>
+</resources>
