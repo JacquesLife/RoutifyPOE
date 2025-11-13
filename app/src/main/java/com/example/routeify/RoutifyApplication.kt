@@ -14,6 +14,7 @@ package com.example.routeify
 import android.app.Application
 import androidx.room.Room
 import com.example.routeify.data.api.AppDatabase
+import com.example.routeify.shared.RecentDestinationsStore
 
 // Main application class initializing the Room database
 class RoutifyApplication : Application() {
@@ -28,6 +29,9 @@ class RoutifyApplication : Application() {
             AppDatabase::class.java,
             "routeify.db"
         ).fallbackToDestructiveMigration().build()
+        
+        // Initialize offline mode store
+        RecentDestinationsStore.initialize(this)
     }
 }
 
