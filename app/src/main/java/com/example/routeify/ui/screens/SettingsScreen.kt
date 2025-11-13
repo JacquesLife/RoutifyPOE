@@ -170,8 +170,8 @@ fun SettingsScreen() {
             Column {
                 SettingSwitchItem(
                     icon = Icons.Default.Notifications,
-                    title = "Notifications",
-                    subtitle = "Enable push notifications",
+                    title = stringResource(R.string.settings_notifications),
+                    subtitle = stringResource(R.string.settings_notifications_subtitle),
                     checked = notificationsEnabled,
                     onCheckedChange = { checked ->
                         if (checked) {

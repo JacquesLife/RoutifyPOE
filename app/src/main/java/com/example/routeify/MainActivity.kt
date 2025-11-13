@@ -86,11 +86,17 @@ import com.example.routeify.data.preferences.LanguageManager
 
 // Main activity hosting the entire app
 class MainActivity : ComponentActivity() {
+    private var currentAppLanguage: String = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //Applying saved language preference
         val languageManager = LanguageManager.getInstance(this)
-        languageManager.setLanguage(languageManager.getSavedLanguage())
+        val savedLanguage = languageManager.getSavedLanguage()
+        languageManager.setLanguage(savedLanguage)
+
+        //Storing the current language
+        currentAppLanguage = savedLanguage
 
         enableEdgeToEdge()
         setContent {
@@ -103,11 +109,13 @@ class MainActivity : ComponentActivity() {
     // Recreate activity to apply new language settings
     override fun onResume(){
         super.onResume()
+
         val languageManager = LanguageManager.getInstance(this)
-        val currentLang = languageManager.getSavedLanguage()
+        val savedLanguage = languageManager.getSavedLanguage()
 
         // Check if language changed and recreate if needed
-        if (currentLang != languageManager.currentLanguage) {
+        if (savedLanguage != currentAppLanguage) {
+            currentAppLanguage = savedLanguage
             recreate()
         }
     }
