@@ -3,7 +3,7 @@
     <!-- App Name -->
     <string name="app_name">Routeify</string>
 
-    <!-- Navigation Titles -->
+    <!-- Navigation/Screen Titles -->
     <string name="title_home">Routeify</string>
     <string name="title_map">Transport Map</string>
     <string name="title_profile">Profile</string>
@@ -31,136 +31,103 @@
     <string name="settings_storage">Storage</string>
     <string name="settings_storage_value">Clear cache</string>
 
-    <!-- Dialog Strings -->
+    <!-- Dialog Titles & Messages -->
     <string name="dialog_notifications_title">Turn off notifications</string>
     <string name="dialog_notifications_message">To disable notifications, change the setting in system settings.</string>
     <string name="dialog_location_title">Turn off location access</string>
     <string name="dialog_location_message">To revoke location access, change the permission in system settings.</string>
     <string name="dialog_language_title">Select Language</string>
 
-    <!-- Button Strings -->
+    <!-- Buttons -->
     <string name="button_open_settings">Open Settings</string>
     <string name="button_cancel">Cancel</string>
     <string name="button_close">Close</string>
-    <string name="button_ok">OK</string>
-    <string name="button_search">Search</string>
+    <string name="button_sign_in">Sign In</string>
+    <string name="button_create_account">Create Account</string>
+    <string name="button_logout">Logout</string>
     <string name="button_directions">Directions</string>
     <string name="button_share">Share</string>
     <string name="button_save_favorites">Save to Favorites</string>
 
-    <!-- Language Names -->
+    <!-- Languages -->
     <string name="language_english">English</string>
     <string name="language_afrikaans">Afrikaans</string>
 
     <!-- Home Screen -->
-    <string name="home_welcome">Welcome</string>
     <string name="home_recent_destinations">Recent Destinations</string>
-    <string name="home_recent_subtitle">Your frequently visited places</string>
+    <string name="home_recent_destinations_subtitle">Your frequently visited places</string>
     <string name="home_no_destinations">No recent destinations</string>
     <string name="home_no_destinations_desc">Start planning routes to see your recent destinations here</string>
-    <string name="home_visited_times">Visited %1$d times</string>
+    <string name="home_visited_times">Visited %d times</string>
 
     <!-- Login Screen -->
-    <string name="login_welcome_back">Welcome Back</string>
+    <string name="login_welcome">Welcome Back</string>
     <string name="login_subtitle">Sign in to continue your journey</string>
     <string name="login_email_username">Email or Username</string>
     <string name="login_password">Password</string>
-    <string name="login_sign_in">Sign In</string>
-    <string name="login_create_account">Create Account</string>
     <string name="login_or">OR</string>
     <string name="login_google">Continue with Google</string>
 
     <!-- Register Screen -->
-    <string name="register_create_account">Create Account</string>
+    <string name="register_title">Create Account</string>
     <string name="register_subtitle">Join Routeify today</string>
     <string name="register_email">Email</string>
     <string name="register_username">Username</string>
     <string name="register_password">Password</string>
     <string name="register_confirm_password">Confirm Password</string>
-    <string name="register_button">Create Account</string>
-    <string name="register_have_account">Already have an account?</string>
+    <string name="register_already_have_account">Already have an account?</string>
+    <string name="register_google">Continue with Google</string>
 
     <!-- Profile Screen -->
-    <string name="profile_guest">Guest</string>
     <string name="profile_saved_routes">Saved Routes</string>
     <string name="profile_account">Account</string>
-    <string name="profile_logout">Logout</string>
     <string name="profile_home_to_work">Home to Work</string>
+    <string name="profile_home_to_work_subtitle">Rondebosch to Claremont</string>
     <string name="profile_university_route">University Route</string>
+    <string name="profile_university_subtitle">UCT Main Campus</string>
     <string name="profile_weekend_shopping">Weekend Shopping</string>
+    <string name="profile_weekend_subtitle">V&amp;A Waterfront</string>
+    <string name="profile_guest">Guest</string>
 
     <!-- Map Screen -->
     <string name="map_cape_town_network">Cape Town Transport Network</string>
-    <string name="map_hide_transit_lines">Hide transit lines</string>
-    <string name="map_show_transit_lines">Show transit lines</string>
+    <string name="map_start">Start</string>
+    <string name="map_end">End</string>
+    <string name="map_hide_transit">Hide transit lines</string>
+    <string name="map_show_transit">Show transit lines</string>
 
     <!-- Google Features Screen -->
-    <string name="google_services_title">Google Services</string>
-    <string name="google_route_planner_title">🗺 Route Planner</string>
+    <string name="google_features_title">Google Services</string>
+    <string name="google_route_planner">🗺 Route Planner</string>
     <string name="google_route_planner_desc">Plan your journey with real-time travel times and multiple transport options</string>
-    <string name="google_nearby_transit_title">🚌 Nearby Transit</string>
+    <string name="google_nearby_transit">🚌 Nearby Transit</string>
     <string name="google_nearby_transit_desc">Find transit stops, bus stations, and train stations near you</string>
-    <string name="google_smart_suggestions_title">💡 Smart Suggestions</string>
+    <string name="google_smart_suggestions">💡 Smart Suggestions</string>
     <string name="google_smart_suggestions_desc">Get personalized route recommendations based on your travel patterns</string>
     <string name="google_privacy_notice">Your privacy is protected. Location data is only used for transit planning.</string>
 
-    <!-- Route Planner Screen -->
-    <string name="route_planner_title">Plan Your Journey</string>
-    <string name="route_planner_from">From</string>
-    <string name="route_planner_to">To</string>
-    <string name="route_planner_swap">Swap locations</string>
-    <string name="route_planner_search">Search for routes</string>
-    <string name="route_planner_searching">Searching…</string>
-    <string name="route_planner_leave_now">Leave now</string>
-    <string name="route_planner_depart_at">Depart at</string>
-    <string name="route_planner_arrive_by">Arrive by</string>
-    <string name="route_planner_select_datetime">Select Date &amp; Time</string>
-    <string name="route_planner_date">Date:</string>
-    <string name="route_planner_time">Time:</string>
-    <string name="route_planner_no_routes">No routes found</string>
-    <string name="route_planner_try_different">Try adjusting your search or using different locations</string>
-    <string name="route_planner_open_maps">Open in Google Maps</string>
-    <string name="route_planner_view_map">View on Map</string>
-
-    <!-- Nearby Transit Screen -->
-    <string name="nearby_transit_title">🚌 Nearby Transit</string>
-    <string name="nearby_transit_search_radius">Search Radius: %1$dm</string>
-    <string name="nearby_transit_search_within">Search within %1$dm</string>
-    <string name="nearby_transit_find">Find Nearby Transit</string>
-    <string name="nearby_transit_searching">Searching…</string>
-    <string name="nearby_transit_found">Found %1$d transit stops</string>
-    <string name="nearby_transit_tap_details">Tap on any stop to see details</string>
-    <string name="nearby_transit_no_results">No results yet</string>
-    <string name="nearby_transit_search_prompt">Search for nearby transit stops to get started</string>
-    <string name="nearby_transit_expand">Expand search options</string>
-
     <!-- Place Details Screen -->
-    <string name="place_details_back">Back</string>
-    <string name="place_details_get_directions">Get directions</string>
     <string name="place_details_transit_stop">Transit Stop</string>
-    <string name="place_details_loading">Loading place details…</string>
+    <string name="place_details_loading">Loading place details...</string>
     <string name="place_details_location">📍 Location Details</string>
     <string name="place_details_coordinates">Coordinates</string>
     <string name="place_details_stop_type">Stop Type</string>
-    <string name="place_details_quick_actions">🚀 Quick Actions</string>
-    <string name="place_details_directions">Directions</string>
-    <string name="place_details_share">Share</string>
-    <string name="place_details_save">Save to Favorites</string>
+    <string name="place_details_actions">🚀 Quick Actions</string>
 
     <!-- Travel Time Card -->
-    <string name="travel_info_title">🚗 Travel Information</string>
-    <string name="travel_info_available">Available</string>
-    <string name="travel_info_duration">Duration</string>
-    <string name="travel_info_distance">Distance</string>
+    <string name="travel_time_info">🚗 Travel Information</string>
+    <string name="travel_time_duration">Duration</string>
+    <string name="travel_time_distance">Distance</string>
+    <string name="travel_time_available">Available</string>
 
     <!-- Splash Screen -->
     <string name="splash_tagline">Smarter Public Transport</string>
 
-    <!-- Common Terms -->
-    <string name="common_loading">Loading…</string>
-    <string name="common_error">Error</string>
-    <string name="common_back">Back</string>
-    <string name="common_menu">Menu</string>
-    <string name="common_navigate">Navigate</string>
-    <string name="common_view_details">View details</string>
+    <!-- Common Strings -->
+    <string name="content_description_menu">Menu</string>
+    <string name="content_description_back">Back</string>
+    <string name="content_description_navigate">Navigate</string>
+    <string name="content_description_open_feature">Open feature</string>
+    <string name="error_generic">An error occurred. Please try again.</string>
+    <string name="loading">Loading...</string>
 </resources>

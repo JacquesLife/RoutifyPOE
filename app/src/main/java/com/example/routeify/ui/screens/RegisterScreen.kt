@@ -6,6 +6,8 @@
  * Compose screen for new user registration and account setup.
  * Handles user input validation, account creation, and initial profile setup.
  * 
+ * UPDATED: All hardcoded strings replaced with string resources
+ *
  * ============================================================================
  */
 
@@ -30,10 +32,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.routeify.R
 import com.example.routeify.ui.viewmodel.AuthViewModel
 import com.example.routeify.ui.theme.RouteifyBlue500
 import com.example.routeify.ui.theme.RouteifyGreen500
@@ -88,13 +92,13 @@ fun RegisterScreen(
                 // Profile name and subtitle
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(
-                    text = "Create Account",
+                    text = stringResource(R.string.register_title),
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
                     color = Color.White
                 )
                 Text(
-                    text = "Join Routeify today",
+                    text = stringResource(R.string.register_subtitle),
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.White.copy(alpha = 0.9f)
                 )
@@ -116,7 +120,7 @@ fun RegisterScreen(
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
-                label = { Text("Email") },
+                label = { Text(stringResource(R.string.register_email)) },
                 leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
                 singleLine = true,
                 shape = RoundedCornerShape(12.dp),
@@ -134,7 +138,7 @@ fun RegisterScreen(
             OutlinedTextField(
                 value = username,
                 onValueChange = { username = it },
-                label = { Text("Username") },
+                label = { Text(stringResource(R.string.register_username)) },
                 leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) },
                 singleLine = true,
                 shape = RoundedCornerShape(12.dp),
@@ -144,7 +148,7 @@ fun RegisterScreen(
                     focusedLabelColor = RouteifyBlue500
                 )
             )
-            
+
             // Password input field
             Spacer(modifier = Modifier.height(12.dp))
 
@@ -152,7 +156,7 @@ fun RegisterScreen(
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
-                label = { Text("Password") },
+                label = { Text(stringResource(R.string.register_password)) },
                 leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
                 singleLine = true,
                 visualTransformation = PasswordVisualTransformation(),
@@ -163,7 +167,7 @@ fun RegisterScreen(
                     focusedLabelColor = RouteifyBlue500
                 )
             )
-            
+
             // Confirm password input field
             Spacer(modifier = Modifier.height(12.dp))
 
@@ -171,7 +175,7 @@ fun RegisterScreen(
             OutlinedTextField(
                 value = confirm,
                 onValueChange = { confirm = it },
-                label = { Text("Confirm Password") },
+                label = { Text(stringResource(R.string.register_confirm_password)) },
                 leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
                 singleLine = true,
                 visualTransformation = PasswordVisualTransformation(),
@@ -213,12 +217,12 @@ fun RegisterScreen(
                     containerColor = RouteifyGreen500
                 )
             ) {
-                Text("Create Account", style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.button_create_account), style = MaterialTheme.typography.titleMedium)
             }
-            
+
             // Navigation to login and Google sign-in
             Spacer(modifier = Modifier.height(12.dp))
-            
+
             // Navigate to login screen
             OutlinedButton(
                 onClick = onNavigateToLogin,
@@ -230,11 +234,11 @@ fun RegisterScreen(
                     contentColor = RouteifyBlue500
                 )
             ) {
-                Text("Already have an account?", style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.register_already_have_account), style = MaterialTheme.typography.titleMedium)
             }
-            
+
             Spacer(modifier = Modifier.height(20.dp))
-            
+
             // Divider with "OR" text
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -243,16 +247,16 @@ fun RegisterScreen(
                 // Divider for "OR" text
                 Divider(modifier = Modifier.weight(1f))
                 Text(
-                    text = "OR",
+                    text = stringResource(R.string.login_or),
                     modifier = Modifier.padding(horizontal = 16.dp),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Divider(modifier = Modifier.weight(1f))
             }
-            
+
             Spacer(modifier = Modifier.height(20.dp))
-            
+
             // Google sign-in button
             OutlinedButton(
                 onClick = onGoogleSignInClick,
@@ -268,10 +272,10 @@ fun RegisterScreen(
                 ) {
                     Icon(Icons.Default.AccountCircle, contentDescription = null)
                     Spacer(modifier = Modifier.width(12.dp))
-                    Text("Continue with Google", style = MaterialTheme.typography.titleMedium)
+                    Text(stringResource(R.string.register_google), style = MaterialTheme.typography.titleMedium)
                 }
             }
-            
+
             Spacer(modifier = Modifier.height(16.dp))
         }
     }

@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.Configuration
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.example.routeify.R
@@ -15,7 +16,8 @@ class LanguageManager(private val context: Context){
     var currentLanguage by mutableStateOf(getSavedLanguage())
         private set
 
-    var languageChangeTrigger by mutableStateOf(0)
+    // Use Int state for triggering recomposition and activity restart
+    var languageChangeTrigger by mutableIntStateOf(0)
         private set
 
     companion object{
@@ -40,11 +42,15 @@ class LanguageManager(private val context: Context){
 
     // Set & save the selected language
     fun setLanguage(languageCode: String) {
+        val previousLanguage = currentLanguage
         prefs.edit().putString(KEY_LANGUAGE, languageCode).apply()
         currentLanguage = languageCode
         updateLocale(languageCode)
 
-        languageChangeTrigger++
+        // Only trigger if language actually changed
+        if (previousLanguage != languageCode) {
+            languageChangeTrigger++
+        }
     }
 
     // Update app locale
@@ -55,6 +61,7 @@ class LanguageManager(private val context: Context){
         val config = Configuration(context.resources.configuration)
         config.setLocale(locale)
 
+        @Suppress("DEPRECATION")
         context.resources.updateConfiguration(config, context.resources.displayMetrics)
     }
 

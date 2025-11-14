@@ -6,6 +6,8 @@
  * Reusable Compose component for displaying travel time and distance data.
  * Shows formatted journey information with icons and styling.
  * 
+ * UPDATED: All hardcoded strings replaced with string resources
+ *
  * ============================================================================
  */
 
@@ -18,8 +20,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.routeify.R
 import com.example.routeify.domain.model.TravelTime
 
 // Card to display travel time and distance information
@@ -46,14 +50,14 @@ fun TravelTimeCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "🚗 Travel Information",
+                    text = stringResource(R.string.travel_time_info),
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Medium
                 )
-                
+
                 Icon(
                     Icons.Default.CheckCircle,
-                    contentDescription = "Available",
+                    contentDescription = stringResource(R.string.travel_time_available),
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(16.dp)
                 )
@@ -82,7 +86,7 @@ fun TravelTimeCard(
                             tint = MaterialTheme.colorScheme.primary
                         )
                         Text(
-                            text = "Duration",
+                            text = stringResource(R.string.travel_time_duration),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -109,7 +113,7 @@ fun TravelTimeCard(
                             tint = MaterialTheme.colorScheme.primary
                         )
                         Text(
-                            text = "Distance",
+                            text = stringResource(R.string.travel_time_distance),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )

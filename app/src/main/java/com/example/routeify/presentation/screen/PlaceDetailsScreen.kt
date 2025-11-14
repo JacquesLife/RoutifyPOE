@@ -6,6 +6,8 @@
  * Compose screen for displaying detailed place information.
  * Shows place data, reviews, photos, and location details from Google Places.
  * 
+ * UPDATED: All hardcoded strings replaced with string resources
+ *
  * ============================================================================
  */
 
@@ -21,10 +23,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.routeify.R
 import com.example.routeify.data.model.TransitStop
 import com.example.routeify.presentation.viewmodel.GoogleFeaturesViewModel
 import java.util.Locale
@@ -39,7 +43,7 @@ fun PlaceDetailsScreen(
 ) {
     val isLoading by viewModel.isLoading
     val errorMessage by viewModel.errorMessage
-    
+
     // Main scrollable column
     Column(
         modifier = Modifier
@@ -59,13 +63,13 @@ fun PlaceDetailsScreen(
             // Back button
             navigationIcon = {
                 IconButton(onClick = onBackClick) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.content_description_back))
                 }
             },
             // Directions button
             actions = {
                 IconButton(onClick = onDirectionsClick) {
-                    Icon(Icons.Default.Directions, contentDescription = "Get directions")
+                    Icon(Icons.Default.Directions, contentDescription = stringResource(R.string.button_directions))
                 }
             }
         )
@@ -99,7 +103,7 @@ fun PlaceDetailsScreen(
                                 tint = MaterialTheme.colorScheme.onPrimaryContainer
                             )
                         }
-                        
+
                         // Stop name and vicinity
                         Column(
                             modifier = Modifier.weight(1f)
@@ -109,7 +113,7 @@ fun PlaceDetailsScreen(
                                 style = MaterialTheme.typography.headlineSmall,
                                 fontWeight = FontWeight.Bold
                             )
-                            
+
                             // Vicinity if available
                             stop.vicinity?.let { vicinity ->
                                 Text(
@@ -148,7 +152,7 @@ fun PlaceDetailsScreen(
                                 }
                             }
                         }
-                        
+
                         // Operating status
                         Card(
                             colors = CardDefaults.cardColors(
@@ -167,7 +171,7 @@ fun PlaceDetailsScreen(
                                     tint = MaterialTheme.colorScheme.onSecondaryContainer
                                 )
                                 Text(
-                                    text = "Transit Stop",
+                                    text = stringResource(R.string.place_details_transit_stop),
                                     style = MaterialTheme.typography.labelMedium,
                                     color = MaterialTheme.colorScheme.onSecondaryContainer
                                 )
@@ -192,10 +196,10 @@ fun PlaceDetailsScreen(
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         CircularProgressIndicator(modifier = Modifier.size(20.dp))
-                        Text("Loading place details...")
+                        Text(stringResource(R.string.place_details_loading))
                     }
                 }
-                
+
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
@@ -223,7 +227,7 @@ fun PlaceDetailsScreen(
                         )
                     }
                 }
-                
+
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
@@ -235,28 +239,28 @@ fun PlaceDetailsScreen(
                     modifier = Modifier.padding(16.dp)
                 ) {
                     Text(
-                        text = "📍 Location Details",
+                        text = stringResource(R.string.place_details_location),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
-                    
+
                     Spacer(modifier = Modifier.height(12.dp))
 
                     DetailRow(
                         icon = Icons.Default.LocationOn,
-                        label = "Coordinates",
+                        label = stringResource(R.string.place_details_coordinates),
                         value = "${stop.latitude}, ${stop.longitude}"
                     )
 
                     DetailRow(
                         icon = Icons.Default.DirectionsBus,
-                        label = "Stop Type",
+                        label = stringResource(R.string.place_details_stop_type),
                         value = stop.stopType.name.replace("_", " ").lowercase()
                             .split(" ").joinToString(" ") { it.capitalize(Locale.ROOT) }
                     )
                 }
             }
-            
+
             Spacer(modifier = Modifier.height(16.dp))
 
             // Action Buttons
@@ -267,11 +271,11 @@ fun PlaceDetailsScreen(
                     modifier = Modifier.padding(16.dp)
                 ) {
                     Text(
-                        text = "🚀 Quick Actions",
+                        text = stringResource(R.string.place_details_actions),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
-                    
+
                     Spacer(modifier = Modifier.height(12.dp))
 
                     Row(
@@ -288,9 +292,9 @@ fun PlaceDetailsScreen(
                                 modifier = Modifier.size(18.dp)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text("Directions")
+                            Text(stringResource(R.string.button_directions))
                         }
-                        
+
                         OutlinedButton(
                             onClick = { /* Share location */ },
                             modifier = Modifier.weight(1f)
@@ -301,12 +305,12 @@ fun PlaceDetailsScreen(
                                 modifier = Modifier.size(18.dp)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text("Share")
+                            Text(stringResource(R.string.button_share))
                         }
                     }
-                    
+
                     Spacer(modifier = Modifier.height(8.dp))
-                    
+
                     OutlinedButton(
                         onClick = { /* Save to favorites */ },
                         modifier = Modifier.fillMaxWidth()
@@ -317,7 +321,7 @@ fun PlaceDetailsScreen(
                             modifier = Modifier.size(18.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Save to Favorites")
+                        Text(stringResource(R.string.button_save_favorites))
                     }
                 }
             }
@@ -347,7 +351,7 @@ private fun DetailRow(
             modifier = Modifier.size(20.dp),
             tint = MaterialTheme.colorScheme.primary
         )
-        
+
         Column(
             modifier = Modifier.weight(1f)
         ) {
