@@ -15,6 +15,9 @@ class LanguageManager(private val context: Context){
     var currentLanguage by mutableStateOf(getSavedLanguage())
         private set
 
+    var languageChangeTrigger by mutableStateOf(0)
+        private set
+
     companion object{
         const val KEY_LANGUAGE = "selected_language"
         const val ENGLISH = "en"
@@ -30,16 +33,21 @@ class LanguageManager(private val context: Context){
         }
     }
 
+    // Retrieve the saved language
     fun getSavedLanguage(): String {
         return prefs.getString(KEY_LANGUAGE, ENGLISH) ?: ENGLISH
     }
 
+    // Set & save the selected language
     fun setLanguage(languageCode: String) {
         prefs.edit().putString(KEY_LANGUAGE, languageCode).apply()
         currentLanguage = languageCode
         updateLocale(languageCode)
+
+        languageChangeTrigger++
     }
 
+    // Update app locale
     private fun updateLocale(languageCode: String){
         val locale = Locale(languageCode)
         Locale.setDefault(locale)
@@ -50,6 +58,7 @@ class LanguageManager(private val context: Context){
         context.resources.updateConfiguration(config, context.resources.displayMetrics)
     }
 
+    // Get the name of the language
     fun getLanguageName(languageCode: String): String {
         return when(languageCode){
             ENGLISH -> context.getString(R.string.language_english)

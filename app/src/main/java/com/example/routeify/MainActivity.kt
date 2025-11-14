@@ -86,8 +86,6 @@ import com.example.routeify.data.preferences.LanguageManager
 
 // Main activity hosting the entire app
 class MainActivity : ComponentActivity() {
-    private var currentAppLanguage: String = ""
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //Applying saved language preference
@@ -95,28 +93,11 @@ class MainActivity : ComponentActivity() {
         val savedLanguage = languageManager.getSavedLanguage()
         languageManager.setLanguage(savedLanguage)
 
-        //Storing the current language
-        currentAppLanguage = savedLanguage
-
         enableEdgeToEdge()
         setContent {
             RouteifyTheme {
                 MainApp()
             }
-        }
-    }
-
-    // Recreate activity to apply new language settings
-    override fun onResume(){
-        super.onResume()
-
-        val languageManager = LanguageManager.getInstance(this)
-        val savedLanguage = languageManager.getSavedLanguage()
-
-        // Check if language changed and recreate if needed
-        if (savedLanguage != currentAppLanguage) {
-            currentAppLanguage = savedLanguage
-            recreate()
         }
     }
 }
@@ -135,6 +116,10 @@ fun MainApp() {
     val authViewModel: AuthViewModel = viewModel()
     val authState by authViewModel.authState.collectAsState()
     val context = androidx.compose.ui.platform.LocalContext.current
+
+    // Language changes
+    val languageManager = remember { LanguageManager.getInstance(context) }
+    val languageChangeTrigger = languageManager.languageChangeTrigger
 
     // Configure Google Sign-In
     val gso = remember {
