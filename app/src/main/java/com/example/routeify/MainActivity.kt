@@ -1,47 +1,13 @@
 /*
- * ============================================================================
- * MAIN ACTIVITY - Primary App Entry Point & Navigation Host (347+ lines)
- * ============================================================================
- * 
- * The central activity orchestrating the entire Routeify application,
- * managing complex navigation flows and authentication state.
- * 
- * CORE RESPONSIBILITIES:
- * - Application lifecycle management and initialization
- * - Jetpack Navigation Compose setup with complex routing
- * - Authentication flow coordination (local + Google Sign-In)
- * - Deep linking and intent handling
- * - Theme and UI configuration management
- * - Permission management and system integration
- * 
- * NAVIGATION ARCHITECTURE:
- * - NavHost with comprehensive route definitions
- * - Authentication-aware navigation with conditional routing
- * - Bottom navigation with tab management
- * - Navigation drawer integration for complex navigation
- * - Back stack management and navigation state preservation
- * 
- * AUTHENTICATION INTEGRATION:
- * - Google Sign-In configuration and callback handling
- * - Local authentication with Room database
- * - Session management and persistent login state
- * - Authentication state observation and UI updates
- * 
- * KEY FEATURES:
- * - Edge-to-edge display with proper inset handling
- * - Material 3 design system implementation
- * - Dark/light theme support with system integration
- * - Drawer navigation with user profile integration
- * - Complex state management across multiple ViewModels
- * 
- * This activity serves as the foundation for the entire app experience
- * and coordinates all major app components and navigation flows.
- * 
- * ============================================================================
+ * Updated MainActivity.kt with proper multi-language support
+ * Key changes:
+ * 1. getCurrentTitle() now uses string resources
+ * 2. Activity recreates when language changes
  */
 
 package com.example.routeify
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -52,6 +18,7 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -100,6 +67,14 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+    // Override attachBaseContext to apply language configuration
+    override fun attachBaseContext(newBase: Context) {
+        val languageManager = LanguageManager.getInstance(newBase)
+        val savedLanguage = languageManager.getSavedLanguage()
+        languageManager.setLanguage(savedLanguage)
+        super.attachBaseContext(newBase)
+    }
 }
 
 
@@ -117,9 +92,16 @@ fun MainApp() {
     val authState by authViewModel.authState.collectAsState()
     val context = androidx.compose.ui.platform.LocalContext.current
 
-    // Language changes
+    // Language changes - observe and recreate activity when changed
     val languageManager = remember { LanguageManager.getInstance(context) }
     val languageChangeTrigger = languageManager.languageChangeTrigger
+
+    // Recreate activity when language changes
+    LaunchedEffect(languageChangeTrigger) {
+        if (languageChangeTrigger > 0) {
+            (context as? ComponentActivity)?.recreate()
+        }
+    }
 
     // Configure Google Sign-In
     val gso = remember {
@@ -162,8 +144,8 @@ fun MainApp() {
                 if (!isAuthRoute) {
                     // Show top app bar
                     TopAppBar(
-                        // Dynamic title based on current route
-                        title = { Text(getCurrentTitle(currentRoute)) },
+                        // Dynamic title based on current route using string resources
+                        title = { Text(getCurrentTitle(currentRoute, context)) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 scope.launch {
@@ -173,7 +155,7 @@ fun MainApp() {
                                 // Show drawer icon
                                 Icon(
                                     imageVector = Icons.Default.Menu,
-                                    contentDescription = "Menu"
+                                    contentDescription = stringResource(R.string.common_menu)
                                 )
                             }
                         },
@@ -186,38 +168,32 @@ fun MainApp() {
                     )
                 }
             }
-            // Padding to avoid content under top bar
         ) { paddingValues ->
+            // Navigation host with route definitions
             NavHost(
                 navController = navController,
-                startDestination = "splash",
+                startDestination = if (authState.isAuthenticated) "home" else "splash",
                 modifier = Modifier.padding(paddingValues)
             ) {
-                // Splash screen as the start destination
+                // Splash screen with navigation callback
                 composable("splash") {
-                    SplashScreen {
-                        if (authState.isAuthenticated) {
-                            navController.navigate("home") {
-                                popUpTo("splash") { inclusive = true }
-                                launchSingleTop = true
-                            }
-                            // If already authenticated, go to home
-                        } else {
-                            navController.navigate("login") {
+                    SplashScreen(
+                        onFinished = {
+                            navController.navigate(if (authState.isAuthenticated) "home" else "login") {
                                 popUpTo("splash") { inclusive = true }
                                 launchSingleTop = true
                             }
                         }
-                    }
+                    )
                 }
                 // Home screen with recent destinations
-                composable("home") { 
+                composable("home") {
                     HomeScreen(
                         onDestinationClick = { destination ->
                             // Navigate to route planner with the selected destination
                             navController.navigate("route-planner?destination=${destination.name}")
                         }
-                    ) 
+                    )
                 }
                 // Profile screen
                 composable("profile") { ProfileScreen() }
@@ -272,11 +248,11 @@ fun MainApp() {
                 }
                 // Placeholder screens for other sections
                 composable("favorites") {
-                    ScreenPlaceholder("Favorites")
+                    ScreenPlaceholder(stringResource(R.string.title_favorites))
                 }
                 // Placeholder for notifications
                 composable("notifications") {
-                    ScreenPlaceholder("Notifications")
+                    ScreenPlaceholder(stringResource(R.string.title_notifications))
                 }
                 // Login screen
                 composable("login") {
@@ -332,7 +308,7 @@ fun MainApp() {
             drawerState = drawerState,
             selectedRoute = currentRoute,
             onNavigate = { route ->
-            // Close drawer and navigate
+                // Close drawer and navigate
                 navController.navigate(route) {
                     popUpTo(navController.graph.startDestinationId) {
                         saveState = true
@@ -377,16 +353,19 @@ fun ScreenPlaceholder(title: String) {
     }
 }
 
-// Get dynamic title based on current route
-fun getCurrentTitle(route: String): String {
+// Get dynamic title based on current route using string resources
+fun getCurrentTitle(route: String, context: Context): String {
     return when (route) {
-        "home" -> "Routeify"
-        "map" -> "Transport Map"
-        "profile" -> "Profile"
-        "settings" -> "Settings"
-        "favorites" -> "Favorites"
-        "notifications" -> "Notifications"
-        else -> "Routeify"
+        "home" -> context.getString(R.string.title_home)
+        "map" -> context.getString(R.string.title_map)
+        "profile" -> context.getString(R.string.title_profile)
+        "settings" -> context.getString(R.string.title_settings)
+        "favorites" -> context.getString(R.string.title_favorites)
+        "notifications" -> context.getString(R.string.title_notifications)
+        "google-features" -> context.getString(R.string.title_google_features)
+        "route-planner" -> context.getString(R.string.title_route_planner)
+        "nearby_transit" -> context.getString(R.string.title_nearby_transit)
+        else -> context.getString(R.string.title_home)
     }
 }
 
