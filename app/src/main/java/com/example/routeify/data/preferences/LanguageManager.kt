@@ -10,17 +10,21 @@ import androidx.compose.runtime.setValue
 import com.example.routeify.R
 import java.util.Locale
 
-class LanguageManager(private val context: Context){
-    private val prefs: SharedPreferences = context.getSharedPreferences("language_prefs", Context.MODE_PRIVATE)
+class LanguageManager(private val context: Context) {
+
+    private val prefs: SharedPreferences = context.getSharedPreferences(
+        "language_prefs",
+        Context.MODE_PRIVATE
+    )
 
     var currentLanguage by mutableStateOf(getSavedLanguage())
         private set
 
     // Use Int state for triggering recomposition and activity restart
-    var languageChangeTrigger by mutableIntStateOf(0)
+    var languageChangeTrigger by mutableIntStateOf(1)
         private set
 
-    companion object{
+    companion object {
         const val KEY_LANGUAGE = "selected_language"
         const val ENGLISH = "en"
         const val AFRIKAANS = "af"
@@ -30,7 +34,9 @@ class LanguageManager(private val context: Context){
 
         fun getInstance(context: Context): LanguageManager {
             return instance ?: synchronized(this) {
-                instance ?: LanguageManager(context.applicationContext).also { instance = it }
+                instance ?: LanguageManager(context.applicationContext).also {
+                    instance = it
+                }
             }
         }
     }
@@ -43,18 +49,22 @@ class LanguageManager(private val context: Context){
     // Set & save the selected language
     fun setLanguage(languageCode: String) {
         val previousLanguage = currentLanguage
+
+        // Save to preferences
         prefs.edit().putString(KEY_LANGUAGE, languageCode).apply()
         currentLanguage = languageCode
+
+        // Update locale
         updateLocale(languageCode)
 
-        // Only trigger if language actually changed
+        // Only trigger recomposition if language actually changed
         if (previousLanguage != languageCode) {
             languageChangeTrigger++
         }
     }
 
     // Update app locale
-    private fun updateLocale(languageCode: String){
+    fun updateLocale(languageCode: String) {
         val locale = Locale(languageCode)
         Locale.setDefault(locale)
 
@@ -67,7 +77,7 @@ class LanguageManager(private val context: Context){
 
     // Get the name of the language
     fun getLanguageName(languageCode: String): String {
-        return when(languageCode){
+        return when (languageCode) {
             ENGLISH -> context.getString(R.string.language_english)
             AFRIKAANS -> context.getString(R.string.language_afrikaans)
             else -> context.getString(R.string.language_english)

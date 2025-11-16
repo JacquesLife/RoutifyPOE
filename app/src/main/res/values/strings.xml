@@ -106,6 +106,94 @@
     <string name="google_smart_suggestions_desc">Get personalized route recommendations based on your travel patterns</string>
     <string name="google_privacy_notice">Your privacy is protected. Location data is only used for transit planning.</string>
 
+    <!-- Nearby Transit Screen -->
+    <string name="nearby_transit_title">🚌 Nearby Transit</string>
+    <string name="back">Back</string>
+    <string name="search_radius">Search Radius: %1$dm</string>
+    <string name="expand_search">Expand search options</string>
+    <string name="search_within">Search within %1$dm</string>
+    <string name="searching">Searching...</string>
+    <string name="find_nearby_transit">Find Nearby Transit</string>
+    <string name="found_transit_stops">Found %1$d transit stops</string>
+    <string name="tap_stop_details">Tap on any stop to see details</string>
+    <string name="no_results_yet">No results yet</string>
+    <string name="search_nearby_prompt">Search for nearby transit stops to get started</string>
+    <string name="view_details">View details</string>
+
+    <!-- Route Planner Screen -->
+    <string name="route_planner_title">🗺 Route Planner</string>
+    <string name="from_label">From</string>
+    <string name="to_label">To</string>
+    <string name="enter_starting_location">Enter starting location</string>
+    <string name="enter_destination">Enter destination</string>
+    <string name="voice_input">Voice input</string>
+    <string name="clear">Clear</string>
+    <string name="swap_locations">Swap locations</string>
+    <string name="use_exact_address">Use this exact address</string>
+
+    <!-- Preset Locations -->
+    <string name="home">Home</string>
+    <string name="work">Work</string>
+    <string name="your_home_address">Your home address</string>
+    <string name="your_workplace">Your workplace</string>
+
+    <!-- Time Selection -->
+    <string name="when_travel">When do you want to travel?</string>
+    <string name="leave_now">Leave now</string>
+    <string name="depart_at">Depart at</string>
+    <string name="arrive_by">Arrive by</string>
+    <string name="select_date_time">Select Date &amp; Time</string>
+    <string name="date_label">Date:</string>
+    <string name="time_label">Time:</string>
+
+    <!-- Route Options -->
+    <string name="route_options">Route Options</string>
+    <string name="show">Show</string>
+    <string name="hide">Hide</string>
+    <string name="transport_modes">Transport modes:</string>
+    <string name="route_preference">Route preference:</string>
+    <string name="wheelchair_accessible">Wheelchair accessible routes</string>
+
+    <!-- Transit Modes -->
+    <string name="bus">Bus</string>
+    <string name="train">Train</string>
+    <string name="tram">Tram</string>
+    <string name="walk">Walk</string>
+
+    <!-- Route Preferences -->
+    <string name="fastest">Fastest</string>
+    <string name="fewest_transfers">Fewest transfers</string>
+    <string name="least_walking">Least walking</string>
+
+    <!-- Search -->
+    <string name="find_transit_routes">Find Transit Routes</string>
+    <string name="finding_routes">Finding routes...</string>
+
+    <!-- Validation Messages -->
+    <string name="ready_find_routes">Ready to find routes!</string>
+    <string name="enter_both_locations">Enter your starting location and destination to find routes</string>
+    <string name="enter_starting_location_msg">Enter your starting location</string>
+    <string name="enter_destination_msg">Enter your destination</string>
+    <string name="locations_must_differ">Starting location and destination must be different</string>
+
+    <!-- Route Results -->
+    <string name="available_routes">Available Routes (%1$d)</string>
+    <string name="stops_duration">%1$d stops • %2$s</string>
+    <string name="distance_duration">%1$s • %2$s</string>
+    <string name="from_stop">From: %1$s</string>
+    <string name="to_stop">To: %1$s</string>
+    <string name="view_on_map">View on Map</string>
+    <string name="open_google_maps">Google Maps</string>
+
+    <!-- Voice Input Prompts -->
+    <string name="voice_prompt_from">Where are you starting from?</string>
+    <string name="voice_prompt_to">Where do you want to go?</string>
+
+    <!-- Common -->
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="search">Search</string>
+
     <!-- Place Details Screen -->
     <string name="place_details_transit_stop">Transit Stop</string>
     <string name="place_details_loading">Loading place details...</string>

@@ -1,12 +1,3 @@
-/*
- * MAIN ACTIVITY - Updated for Multi-Language Support
- *
- * Key Changes:
- * 1. getCurrentTitle() now uses string resources
- * 2. Added activity recreation on language change
- * 3. Proper locale handling
- */
-
 package com.example.routeify
 
 import android.content.Context
@@ -35,7 +26,6 @@ import com.example.routeify.ui.screens.ProfileScreen
 import com.example.routeify.ui.screens.SettingsScreen
 import com.example.routeify.ui.screens.LoginScreen
 import com.example.routeify.ui.screens.RegisterScreen
-import com.example.routeify.shared.RecentDestination
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.routeify.ui.viewmodel.AuthViewModel
 import com.example.routeify.presentation.screen.GoogleFeaturesScreen
@@ -44,7 +34,6 @@ import android.widget.Toast
 import kotlinx.coroutines.launch
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -55,13 +44,14 @@ import android.os.Build.VERSION_CODES
 import com.example.routeify.data.preferences.LanguageManager
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         // Apply saved language preference
         val languageManager = LanguageManager.getInstance(this)
         val savedLanguage = languageManager.getSavedLanguage()
-        languageManager.setLanguage(savedLanguage)
+        languageManager.updateLocale(savedLanguage)
 
         enableEdgeToEdge()
         setContent {
@@ -91,6 +81,9 @@ class MainActivity : ComponentActivity() {
             val intent = Intent(context, MainActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
             context.startActivity(intent)
+            if (context is ComponentActivity) {
+                context.finish()
+            }
         }
     }
 }
@@ -111,11 +104,15 @@ fun MainApp() {
     val languageManager = remember { LanguageManager.getInstance(context) }
     val languageChangeTrigger = languageManager.languageChangeTrigger
 
+    // Track the previous trigger value to detect actual changes
+    var previousTrigger by remember { mutableIntStateOf(languageChangeTrigger) }
+
     LaunchedEffect(languageChangeTrigger) {
-        if (languageChangeTrigger > 0) {
-            // Restart activity to apply new language
+        // Only restart if the trigger actually changed
+        if (languageChangeTrigger != previousTrigger && previousTrigger > 0) {
             MainActivity.restart(context)
         }
+        previousTrigger = languageChangeTrigger
     }
 
     // Configure Google Sign-In
@@ -124,6 +121,7 @@ fun MainApp() {
             .requestEmail()
             .build()
     }
+
     val googleClient = remember { GoogleSignIn.getClient(context, gso) }
 
     val googleSignInLauncher = rememberLauncherForActivityResult(
@@ -138,11 +136,16 @@ fun MainApp() {
                 authViewModel.ssoSignIn(email, name)
             }
         } catch (e: ApiException) {
-            Toast.makeText(context, "Google sign-in failed: ${e.statusCode}", Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                context,
+                "Google sign-in failed: ${e.statusCode}",
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 
-    val isAuthRoute = currentRoute in listOf("login", "register", "splash") && !authState.isAuthenticated
+    val isAuthRoute = currentRoute in listOf("login", "register", "splash") &&
+            !authState.isAuthenticated
 
     val content: @Composable () -> Unit = {
         Scaffold(
@@ -183,6 +186,7 @@ fun MainApp() {
                         }
                     }
                 }
+
                 composable("home") {
                     HomeScreen(
                         onDestinationClick = { destination ->
@@ -190,7 +194,9 @@ fun MainApp() {
                         }
                     )
                 }
+
                 composable("profile") { ProfileScreen() }
+
                 composable(
                     route = "map?fromLat={fromLat}&fromLng={fromLng}&toLat={toLat}&toLng={toLng}&poly={poly}",
                     arguments = listOf(
@@ -201,7 +207,9 @@ fun MainApp() {
                         navArgument("poly") { type = NavType.StringType; nullable = true }
                     )
                 ) { MapScreen() }
+
                 composable("settings") { SettingsScreen() }
+
                 composable("google-features") {
                     if (Build.VERSION.SDK_INT >= VERSION_CODES.O) {
                         GoogleFeaturesScreen(
@@ -215,6 +223,7 @@ fun MainApp() {
                         ScreenPlaceholder(stringResource(R.string.error_generic))
                     }
                 }
+
                 composable(
                     route = "route-planner?destination={destination}",
                     arguments = listOf(
@@ -235,12 +244,15 @@ fun MainApp() {
                         ScreenPlaceholder(stringResource(R.string.error_generic))
                     }
                 }
+
                 composable("favorites") {
                     ScreenPlaceholder(stringResource(R.string.title_favorites))
                 }
+
                 composable("notifications") {
                     ScreenPlaceholder(stringResource(R.string.title_notifications))
                 }
+
                 composable("login") {
                     LoginScreen(
                         onLoginSuccess = {
@@ -258,6 +270,7 @@ fun MainApp() {
                         authViewModel = authViewModel
                     )
                 }
+
                 composable("register") {
                     RegisterScreen(
                         onRegisterSuccess = {

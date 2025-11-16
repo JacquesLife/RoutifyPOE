@@ -106,6 +106,94 @@
     <string name="google_smart_suggestions_desc">Kry gepersonaliseerde roete aanbevelings gebaseer op jou reis patrone</string>
     <string name="google_privacy_notice">Jou privaatheid is beskerm. Liggingsdata word slegs gebruik vir vervoer beplanning.</string>
 
+    <!-- Nearby Transit Screen -->
+    <string name="nearby_transit_title">🚌 Nabygeleë Vervoer</string>
+    <string name="back">Terug</string>
+    <string name="search_radius">Soek Radius: %1$dm</string>
+    <string name="expand_search">Brei soekopsies uit</string>
+    <string name="search_within">Soek binne %1$dm</string>
+    <string name="searching">Besig om te soek...</string>
+    <string name="find_nearby_transit">Vind Nabygeleë Vervoer</string>
+    <string name="found_transit_stops">%1$d vervoer stopplekke gevind</string>
+    <string name="tap_stop_details">Tik op enige stopplek vir besonderhede</string>
+    <string name="no_results_yet">Nog geen resultate</string>
+    <string name="search_nearby_prompt">Soek nabygeleë vervoer stopplekke om te begin</string>
+    <string name="view_details">Bekyk besonderhede</string>
+
+    <!-- Route Planner Screen -->
+    <string name="route_planner_title">🗺 Roete Beplanner</string>
+    <string name="from_label">Van</string>
+    <string name="to_label">Na</string>
+    <string name="enter_starting_location">Voer beginpunt in</string>
+    <string name="enter_destination">Voer bestemming in</string>
+    <string name="voice_input">Stem invoer</string>
+    <string name="clear">Maak skoon</string>
+    <string name="swap_locations">Ruil liggings</string>
+    <string name="use_exact_address">Gebruik hierdie presiese adres</string>
+
+    <!-- Preset Locations -->
+    <string name="home">Tuis</string>
+    <string name="work">Werk</string>
+    <string name="your_home_address">Jou tuis adres</string>
+    <string name="your_workplace">Jou werkplek</string>
+
+    <!-- Time Selection -->
+    <string name="when_travel">Wanneer wil jy reis?</string>
+    <string name="leave_now">Vertrek nou</string>
+    <string name="depart_at">Vertrek om</string>
+    <string name="arrive_by">Arriveer teen</string>
+    <string name="select_date_time">Kies Datum &amp; Tyd</string>
+    <string name="date_label">Datum:</string>
+    <string name="time_label">Tyd:</string>
+
+    <!-- Route Options -->
+    <string name="route_options">Roete Opsies</string>
+    <string name="show">Wys</string>
+    <string name="hide">Versteek</string>
+    <string name="transport_modes">Vervoer modusse:</string>
+    <string name="route_preference">Roete voorkeur:</string>
+    <string name="wheelchair_accessible">Rolstoel toeganklike roetes</string>
+
+    <!-- Transit Modes -->
+    <string name="bus">Bus</string>
+    <string name="train">Trein</string>
+    <string name="tram">Trem</string>
+    <string name="walk">Loop</string>
+
+    <!-- Route Preferences -->
+    <string name="fastest">Vinnigste</string>
+    <string name="fewest_transfers">Minste oordragte</string>
+    <string name="least_walking">Minste loop</string>
+
+    <!-- Search -->
+    <string name="find_transit_routes">Vind Vervoer Roetes</string>
+    <string name="finding_routes">Soek roetes...</string>
+
+    <!-- Validation Messages -->
+    <string name="ready_find_routes">Gereed om roetes te vind!</string>
+    <string name="enter_both_locations">Voer jou beginpunt en bestemming in om roetes te vind</string>
+    <string name="enter_starting_location_msg">Voer jou beginpunt in</string>
+    <string name="enter_destination_msg">Voer jou bestemming in</string>
+    <string name="locations_must_differ">Beginpunt en bestemming moet verskillend wees</string>
+
+    <!-- Route Results -->
+    <string name="available_routes">Beskikbare Roetes (%1$d)</string>
+    <string name="stops_duration">%1$d stopplekke • %2$s</string>
+    <string name="distance_duration">%1$s • %2$s</string>
+    <string name="from_stop">Van: %1$s</string>
+    <string name="to_stop">Na: %1$s</string>
+    <string name="view_on_map">Bekyk op Kaart</string>
+    <string name="open_google_maps">Google Kaarte</string>
+
+    <!-- Voice Input Prompts -->
+    <string name="voice_prompt_from">Waar begin jy?</string>
+    <string name="voice_prompt_to">Waarheen wil jy gaan?</string>
+
+    <!-- Common -->
+    <string name="ok">OK</string>
+    <string name="cancel">Kanselleer</string>
+    <string name="search">Soek</string>
+
     <!-- Place Details Screen -->
     <string name="place_details_transit_stop">Vervoer Stilhoupunt</string>
     <string name="place_details_loading">Laai plek besonderhede...</string>
