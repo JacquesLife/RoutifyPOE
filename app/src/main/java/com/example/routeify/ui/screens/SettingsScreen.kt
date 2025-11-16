@@ -16,6 +16,8 @@ import android.os.Build
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
+import android.content.Context
+import android.content.ContextWrapper
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import android.content.pm.PackageManager
@@ -34,19 +36,60 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.activity.ComponentActivity
+import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.routeify.ui.theme.RouteifyBlue500
+import com.example.routeify.ui.viewmodel.AuthViewModel
+import com.example.routeify.utils.BiometricAuthManager
+
+/**
+ * Helper function to find FragmentActivity from Context
+ * Handles ContextWrapper cases in Compose
+ */
+private fun Context.findActivity(): FragmentActivity? {
+    var context = this
+    // Check if the context itself is already a FragmentActivity
+    if (context is FragmentActivity) return context
+    
+    // Unwrap ContextWrappers to find the activity
+    while (context is ContextWrapper) {
+        context = context.baseContext
+        if (context is FragmentActivity) return context
+    }
+    return null
+}
 
 // Settings screen composable
 @Composable
-fun SettingsScreen() {
+fun SettingsScreen(
+    authViewModel: AuthViewModel = viewModel()
+) {
     var darkModeEnabled by remember { mutableStateOf(false) }
     var autoSyncEnabled by remember { mutableStateOf(true) }
 
     // Context and lifecycle
     val context = LocalContext.current
+    val view = LocalView.current
+    val activity = remember(view) { 
+        val viewContext = view.context
+        when {
+            viewContext is FragmentActivity -> viewContext
+            else -> viewContext.findActivity()
+        }
+    }
     val lifecycleOwner = LocalLifecycleOwner.current
+    
+    // Auth state for biometric
+    val authState by authViewModel.authState.collectAsState()
+    
+    // Biometric manager
+    val biometricManager = remember(activity) {
+        activity?.let { BiometricAuthManager(it) }
+    }
 
     // Check if notifications are enabled
     fun isNotificationsAllowed(): Boolean {
@@ -284,6 +327,68 @@ fun SettingsScreen() {
                     checked = autoSyncEnabled,
                     onCheckedChange = { autoSyncEnabled = it }
                 )
+                
+                // Biometric authentication - Always show
+                HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)
+                
+                val biometricAvailable = remember(biometricManager) {
+                    biometricManager?.canAuthenticate() == true
+                }
+                
+                var showBiometricUnavailableDialog by remember { mutableStateOf(false) }
+                
+                SettingSwitchItem(
+                    icon = Icons.Default.Fingerprint,
+                    title = "Biometric Login",
+                    subtitle = if (biometricAvailable) {
+                        "Use fingerprint or face to sign in"
+                    } else {
+                        biometricManager?.getAvailabilityMessage() ?: "Biometric hardware not available"
+                    },
+                    checked = authState.biometricEnabled,
+                    onCheckedChange = { enabled ->
+                        if (enabled) {
+                            if (biometricAvailable) {
+                                // Test biometric before enabling
+                                biometricManager?.authenticate(
+                                    title = "Enable Biometric Login",
+                                    subtitle = "Verify your identity",
+                                    description = "Authenticate to enable biometric login",
+                                    onSuccess = {
+                                        authViewModel.setBiometricEnabled(true)
+                                    },
+                                    onError = { _, _ ->
+                                        // Keep disabled if authentication failed
+                                        authViewModel.setBiometricEnabled(false)
+                                    }
+                                )
+                            } else {
+                                // Show dialog explaining why it's not available
+                                showBiometricUnavailableDialog = true
+                            }
+                        } else {
+                            authViewModel.setBiometricEnabled(false)
+                        }
+                    }
+                )
+                
+                // Dialog when biometric is not available
+                if (showBiometricUnavailableDialog) {
+                    AlertDialog(
+                        onDismissRequest = { showBiometricUnavailableDialog = false },
+                        icon = { Icon(Icons.Default.Fingerprint, contentDescription = null) },
+                        title = { Text("Biometric Authentication Unavailable") },
+                        text = { 
+                            Text(biometricManager?.getAvailabilityMessage() 
+                                ?: "Biometric authentication is not available on this device.")
+                        },
+                        confirmButton = {
+                            TextButton(onClick = { showBiometricUnavailableDialog = false }) {
+                                Text("OK")
+                            }
+                        }
+                    )
+                }
             }
         }
 

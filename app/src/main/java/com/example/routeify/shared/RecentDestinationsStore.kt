@@ -11,19 +11,38 @@
 
 package com.example.routeify.shared
 
+import android.content.Context
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import com.example.routeify.RoutifyApplication
+import com.example.routeify.data.api.AppDatabase
+import com.example.routeify.data.dao.RecentDestinationDao
+import com.example.routeify.data.sync.SyncManager
 import com.example.routeify.domain.model.PlaceSuggestion
 import com.google.android.gms.maps.model.LatLng
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+
+// Sync status for offline mode
+enum class SyncStatus {
+    SYNCED,      // Data is synced to cloud/server
+    PENDING,     // Needs sync when online
+    LOCAL_ONLY   // Never needs sync (local-only data)
+}
 
 // Data class representing a recent destination
+@Entity(tableName = "recent_destinations")
 data class RecentDestination(
+    @PrimaryKey
     val id: String,
     val name: String,
     val address: String,
@@ -32,7 +51,9 @@ data class RecentDestination(
     val longitude: Double,
     val iconType: DestinationIconType,
     val lastVisited: Long = System.currentTimeMillis(),
-    val visitCount: Int = 1
+    val visitCount: Int = 1,
+    val syncStatus: SyncStatus = SyncStatus.LOCAL_ONLY,
+    val isFavorite: Boolean = false
 ) {
     // Convert to PlaceSuggestion
     fun toPlaceSuggestion(): PlaceSuggestion {
@@ -66,10 +87,77 @@ enum class DestinationIconType {
 
 // Singleton object to manage recent destinations
 object RecentDestinationsStore {
+    private lateinit var database: AppDatabase
+    private lateinit var dao: RecentDestinationDao
+    private lateinit var syncManager: SyncManager
+    private var isInitialized = false
+    
     private val _recentDestinations = MutableStateFlow<List<RecentDestination>>(emptyList())
     val recentDestinations: StateFlow<List<RecentDestination>> = _recentDestinations.asStateFlow()
+    
+    private val _isOfflineMode = MutableStateFlow(false)
+    val isOfflineMode: StateFlow<Boolean> = _isOfflineMode.asStateFlow()
 
     private const val MAX_RECENT_DESTINATIONS = 10
+    private val scope = CoroutineScope(Dispatchers.IO)
+    
+    /**
+     * Initialize the store with database and sync manager
+     * Must be called before using the store
+     */
+    fun initialize(context: Context) {
+        if (isInitialized) return
+        
+        val app = context.applicationContext as RoutifyApplication
+        database = app.database
+        dao = database.recentDestinationDao()
+        syncManager = SyncManager(context)
+        
+        // Load from database
+        scope.launch {
+            dao.getAllDestinations().collect { destinations ->
+                _recentDestinations.value = destinations
+            }
+        }
+        
+        // Monitor connectivity
+        scope.launch {
+            syncManager.isOnline.collect { isOnline ->
+                _isOfflineMode.value = !isOnline
+                if (isOnline) {
+                    // Sync pending destinations when back online
+                    syncPendingDestinations()
+                }
+            }
+        }
+        
+        isInitialized = true
+    }
+    
+    /**
+     * Sync destinations with PENDING status
+     */
+    private suspend fun syncPendingDestinations() {
+        try {
+            val pending = dao.getPendingDestinations()
+            if (pending.isNotEmpty()) {
+                syncManager.syncPendingData()
+                
+                // Mark as synced after successful sync
+                pending.forEach { destination ->
+                    dao.updateSyncStatus(destination.id, SyncStatus.SYNCED)
+                }
+            }
+        } catch (e: Exception) {
+            // Log error but don't crash
+            e.printStackTrace()
+        }
+    }
+    
+    // Update offline mode status
+    fun setOfflineMode(isOffline: Boolean) {
+        _isOfflineMode.value = isOffline
+    }
 
     // Initialize with some dummy data for demonstration
     init {
@@ -139,29 +227,35 @@ object RecentDestinationsStore {
 
     // Add or update a recent destination
     fun addDestination(destination: RecentDestination) {
-        val currentList = _recentDestinations.value
-        val existingIndex = currentList.indexOfFirst { it.placeId == destination.placeId }
-        
-        if (existingIndex >= 0) {
-            // Update existing destination
-            val existing = currentList[existingIndex]
-            val updated = existing.copy(
-                lastVisited = System.currentTimeMillis(),
-                visitCount = existing.visitCount + 1
-            )
-            val newList = currentList.toMutableList().apply {
-                removeAt(existingIndex)
-                add(0, updated) // Move to top
-            }
-            _recentDestinations.value = newList
-        } else {
-            // Add new destination
-            val newList = mutableListOf<RecentDestination>()
-            newList.add(destination)
-            newList.addAll(currentList)
+        scope.launch {
+            val currentList = _recentDestinations.value
+            val existingIndex = currentList.indexOfFirst { it.placeId == destination.placeId }
             
-            // Keep only the most recent destinations
-            _recentDestinations.value = newList.take(MAX_RECENT_DESTINATIONS)
+            if (existingIndex >= 0) {
+                // Update existing destination
+                val existing = currentList[existingIndex]
+                val updated = existing.copy(
+                    lastVisited = System.currentTimeMillis(),
+                    visitCount = existing.visitCount + 1,
+                    syncStatus = if (_isOfflineMode.value) SyncStatus.PENDING else SyncStatus.SYNCED
+                )
+                dao.updateDestination(updated)
+            } else {
+                // Add new destination
+                val newDestination = destination.copy(
+                    syncStatus = if (_isOfflineMode.value) SyncStatus.PENDING else SyncStatus.SYNCED
+                )
+                dao.insertDestination(newDestination)
+                
+                // Maintain max limit
+                val totalCount = dao.getTotalCount()
+                if (totalCount > MAX_RECENT_DESTINATIONS) {
+                    // Remove oldest destinations
+                    val allDestinations = dao.getDestinationsByStatus(SyncStatus.SYNCED)
+                    val toRemove = allDestinations.drop(MAX_RECENT_DESTINATIONS)
+                    toRemove.forEach { dao.deleteDestination(it) }
+                }
+            }
         }
     }
 
@@ -206,14 +300,61 @@ object RecentDestinationsStore {
      * Clear all recent destinations
      */
     fun clearAll() {
-        _recentDestinations.value = emptyList()
+        scope.launch {
+            dao.clearAll()
+        }
     }
 
     /**
      * Remove a specific destination
      */
     fun removeDestination(placeId: String) {
-        _recentDestinations.value = _recentDestinations.value.filter { it.placeId != placeId }
+        scope.launch {
+            dao.deleteById(placeId)
+        }
+    }
+    
+    /**
+     * Get destinations that need syncing
+     */
+    fun getPendingSyncDestinations(): List<RecentDestination> {
+        return _recentDestinations.value.filter { it.syncStatus == SyncStatus.PENDING }
+    }
+    
+    /**
+     * Mark destinations as synced
+     */
+    fun markAsSynced(placeIds: List<String>) {
+        scope.launch {
+            placeIds.forEach { placeId ->
+                dao.updateSyncStatus(placeId, SyncStatus.SYNCED)
+            }
+        }
+    }
+    
+    /**
+     * Toggle favorite status for a destination
+     */
+    fun toggleFavorite(placeId: String) {
+        scope.launch {
+            val destinations = _recentDestinations.value
+            val destination = destinations.find { it.placeId == placeId }
+            destination?.let {
+                val updated = it.copy(
+                    isFavorite = !it.isFavorite,
+                    syncStatus = if (it.syncStatus == SyncStatus.SYNCED) SyncStatus.PENDING else it.syncStatus
+                )
+                dao.updateDestination(updated)
+            }
+        }
+    }
+    
+    /**
+     * Get sync manager for UI integration
+     */
+    fun getSyncManager(): SyncManager {
+        check(isInitialized) { "RecentDestinationsStore must be initialized before use" }
+        return syncManager
     }
 }
 

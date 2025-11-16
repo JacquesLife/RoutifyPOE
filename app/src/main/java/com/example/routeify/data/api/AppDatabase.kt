@@ -30,18 +30,23 @@ package com.example.routeify.data.api
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
+import com.example.routeify.data.dao.RecentDestinationDao
 import com.example.routeify.data.model.User
+import com.example.routeify.shared.RecentDestination
 
 // The AppDatabase class for Room database
 @Database(
-    entities = [User::class],
-    version = 2,
+    entities = [User::class, RecentDestination::class],
+    version = 3,
     exportSchema = true
 )
+@TypeConverters(Converters::class)
 
 // Abstract class extending RoomDatabase
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
+    abstract fun recentDestinationDao(): RecentDestinationDao
 }
 
 

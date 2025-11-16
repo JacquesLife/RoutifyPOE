@@ -43,7 +43,7 @@
 package com.example.routeify
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
+import androidx.fragment.app.FragmentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.*
@@ -83,8 +83,8 @@ import androidx.navigation.navArgument
 import android.os.Build
 import android.os.Build.VERSION_CODES
 
-// Main activity hosting the entire app
-class MainActivity : ComponentActivity() {
+// Main activity hosting the entire app - extends FragmentActivity for biometric support
+class MainActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
