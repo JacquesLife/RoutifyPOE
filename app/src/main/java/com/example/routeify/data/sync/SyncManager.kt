@@ -123,10 +123,6 @@ class SyncManager(private val context: Context) {
         try {
             var syncedCount = 0
             
-            // Here you would sync recent destinations to your backend/cloud
-            // For now, we'll just mark them as synced
-            // Example: Upload to Firebase, your REST API, etc.
-            
             // Simulate sync delay
             kotlinx.coroutines.delay(500)
             

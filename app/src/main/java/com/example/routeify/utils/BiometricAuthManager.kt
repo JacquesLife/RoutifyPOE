@@ -12,16 +12,6 @@
  * - Fallback to PIN/Pattern if biometrics unavailable
  * - Simple callback-based API
  * 
- * Usage:
- * ```
- * val authManager = BiometricAuthManager(activity)
- * if (authManager.canAuthenticate()) {
- *     authManager.authenticate(
- *         onSuccess = { /* Handle success */ },
- *         onError = { errorCode, errorMessage -> /* Handle error */ }
- *     )
- * }
- * ```
  * ============================================================================
  */
 

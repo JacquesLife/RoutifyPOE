@@ -350,16 +350,16 @@ class GooglePlacesEnhancedRepository {
                         }
 
                         allRoutes.addAll(enhancedRoutes)
-                        Log.d(TAG, "✅ Found ${enhancedRoutes.size} routes via ${originStop.name} -> ${destinationStop.name}")
+                        Log.d(TAG, "Found ${enhancedRoutes.size} routes via ${originStop.name} -> ${destinationStop.name}")
                     }
                 }
             }
 
             if (allRoutes.isNotEmpty()) {
-                Log.d(TAG, "🎉 Found ${allRoutes.size} total routes with nearest stops")
+                Log.d(TAG, "Found ${allRoutes.size} total routes with nearest stops")
                 Result.success(allRoutes)
             } else {
-                Log.d(TAG, "❌ No routes found even with nearest stops")
+                Log.d(TAG, "No routes found even with nearest stops")
                 Result.failure(Exception("No transit routes found, even when including nearby stops"))
             }
 

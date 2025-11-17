@@ -2,6 +2,19 @@
 
 **Routeify** is a modern Android transit planning application built with Jetpack Compose that helps users navigate public transportation in Cape Town, South Africa. The app integrates with Google Maps and Google Places APIs to provide real-time transit information, route planning, and smart navigation features.
 
+## Purpose
+
+Routeify aims to simplify public transportation in Cape Town by providing an intuitive, all-in-one transit solution. Whether you're commuting to work, exploring the city, or planning a complex multi-modal journey, Routeify helps you:
+
+- Find the fastest routes combining buses, trains, and walking
+- Discover nearby transit stops with detailed information
+- Save time with intelligent route suggestions based on real-time data
+- Access wheelchair-accessible route options for inclusive travel
+- Plan trips offline with smart caching capabilities
+
+The app addresses the challenges of navigating Cape Town's transit network by consolidating multiple data sources into a single, user-friendly interface.
+
+
 ##  Features
 
 ### Core Functionality
@@ -178,6 +191,26 @@ Run instrumented tests:
 ### Networking
 - **Retrofit**: 2.9.0
 - **Gson**: 2.10.1
+
+## CI/CD Pipeline
+
+The project uses GitHub Actions for continuous integration and deployment:
+
+### Build & Test
+- **Automated Builds**: Every commit triggers a build verification
+- **Unit Tests**: Automated test suite runs on all pull requests
+- **Code Quality**: Static analysis and linting checks
+- **Build Artifacts**: APK generation for testing and distribution
+
+### Release Management
+- **Version Control**: Semantic versioning with automatic changelog generation
+- **Beta Distribution**: Automated deployment to internal testing tracks
+- **Production Releases**: Manual approval gates for Play Store releases
+
+### Code Quality
+- **Lint Checks**: Android lint and Kotlin static analysis
+- **Dependency Updates**: Automated dependency version monitoring
+- **Security Scanning**: Vulnerability checks on third-party libraries
 
 ##  Development Status
 
