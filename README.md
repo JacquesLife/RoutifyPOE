@@ -5,25 +5,25 @@
 ##  Features
 
 ### Core Functionality
-- ** Interactive Map View**: Real-time transit map with clustered bus stops and train stations
-- ** Route Planning**: Comprehensive route planning with multiple transport options (bus, train, tram, walking)
-- ** Nearby Transit**: Find transit stops, bus stations, and train stations near your location
-- ** Real-time Travel Times**: Get accurate travel time estimates and departure information
-- ** Smart Suggestions**: AI-powered route recommendations based on travel patterns
+- **Interactive Map View**: Real-time transit map with clustered bus stops and train stations
+- **Route Planning**: Comprehensive route planning with multiple transport options (bus, train, tram, walking)
+- **Nearby Transit**: Find transit stops, bus stations, and train stations near your location
+- **Real-time Travel Times**: Get accurate travel time estimates and departure information
+- **Smart Suggestions**: AI-powered route recommendations based on travel patterns
 
 ### User Experience
-- ** User Authentication**: Secure login/registration with Google SSO support
-- ** Offline Caching**: Intelligent data caching for improved performance
-- ** Modern UI**: Beautiful Material Design 3 interface with dark/light themes
-- ** Responsive Design**: Optimized for various screen sizes and orientations
-- ** Accessibility**: Wheelchair-accessible route options
+- **User Authentication**: Secure login/registration with Google SSO support
+- **Offline Caching**: Intelligent data caching for improved performance
+- **Modern UI**: Beautiful Material Design 3 interface with dark/light themes
+- **Responsive Design**: Optimized for various screen sizes and orientations
+- **Accessibility**: Wheelchair-accessible route options
 
 ### Advanced Features
-- ** Place Autocomplete**: Smart search with Google Places API integration
-- ** Route Comparison**: Compare multiple route options with detailed metrics
-- ** Favorites**: Save frequently used destinations and routes
-- ** Notifications**: Real-time transit alerts and updates
-- ** Travel Analytics**: Track your transit usage and patterns
+- **Place Autocomplete**: Smart search with Google Places API integration
+- **Route Comparison**: Compare multiple route options with detailed metrics
+- **Favorites**: Save frequently used destinations and routes
+- **Notifications**: Real-time transit alerts and updates
+- **Travel Analytics**: Track your transit usage and patterns
 
 ##  Architecture
 
@@ -99,7 +99,7 @@ The app requires the following permissions (automatically granted):
 - `ACCESS_NETWORK_STATE` - For network status monitoring
 - `POST_NOTIFICATIONS` - For transit alerts (Android 13+)
 
-## 📱 Usage Guide
+## Usage Guide
 
 ### Getting Started
 1. **Launch the app** and create an account or sign in with Google
@@ -128,7 +128,7 @@ The app requires the following permissions (automatically granted):
 - **Toggle transit lines** visibility
 - **Follow route polylines** for turn-by-turn navigation
 
-## 🔧 Configuration
+## Configuration
 
 ### API Configuration
 The app uses several Google APIs. Ensure your API key has access to:
@@ -204,7 +204,7 @@ We welcome contributions! Please follow these steps:
 
 1. **Fork the repository**
 2. **Create a feature branch**: `git checkout -b feature/amazing-feature`
-3. **Commit your changes**: `git commit -m 'Add amazing feature'`
+3. **Commit your changes**: `git commit -m "Add amazing feature"`
 4. **Push to the branch**: `git push origin feature/amazing-feature`
 5. **Open a Pull Request**
 
@@ -213,8 +213,6 @@ We welcome contributions! Please follow these steps:
 - Write unit tests for new features
 - Update documentation for API changes
 - Ensure all tests pass before submitting
-
-
 
 ##  Support
 
@@ -233,12 +231,7 @@ We welcome contributions! Please follow these steps:
 - Verify your Google Directions API is enabled
 - Check API key restrictions and quotas
 
-### Getting Help
--  Email: support@routeify.app
--  Issues: [GitHub Issues](https://github.com/yourusername/routeify/issues)
--  Documentation: [Wiki](https://github.com/yourusername/routeify/wiki)
-
-##  Acknowledgments
+## Acknowledgments
 
 - **Google Maps Platform** for comprehensive mapping and transit APIs
 - **Jetpack Compose** team for the amazing UI toolkit
