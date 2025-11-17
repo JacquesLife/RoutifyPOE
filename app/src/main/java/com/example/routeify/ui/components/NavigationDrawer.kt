@@ -24,9 +24,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.routeify.R
 import com.example.routeify.ui.theme.RouteifyBlue500
 import com.example.routeify.ui.theme.RouteifyGreen500
 
@@ -52,13 +54,13 @@ fun AppNavigationDrawer(
 ) {
     // List of navigation items
     val items = listOf(
-        NavigationItem("Home", Icons.Default.Home, "home"),
-        NavigationItem("Map", Icons.Default.Map, "map"),
-        NavigationItem("Google Features", Icons.Default.Api, "google-features"),
-        NavigationItem("Profile", Icons.Default.Person, "profile"),
-        NavigationItem("Settings", Icons.Default.Settings, "settings"),
-        NavigationItem("Favorites", Icons.Default.Favorite, "favorites"),
-        NavigationItem("Notifications", Icons.Default.Notifications, "notifications")
+        NavigationItem(stringResource(R.string.home), Icons.Default.Home, "home"),
+        NavigationItem(stringResource(R.string.title_map), Icons.Default.Map, "map"),
+        NavigationItem(stringResource(R.string.title_google_features), Icons.Default.Api, "google-features"),
+        NavigationItem(stringResource(R.string.title_profile), Icons.Default.Person, "profile"),
+        NavigationItem(stringResource(R.string.title_settings), Icons.Default.Settings, "settings"),
+        NavigationItem(stringResource(R.string.title_favorites), Icons.Default.Favorite, "favorites"),
+        NavigationItem(stringResource(R.string.title_notifications), Icons.Default.Notifications, "notifications")
     )
 
     // Modal Navigation Drawer
