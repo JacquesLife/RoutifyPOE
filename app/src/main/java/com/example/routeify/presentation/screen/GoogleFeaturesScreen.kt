@@ -32,6 +32,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.routeify.R
 import com.example.routeify.data.model.TransitStop
 import com.example.routeify.presentation.viewmodel.GoogleFeaturesViewModel
+import com.example.routeify.shared.RecentRoutesStore
 
 // Main screen for Google Features
 @RequiresApi(Build.VERSION_CODES.O)
@@ -63,6 +64,54 @@ fun GoogleFeaturesScreen(
                     val toLng = route.endLocation?.longitude?.toString()
                     val poly = route.overviewPolyline
                     val encodedPoly = poly?.let { java.net.URLEncoder.encode(it, "UTF-8") }
+                    
+                    // Get location names from route segments - use first and last transit stops
+                    val firstTransitSegment = route.segments.firstOrNull { it.transitInfo != null }
+                    val lastTransitSegment = route.segments.lastOrNull { it.transitInfo != null }
+                    
+                    val fromName = firstTransitSegment?.transitInfo?.departureStop 
+                        ?: route.segments.firstOrNull()?.instruction?.let {
+                            // Try to extract location from walking instruction
+                            it.substringAfter("to ", "").substringBefore(",").trim()
+                        }?.takeIf { it.isNotBlank() }
+                        ?: "Start Location"
+                        
+                    val toName = lastTransitSegment?.transitInfo?.arrivalStop
+                        ?: route.segments.lastOrNull()?.instruction?.let {
+                            // Try to extract destination from instruction
+                            it.substringAfter("to ", "").substringBefore(",").trim()
+                        }?.takeIf { it.isNotBlank() }
+                        ?: "End Location"
+                        
+                    val encodedFromName = java.net.URLEncoder.encode(fromName, "UTF-8")
+                    val encodedToName = java.net.URLEncoder.encode(toName, "UTF-8")
+                    
+                    // Save route to recent routes
+                    if (route.startLocation != null && route.endLocation != null) {
+                        RecentRoutesStore.addRoute(
+                            fromName = fromName,
+                            fromAddress = "",
+                            fromLat = route.startLocation.latitude,
+                            fromLng = route.startLocation.longitude,
+                            toName = toName,
+                            toAddress = "",
+                            toLat = route.endLocation.latitude,
+                            toLng = route.endLocation.longitude,
+                            polyline = poly,
+                            duration = route.totalDuration,
+                            distance = route.totalDistance
+                        )
+                    }
+                    
+                    // Debug logging
+                    android.util.Log.d("GoogleFeaturesScreen", "Route selected:")
+                    android.util.Log.d("GoogleFeaturesScreen", "  startLocation: ${route.startLocation}")
+                    android.util.Log.d("GoogleFeaturesScreen", "  endLocation: ${route.endLocation}")
+                    android.util.Log.d("GoogleFeaturesScreen", "  polyline exists: ${poly != null}, length: ${poly?.length}")
+                    android.util.Log.d("GoogleFeaturesScreen", "  fromLat=$fromLat, fromLng=$fromLng")
+                    android.util.Log.d("GoogleFeaturesScreen", "  toLat=$toLat, toLng=$toLng")
+                    android.util.Log.d("GoogleFeaturesScreen", "  fromName=$fromName, toName=$toName")
+                    
                     val routeStr = buildString {
                         append("map")
                         append("?")
@@ -70,8 +119,12 @@ fun GoogleFeaturesScreen(
                         if (fromLng != null) append("fromLng=$fromLng&")
                         if (toLat != null) append("toLat=$toLat&")
                         if (toLng != null) append("toLng=$toLng&")
-                        if (encodedPoly != null) append("poly=$encodedPoly")
+                        append("fromName=$encodedFromName&")
+                        append("toName=$encodedToName")
+                        if (encodedPoly != null) append("&poly=$encodedPoly")
                     }.trimEnd('&')
+                    
+                    android.util.Log.d("GoogleFeaturesScreen", "Navigation string: $routeStr")
                     onRouteSelectedNavigateToMap(routeStr)
                 }
             )

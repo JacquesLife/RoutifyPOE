@@ -8,6 +8,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -155,17 +156,51 @@ fun MainApp() {
         Scaffold(
             topBar = {
                 if (!isAuthRoute) {
+                    // Check if we should show back button:
+                    // 1. Map with single location (from recent destinations)
+                    // 2. Map with route (from/to destinations)
+                    // 3. Google-features/route-planner screens
+                    val hasRouteParams = currentBackStackEntry?.arguments?.getString("fromLat") != null ||
+                                        currentBackStackEntry?.arguments?.getString("toLat") != null
+                    val hasSingleLocation = currentBackStackEntry?.arguments?.getString("lat") != null
+                    
+                    val showBackButton = (currentRoute.startsWith("map") && (hasSingleLocation || hasRouteParams)) ||
+                                        currentRoute.startsWith("google-features") ||
+                                        currentRoute.startsWith("route-planner")
+                    
                     TopAppBar(
                         title = { Text(getCurrentTitle(currentRoute, context)) },
                         navigationIcon = {
                             IconButton(onClick = {
-                                scope.launch {
-                                    drawerState.open()
+                                if (showBackButton) {
+                                    // For google-features/route-planner, navigate to home
+                                    // For map views, go back to previous screen
+                                    if (currentRoute.startsWith("google-features") || 
+                                        currentRoute.startsWith("route-planner")) {
+                                        navController.navigate("home") {
+                                            popUpTo("home") { inclusive = false }
+                                            launchSingleTop = true
+                                        }
+                                    } else {
+                                        // Map with route or single location - go back
+                                        navController.popBackStack()
+                                    }
+                                } else {
+                                    // Open drawer
+                                    scope.launch {
+                                        drawerState.open()
+                                    }
                                 }
                             }) {
                                 Icon(
-                                    imageVector = Icons.Default.Menu,
-                                    contentDescription = stringResource(R.string.content_description_menu)
+                                    imageVector = if (showBackButton) 
+                                        Icons.AutoMirrored.Filled.ArrowBack 
+                                    else 
+                                        Icons.Default.Menu,
+                                    contentDescription = if (showBackButton)
+                                        stringResource(R.string.back)
+                                    else
+                                        stringResource(R.string.content_description_menu)
                                 )
                             }
                         },
@@ -193,8 +228,27 @@ fun MainApp() {
 
                 composable("home") {
                     HomeScreen(
-                        onDestinationClick = { destination ->
-                            navController.navigate("route-planner?destination=${destination.name}")
+                        onRouteClick = { route ->
+                            // Navigate to map showing the full route
+                            val encodedPoly = route.polyline?.let { 
+                                java.net.URLEncoder.encode(it, "UTF-8") 
+                            }
+                            val encodedFromName = java.net.URLEncoder.encode(route.fromName, "UTF-8")
+                            val encodedToName = java.net.URLEncoder.encode(route.toName, "UTF-8")
+                            navController.navigate(
+                                buildString {
+                                    append("map?")
+                                    append("fromLat=${route.fromLat}&")
+                                    append("fromLng=${route.fromLng}&")
+                                    append("toLat=${route.toLat}&")
+                                    append("toLng=${route.toLng}&")
+                                    append("fromName=$encodedFromName&")
+                                    append("toName=$encodedToName")
+                                    if (encodedPoly != null) {
+                                        append("&poly=$encodedPoly")
+                                    }
+                                }
+                            )
                         }
                     )
                 }
@@ -202,13 +256,19 @@ fun MainApp() {
                 composable("profile") { ProfileScreen() }
 
                 composable(
-                    route = "map?fromLat={fromLat}&fromLng={fromLng}&toLat={toLat}&toLng={toLng}&poly={poly}",
+                    route = "map?fromLat={fromLat}&fromLng={fromLng}&toLat={toLat}&toLng={toLng}&poly={poly}&lat={lat}&lng={lng}&name={name}&address={address}&fromName={fromName}&toName={toName}",
                     arguments = listOf(
                         navArgument("fromLat") { type = NavType.StringType; nullable = true },
                         navArgument("fromLng") { type = NavType.StringType; nullable = true },
                         navArgument("toLat") { type = NavType.StringType; nullable = true },
                         navArgument("toLng") { type = NavType.StringType; nullable = true },
-                        navArgument("poly") { type = NavType.StringType; nullable = true }
+                        navArgument("poly") { type = NavType.StringType; nullable = true },
+                        navArgument("lat") { type = NavType.StringType; nullable = true },
+                        navArgument("lng") { type = NavType.StringType; nullable = true },
+                        navArgument("name") { type = NavType.StringType; nullable = true },
+                        navArgument("address") { type = NavType.StringType; nullable = true },
+                        navArgument("fromName") { type = NavType.StringType; nullable = true },
+                        navArgument("toName") { type = NavType.StringType; nullable = true }
                     )
                 ) { MapScreen() }
 

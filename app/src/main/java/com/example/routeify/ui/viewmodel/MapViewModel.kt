@@ -48,9 +48,14 @@ class MapViewModel(
         val toLat = savedStateHandle.get<String>("toLat")?.toDoubleOrNull()
         val toLng = savedStateHandle.get<String>("toLng")?.toDoubleOrNull()
         val poly = savedStateHandle.get<String>("poly")
+        
+        // Try to read single location args (for recent destinations)
+        val lat = savedStateHandle.get<String>("lat")?.toDoubleOrNull()
+        val lng = savedStateHandle.get<String>("lng")?.toDoubleOrNull()
 
         // If valid coordinates are present, clear any error state
-        if (fromLat != null && fromLng != null && toLat != null && toLng != null) {
+        if ((fromLat != null && fromLng != null && toLat != null && toLng != null) ||
+            (lat != null && lng != null)) {
             _uiState.value = _uiState.value.copy(error = null)
         }
 
@@ -64,14 +69,75 @@ class MapViewModel(
         val fromLng = savedStateHandle.get<String>("fromLng")?.toDoubleOrNull()
         val toLat = savedStateHandle.get<String>("toLat")?.toDoubleOrNull()
         val toLng = savedStateHandle.get<String>("toLng")?.toDoubleOrNull()
-        val poly = savedStateHandle.get<String>("poly")
+        val poly = savedStateHandle.get<String>("poly")?.let {
+            try {
+                java.net.URLDecoder.decode(it, "UTF-8")
+            } catch (e: Exception) {
+                it
+            }
+        }
+        val fromName = savedStateHandle.get<String>("fromName")?.let {
+            try {
+                java.net.URLDecoder.decode(it, "UTF-8")
+            } catch (e: Exception) {
+                it
+            }
+        }
+        val toName = savedStateHandle.get<String>("toName")?.let {
+            try {
+                java.net.URLDecoder.decode(it, "UTF-8")
+            } catch (e: Exception) {
+                it
+            }
+        }
+        
+        // Debug logging
+        android.util.Log.d("MapViewModel", "Route Args - fromLat: $fromLat, fromLng: $fromLng")
+        android.util.Log.d("MapViewModel", "Route Args - toLat: $toLat, toLng: $toLng")
+        android.util.Log.d("MapViewModel", "Route Args - poly exists: ${poly != null}, length: ${poly?.length}")
+        android.util.Log.d("MapViewModel", "Route Args - fromName: $fromName, toName: $toName")
 
         // Return SelectedRouteArgs if all coordinates are valid
         return if (fromLat != null && fromLng != null && toLat != null && toLng != null) {
-            SelectedRouteArgs(
+            val result = SelectedRouteArgs(
                 origin = com.google.android.gms.maps.model.LatLng(fromLat, fromLng),
                 destination = com.google.android.gms.maps.model.LatLng(toLat, toLng),
-                encodedPolyline = poly
+                encodedPolyline = poly,
+                originName = fromName,
+                destinationName = toName
+            )
+            android.util.Log.d("MapViewModel", "Returning route args: origin=$fromLat,$fromLng dest=$toLat,$toLng")
+            result
+        } else {
+            android.util.Log.d("MapViewModel", "Route args incomplete - returning null")
+            null
+        }
+    }
+    
+    // Retrieve single location arguments from saved state
+    fun getSingleLocationArgs(): SingleLocationArgs? {
+        val lat = savedStateHandle.get<String>("lat")?.toDoubleOrNull()
+        val lng = savedStateHandle.get<String>("lng")?.toDoubleOrNull()
+        val name = savedStateHandle.get<String>("name")?.let { 
+            try {
+                java.net.URLDecoder.decode(it, "UTF-8")
+            } catch (e: Exception) {
+                it
+            }
+        }
+        val address = savedStateHandle.get<String>("address")?.let {
+            try {
+                java.net.URLDecoder.decode(it, "UTF-8")
+            } catch (e: Exception) {
+                it
+            }
+        }
+        
+        return if (lat != null && lng != null) {
+            SingleLocationArgs(
+                location = com.google.android.gms.maps.model.LatLng(lat, lng),
+                name = name,
+                address = address
             )
         } else null
     }
@@ -112,7 +178,16 @@ class MapViewModel(
 data class SelectedRouteArgs(
     val origin: com.google.android.gms.maps.model.LatLng,
     val destination: com.google.android.gms.maps.model.LatLng,
-    val encodedPolyline: String?
+    val encodedPolyline: String?,
+    val originName: String? = null,
+    val destinationName: String? = null
+)
+
+// Data class to hold single location arguments (for recent destinations)
+data class SingleLocationArgs(
+    val location: com.google.android.gms.maps.model.LatLng,
+    val name: String?,
+    val address: String?
 )
 
 // --------------------------------------------------End of File----------------------------------------------------------------
