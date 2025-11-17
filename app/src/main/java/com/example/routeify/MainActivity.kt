@@ -41,6 +41,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.navigation.navArgument
 import android.os.Build
 import android.os.Build.VERSION_CODES
+import androidx.activity.ComponentActivity
 import com.example.routeify.data.preferences.LanguageManager
 
 // Main activity hosting the entire app - extends FragmentActivity for biometric support

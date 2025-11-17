@@ -46,18 +46,21 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.routeify.ui.theme.RouteifyBlue500
 import com.example.routeify.R
 import com.example.routeify.data.preferences.LanguageManager
+import com.example.routeify.ui.viewmodel.AuthViewModel
+import com.example.routeify.utils.BiometricAuthManager
 
 // Settings screen composable
 @Composable
-fun SettingsScreen() {
-import com.example.routeify.ui.viewmodel.AuthViewModel
-import com.example.routeify.utils.BiometricAuthManager
+fun SettingsScreen( authViewModel: AuthViewModel = viewModel()
+) {
+
+
 
 /**
  * Helper function to find FragmentActivity from Context
  * Handles ContextWrapper cases in Compose
  */
-private fun Context.findActivity(): FragmentActivity? {
+ fun Context.findActivity(): FragmentActivity? {
     var context = this
     // Check if the context itself is already a FragmentActivity
     if (context is FragmentActivity) return context
@@ -69,14 +72,6 @@ private fun Context.findActivity(): FragmentActivity? {
     }
     return null
 }
-
-// Settings screen composable
-@Composable
-fun SettingsScreen(
-    authViewModel: AuthViewModel = viewModel()
-) {
-    var darkModeEnabled by remember { mutableStateOf(false) }
-    var autoSyncEnabled by remember { mutableStateOf(true) }
 
     // Context and lifecycle
     val context = LocalContext.current
@@ -621,5 +616,6 @@ fun LanguageSectionDialog(languageManager: LanguageManager, currentLanguage: Str
         }
     )
 }
+
 
 // --------------------------------------------------End of File----------------------------------------------------------------
