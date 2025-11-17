@@ -28,6 +28,7 @@ class AuthDataStore(private val context: Context) {
         val email = stringPreferencesKey("email")
         val username = stringPreferencesKey("username")
         val biometricEnabled = booleanPreferencesKey("biometric_enabled")
+        val darkModeEnabled = booleanPreferencesKey("dark_mode_enabled")
     }
 
 // Flows to observe authentication state and user info
@@ -35,6 +36,7 @@ class AuthDataStore(private val context: Context) {
     val emailFlow: Flow<String?> = context.authPrefs.data.map { it[Keys.email] }
     val usernameFlow: Flow<String?> = context.authPrefs.data.map { it[Keys.username] }
     val biometricEnabledFlow: Flow<Boolean> = context.authPrefs.data.map { it[Keys.biometricEnabled] ?: false }
+    val darkModeEnabledFlow: Flow<Boolean> = context.authPrefs.data.map { it[Keys.darkModeEnabled] ?: false }
 
     // Set authentication state and user info
     suspend fun setAuthenticated(email: String, username: String) {
@@ -58,6 +60,13 @@ class AuthDataStore(private val context: Context) {
     suspend fun setBiometricEnabled(enabled: Boolean) {
         context.authPrefs.edit { prefs ->
             prefs[Keys.biometricEnabled] = enabled
+        }
+    }
+    
+    // Set dark mode preference
+    suspend fun setDarkModeEnabled(enabled: Boolean) {
+        context.authPrefs.edit { prefs ->
+            prefs[Keys.darkModeEnabled] = enabled
         }
     }
 }

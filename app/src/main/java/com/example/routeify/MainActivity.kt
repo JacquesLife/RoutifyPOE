@@ -56,7 +56,10 @@ class MainActivity : FragmentActivity() {
 
         enableEdgeToEdge()
         setContent {
-            RouteifyTheme {
+            val authViewModel: AuthViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+            val authState by authViewModel.authState.collectAsState()
+            
+            RouteifyTheme(darkTheme = authState.darkModeEnabled) {
                 MainApp()
             }
         }
