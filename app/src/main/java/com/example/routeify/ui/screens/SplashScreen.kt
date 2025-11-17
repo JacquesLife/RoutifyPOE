@@ -6,6 +6,8 @@
  * Initial Compose screen with app branding and loading animation.
  * Handles app initialization and smooth transition to main screens.
  * 
+ * UPDATED: All hardcoded strings replaced with string resources
+ *
  * ============================================================================
  */
 
@@ -36,6 +38,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -82,7 +85,7 @@ fun SplashScreen(onFinished: () -> Unit) {
                 Box(contentAlignment = Alignment.Center) {
                     Icon(
                         painter = painterResource(id = R.drawable.bus_station_splash),
-                        contentDescription = "Routeify Bus Station logo",
+                        contentDescription = stringResource(R.string.app_name),
                         tint = androidx.compose.ui.graphics.Color.Unspecified,
                         modifier = Modifier.size(80.dp)
                     )
@@ -93,7 +96,7 @@ fun SplashScreen(onFinished: () -> Unit) {
 
             // App name and tagline
             Text(
-                text = "Routeify",
+                text = stringResource(R.string.app_name),
                 color = Color.White,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold
@@ -103,7 +106,7 @@ fun SplashScreen(onFinished: () -> Unit) {
 
             // Tagline
             Text(
-                text = "Smarter Public Transport",
+                text = stringResource(R.string.splash_tagline),
                 color = Color.White.copy(alpha = 0.9f),
                 style = MaterialTheme.typography.bodyMedium
             )

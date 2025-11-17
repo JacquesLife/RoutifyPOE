@@ -2,10 +2,12 @@
  * ============================================================================
  * LOGIN SCREEN - User Authentication Interface
  * ============================================================================
- * 
+ *
  * Compose screen for user login and authentication.
  * Handles credential validation, session creation, and navigation routing.
- * 
+ *
+ * UPDATED: All hardcoded strings replaced with string resources
+ *
  * ============================================================================
  */
 
@@ -30,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
@@ -37,6 +40,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.routeify.R
 import com.example.routeify.ui.viewmodel.AuthViewModel
 import com.example.routeify.ui.theme.RouteifyBlue500
 import com.example.routeify.ui.theme.RouteifyGreen500
@@ -145,13 +149,13 @@ fun LoginScreen(
                 // App title
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    text = "Welcome Back",
+                    text = stringResource(R.string.login_welcome),
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
                     color = Color.White
                 )
                 Text(
-                    text = "Sign in to continue your journey",
+                    text = stringResource(R.string.login_subtitle),
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.White.copy(alpha = 0.9f)
                 )
@@ -173,7 +177,7 @@ fun LoginScreen(
             OutlinedTextField(
                 value = emailOrUsername,
                 onValueChange = { emailOrUsername = it },
-                label = { Text("Email or Username") },
+                label = { Text(stringResource(R.string.login_email_username)) },
                 leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
                 singleLine = true,
                 shape = RoundedCornerShape(12.dp),
@@ -183,14 +187,14 @@ fun LoginScreen(
                     focusedLabelColor = RouteifyBlue500
                 )
             )
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             // Password field
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
-                label = { Text("Password") },
+                label = { Text(stringResource(R.string.login_password)) },
                 leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
                 singleLine = true,
                 visualTransformation = PasswordVisualTransformation(),
@@ -220,7 +224,7 @@ fun LoginScreen(
             }
 
             Spacer(modifier = Modifier.height(24.dp))
-            
+
             // Sign In button
             Button(
                 onClick = { authViewModel.login(emailOrUsername, password) },
@@ -232,7 +236,7 @@ fun LoginScreen(
                     containerColor = RouteifyBlue500
                 )
             ) {
-                Text("Sign In", style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.button_sign_in), style = MaterialTheme.typography.titleMedium)
             }
             
             // Biometric login button (if available)
@@ -291,7 +295,7 @@ fun LoginScreen(
             
             // Create Account button
             Spacer(modifier = Modifier.height(12.dp))
-            
+
             // Outlined button for account creation
             OutlinedButton(
                 onClick = onNavigateToRegister,
@@ -304,9 +308,9 @@ fun LoginScreen(
                 )
             ) {
                 // Create Account text
-                Text("Create Account", style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.button_create_account), style = MaterialTheme.typography.titleMedium)
             }
-            
+
             Spacer(modifier = Modifier.height(24.dp))
 
             // Divider with "OR" text
@@ -317,16 +321,16 @@ fun LoginScreen(
                 // Divider
                 Divider(modifier = Modifier.weight(1f))
                 Text(
-                    text = "OR",
+                    text = stringResource(R.string.login_or),
                     modifier = Modifier.padding(horizontal = 16.dp),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Divider(modifier = Modifier.weight(1f))
             }
-            
+
             Spacer(modifier = Modifier.height(24.dp))
-            
+
             // Google Sign-In button
             OutlinedButton(
                 onClick = onGoogleSignInClick,
@@ -343,7 +347,7 @@ fun LoginScreen(
                     // Google icon
                     Icon(Icons.Default.AccountCircle, contentDescription = null)
                     Spacer(modifier = Modifier.width(12.dp))
-                    Text("Continue with Google", style = MaterialTheme.typography.titleMedium)
+                    Text(stringResource(R.string.login_google), style = MaterialTheme.typography.titleMedium)
                 }
             }
         }

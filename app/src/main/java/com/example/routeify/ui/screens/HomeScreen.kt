@@ -6,6 +6,8 @@
  * Primary Compose screen with app navigation and feature overview.
  * Provides quick access to core features and recent destinations.
  * 
+ * UPDATED: All hardcoded strings replaced with string resources
+ *
  * ============================================================================
  */
 
@@ -26,8 +28,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.routeify.R
 import com.example.routeify.ui.theme.RouteifyBlue500
 import com.example.routeify.ui.theme.RouteifyGreen500
 import com.example.routeify.shared.RecentDestinationsStore
@@ -56,7 +60,7 @@ fun HomeScreen(
                 // App icon
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
-                    "Routeify",
+                    stringResource(R.string.app_name),
                     color = Color.White,
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold
@@ -73,17 +77,17 @@ fun HomeScreen(
         ) {
             // Section title and subtitle
             Text(
-                "Recent Destinations",
+                stringResource(R.string.home_recent_destinations),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onBackground
             )
-            
+
             Spacer(modifier = Modifier.height(4.dp))
-            
+
             // Section subtitle
             Text(
-                "Your frequently visited places",
+                stringResource(R.string.home_recent_destinations_subtitle),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -92,7 +96,7 @@ fun HomeScreen(
 
             // Dynamic list of recent destinations
             val recentDestinations by RecentDestinationsStore.recentDestinations.collectAsState()
-            
+
             if (recentDestinations.isEmpty()) {
                 // Show empty state
                 Card(
@@ -115,14 +119,14 @@ fun HomeScreen(
                         // Empty state text
                         Spacer(modifier = Modifier.height(12.dp))
                         Text(
-                            "No recent destinations",
+                            stringResource(R.string.home_no_destinations),
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         // Empty state description
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            "Start planning routes to see your recent destinations here",
+                            stringResource(R.string.home_no_destinations_desc),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -153,7 +157,7 @@ private fun DestinationCard(
 ) {
     // Get appropriate icon based on destination type
     val icon = RecentDestinationsStore.getIconForType(destination.iconType)
-    
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -202,7 +206,7 @@ private fun DestinationCard(
                     // Show visit count if more than once
                     if (destination.visitCount > 1) {
                         Text(
-                            "Visited ${destination.visitCount} times",
+                            stringResource(R.string.home_visited_times, destination.visitCount),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                         )
@@ -213,7 +217,7 @@ private fun DestinationCard(
             trailingContent = {
                 Icon(
                     Icons.Default.ChevronRight,
-                    contentDescription = "Navigate to ${destination.name}",
+                    contentDescription = stringResource(R.string.content_description_navigate),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }

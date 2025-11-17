@@ -6,6 +6,8 @@
  * Compose screen for displaying and editing user profile information.
  * Shows account details, recent activity, and profile customization options.
  * 
+ * UPDATED: All hardcoded strings replaced with string resources
+ *
  * ============================================================================
  */
 
@@ -48,10 +50,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.routeify.R
 import com.example.routeify.ui.viewmodel.AuthViewModel
 import com.example.routeify.ui.theme.RouteifyBlue500
 import com.example.routeify.ui.theme.RouteifyGreen500
@@ -89,7 +93,7 @@ fun ProfileScreen(authViewModel: AuthViewModel = viewModel()) {
                             .mapNotNull { it.firstOrNull()?.uppercase() }
                             .joinToString("")
                             .take(2)
-                            .ifBlank { "GU" }
+                            .ifBlank { stringResource(R.string.profile_guest).take(2).uppercase() }
                         Text(
                             text = initials,
                             color = RouteifyBlue500,
@@ -101,7 +105,7 @@ fun ProfileScreen(authViewModel: AuthViewModel = viewModel()) {
                 // Profile name
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    authState.username ?: "Guest",
+                    authState.username ?: stringResource(R.string.profile_guest),
                     color = Color.White,
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold
@@ -116,28 +120,28 @@ fun ProfileScreen(authViewModel: AuthViewModel = viewModel()) {
             }
         }
 
-        // Settings sections with hardcoded options
+        // Settings sections with saved routes
         Column(modifier = Modifier.padding(16.dp)) {
-            SectionTitle("Saved Routes")
+            SectionTitle(stringResource(R.string.profile_saved_routes))
 
             RouteCard(
-                title = "Home to Work",
-                subtitle = "Rondebosch to Claremont",
+                title = stringResource(R.string.profile_home_to_work),
+                subtitle = stringResource(R.string.profile_home_to_work_subtitle),
                 leading = Icons.Default.Route
             )
             RouteCard(
-                title = "University Route",
-                subtitle = "UCT Main Campus",
+                title = stringResource(R.string.profile_university_route),
+                subtitle = stringResource(R.string.profile_university_subtitle),
                 leading = Icons.Default.Star
             )
             RouteCard(
-                title = "Weekend Shopping",
-                subtitle = "V&A Waterfront",
+                title = stringResource(R.string.profile_weekend_shopping),
+                subtitle = stringResource(R.string.profile_weekend_subtitle),
                 leading = Icons.Default.LocationOn
             )
 
 
-            SectionTitle("Account")
+            SectionTitle(stringResource(R.string.profile_account))
             Card(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 shape = RoundedCornerShape(16.dp),
@@ -148,7 +152,7 @@ fun ProfileScreen(authViewModel: AuthViewModel = viewModel()) {
                         Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = null, tint = MaterialTheme.colorScheme.error)
                     },
                     headlineContent = {
-                        Text("Logout", color = MaterialTheme.colorScheme.error)
+                        Text(stringResource(R.string.button_logout), color = MaterialTheme.colorScheme.error)
                     }
                 )
             }

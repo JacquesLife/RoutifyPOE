@@ -2,10 +2,10 @@
  * ============================================================================
  * SETTINGS SCREEN - App Configuration Interface
  * ============================================================================
- * 
+ *
  * Compose screen for app preferences and configuration options.
  * Manages permissions, notifications, and user customization settings.
- * 
+ *
  * ============================================================================
  */
 
@@ -36,6 +36,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -43,6 +44,12 @@ import androidx.activity.ComponentActivity
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.routeify.ui.theme.RouteifyBlue500
+import com.example.routeify.R
+import com.example.routeify.data.preferences.LanguageManager
+
+// Settings screen composable
+@Composable
+fun SettingsScreen() {
 import com.example.routeify.ui.viewmodel.AuthViewModel
 import com.example.routeify.utils.BiometricAuthManager
 
@@ -82,6 +89,14 @@ fun SettingsScreen(
         }
     }
     val lifecycleOwner = LocalLifecycleOwner.current
+    val languageManager = remember { LanguageManager.getInstance(context) }
+
+    var darkModeEnabled by remember { mutableStateOf(false) }
+    var autoSyncEnabled by remember { mutableStateOf(true) }
+    var showLanguageDialog by remember { mutableStateOf(false) }
+
+    // Observe language changes
+    val currentLanguage = languageManager.currentLanguage
     
     // Auth state for biometric
     val authState by authViewModel.authState.collectAsState()
@@ -179,7 +194,7 @@ fun SettingsScreen(
     ) {
         // Screen title
         Text(
-            text = "Settings",
+            text = stringResource(R.string.settings_title),
             style = MaterialTheme.typography.headlineLarge,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onBackground,
@@ -188,7 +203,7 @@ fun SettingsScreen(
 
         // General Settings Section
         Text(
-            text = "General",
+            text = stringResource(R.string.settings_general),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onBackground,
@@ -205,8 +220,8 @@ fun SettingsScreen(
             Column {
                 SettingSwitchItem(
                     icon = Icons.Default.Notifications,
-                    title = "Notifications",
-                    subtitle = "Enable push notifications",
+                    title = stringResource(R.string.settings_notifications),
+                    subtitle = stringResource(R.string.settings_notifications_subtitle),
                     checked = notificationsEnabled,
                     onCheckedChange = { checked ->
                         if (checked) {
@@ -230,8 +245,8 @@ fun SettingsScreen(
                 // Dark Mode setting
                 SettingSwitchItem(
                     icon = Icons.Default.DarkMode,
-                    title = "Dark Mode",
-                    subtitle = "Use dark theme",
+                    title = stringResource(R.string.settings_dark_mode),
+                    subtitle = stringResource(R.string.settings_dark_mode_subtitle),
                     checked = darkModeEnabled,
                     onCheckedChange = { darkModeEnabled = it }
                 )
@@ -242,7 +257,7 @@ fun SettingsScreen(
 
         // Privacy Settings Section
         Text(
-            text = "Privacy & Security",
+            text = stringResource(R.string.settings_privacy),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onBackground,
@@ -259,8 +274,8 @@ fun SettingsScreen(
             Column {
                 SettingSwitchItem(
                     icon = Icons.Default.LocationOn,
-                    title = "Location Services",
-                    subtitle = "Allow app to access location",
+                    title = stringResource(R.string.settings_location),
+                    subtitle = stringResource(R.string.settings_location_subtitle),
                     checked = locationEnabled,
                     // Request permissions or show dialog
                     onCheckedChange = { checked ->
@@ -284,17 +299,17 @@ fun SettingsScreen(
             AlertDialog(
                 // Dismiss on outside touch or back press
                 onDismissRequest = { showNotificationSettingsDialog = false },
-                title = { Text("Turn off notifications") },
-                text = { Text("To disable notifications, change the setting in system settings.") },
+                title = { Text(stringResource(R.string.dialog_notifications_title)) },
+                text = { Text(stringResource(R.string.dialog_notifications_message)) },
                 confirmButton = {
                     // Deep-link to app notification settings
                     TextButton(onClick = {
                         showNotificationSettingsDialog = false
                         openAppNotificationSettings()
-                    }) { Text("Open Settings") }
+                    }) { Text(stringResource(R.string.button_open_settings)) }
                 },
                 dismissButton = {
-                    TextButton(onClick = { showNotificationSettingsDialog = false }) { Text("Cancel") }
+                    TextButton(onClick = { showNotificationSettingsDialog = false }) { Text(stringResource(R.string.button_cancel)) }
                 }
             )
         }
@@ -303,27 +318,27 @@ fun SettingsScreen(
         if (showLocationSettingsDialog) {
             AlertDialog(
                 onDismissRequest = { showLocationSettingsDialog = false },
-                title = { Text("Turn off location access") },
-                text = { Text("To revoke location access, change the permission in system settings.") },
+                title = { Text(stringResource(R.string.dialog_location_title)) },
+                text = { Text(stringResource(R.string.dialog_location_message)) },
                 confirmButton = {
                     TextButton(onClick = {
                         showLocationSettingsDialog = false
                         openAppDetailsSettings()
-                    }) { Text("Open Settings") }
+                    }) { Text(stringResource(R.string.button_open_settings)) }
                 },
                 // Dismiss button
                 dismissButton = {
-                    TextButton(onClick = { showLocationSettingsDialog = false }) { Text("Cancel") }
+                    TextButton(onClick = { showLocationSettingsDialog = false }) { Text(stringResource(R.string.button_cancel)) }
                 }
             )
-        }   
+        }
                 // Divider
                 HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)
 
                 SettingSwitchItem(
                     icon = Icons.Default.Sync,
-                    title = "Auto Sync",
-                    subtitle = "Sync data automatically",
+                    title = stringResource(R.string.settings_auto_sync),
+                    subtitle = stringResource(R.string.settings_auto_sync_subtitle),
                     checked = autoSyncEnabled,
                     onCheckedChange = { autoSyncEnabled = it }
                 )
@@ -396,7 +411,7 @@ fun SettingsScreen(
 
         // Other Options Section
         Text(
-            text = "Other",
+            text = stringResource(R.string.settings_other),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onBackground,
@@ -413,9 +428,9 @@ fun SettingsScreen(
             Column {
                 SettingNavigationItem(
                     icon = Icons.Default.Language,
-                    title = "Language",
-                    value = "English",
-                    onClick = { /* Handle language selection */ }
+                    title = stringResource(R.string.settings_language),
+                    value = languageManager.getLanguageName(currentLanguage),
+                    onClick = { showLanguageDialog = true }
                 )
 
                 // Divider
@@ -423,13 +438,22 @@ fun SettingsScreen(
 
                 SettingNavigationItem(
                     icon = Icons.Default.Storage,
-                    title = "Storage",
-                    value = "Clear cache",
+                    title = stringResource(R.string.settings_storage),
+                    value = stringResource(R.string.settings_storage_value),
                     onClick = { /* Handle storage */ }
                 )
 
                 // Divider
                 HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)
+
+                // Language section Dialog
+                if (showLanguageDialog) {
+                    LanguageSectionDialog(
+                        languageManager = languageManager,
+                        currentLanguage = currentLanguage,
+                        onDismiss = { showLanguageDialog = false }
+                    )
+                }
 
 //                SettingNavigationItem(
 //                    icon = Icons.Default.Info,
@@ -542,6 +566,60 @@ fun SettingNavigationItem(
             )
         }
     }
+}
+
+// Language section dialog
+@Composable
+fun LanguageSectionDialog(languageManager: LanguageManager, currentLanguage: String, onDismiss: () -> Unit) {
+    val languages = listOf(
+        LanguageManager.ENGLISH to languageManager.getLanguageName(LanguageManager.ENGLISH),
+        LanguageManager.AFRIKAANS to languageManager.getLanguageName(LanguageManager.AFRIKAANS)
+    )
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = stringResource(R.string.dialog_language_title),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold
+            )
+        },
+        text = {
+            Column {
+                languages.forEach { (code, name) ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = currentLanguage == code,
+                            onClick = {
+                                languageManager.setLanguage(code)
+                                onDismiss()
+                            },
+                            colors = RadioButtonDefaults.colors(
+                                selectedColor = RouteifyBlue500
+                            )
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text(
+                            text = name,
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.button_close))
+            }
+        }
+    )
 }
 
 // --------------------------------------------------End of File----------------------------------------------------------------

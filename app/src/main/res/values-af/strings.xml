@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App Name -->
+    <string name="app_name">Routeify</string>
+
+    <!-- Navigation/Screen Titles -->
+    <string name="title_home">Routeify</string>
+    <string name="title_map">Vervoer Kaart</string>
+    <string name="title_profile">Profiel</string>
+    <string name="title_settings">Instellings</string>
+    <string name="title_favorites">Gunstelinge</string>
+    <string name="title_notifications">Kennisgewings</string>
+    <string name="title_google_features">Google Dienste</string>
+    <string name="title_route_planner">Roetebeplanner</string>
+    <string name="title_nearby_transit">Nabygeleë Vervoer</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Instellings</string>
+    <string name="settings_general">Algemeen</string>
+    <string name="settings_privacy">Privaatheid &amp; Sekuriteit</string>
+    <string name="settings_other">Ander</string>
+    <string name="settings_notifications">Kennisgewings</string>
+    <string name="settings_notifications_subtitle">Aktiveer stoot kennisgewings</string>
+    <string name="settings_dark_mode">Donker Modus</string>
+    <string name="settings_dark_mode_subtitle">Gebruik donker tema</string>
+    <string name="settings_location">Liggingsdienste</string>
+    <string name="settings_location_subtitle">Laat app toe om ligging te gebruik</string>
+    <string name="settings_auto_sync">Outo Sinkroniseer</string>
+    <string name="settings_auto_sync_subtitle">Sinkroniseer data outomaties</string>
+    <string name="settings_language">Taal</string>
+    <string name="settings_storage">Berging</string>
+    <string name="settings_storage_value">Maak kas skoon</string>
+
+    <!-- Dialog Titles & Messages -->
+    <string name="dialog_notifications_title">Skakel kennisgewings af</string>
+    <string name="dialog_notifications_message">Om kennisgewings te deaktiveer, verander die instelling in stelselinstellings.</string>
+    <string name="dialog_location_title">Skakel liggingstoegang af</string>
+    <string name="dialog_location_message">Om liggingstoegang te herroep, verander die toestemming in stelselinstellings.</string>
+    <string name="dialog_language_title">Kies Taal</string>
+
+    <!-- Buttons -->
+    <string name="button_open_settings">Maak Instellings Oop</string>
+    <string name="button_cancel">Kanselleer</string>
+    <string name="button_close">Sluit</string>
+    <string name="button_sign_in">Teken In</string>
+    <string name="button_create_account">Skep Rekening</string>
+    <string name="button_logout">Teken Uit</string>
+    <string name="button_directions">Rigtings</string>
+    <string name="button_share">Deel</string>
+    <string name="button_save_favorites">Stoor na Gunstelinge</string>
+
+    <!-- Languages -->
+    <string name="language_english">Engels</string>
+    <string name="language_afrikaans">Afrikaans</string>
+
+    <!-- Home Screen -->
+    <string name="home_recent_destinations">Onlangse Bestemmings</string>
+    <string name="home_recent_destinations_subtitle">Jou gereeld besoekte plekke</string>
+    <string name="home_no_destinations">Geen onlangse bestemmings</string>
+    <string name="home_no_destinations_desc">Begin roetes beplan om jou onlangse bestemmings hier te sien</string>
+    <string name="home_visited_times">%d keer besoek</string>
+
+    <!-- Login Screen -->
+    <string name="login_welcome">Welkom Terug</string>
+    <string name="login_subtitle">Teken in om jou reis voort te sit</string>
+    <string name="login_email_username">E-pos of Gebruikersnaam</string>
+    <string name="login_password">Wagwoord</string>
+    <string name="login_or">OF</string>
+    <string name="login_google">Gaan voort met Google</string>
+
+    <!-- Register Screen -->
+    <string name="register_title">Skep Rekening</string>
+    <string name="register_subtitle">Sluit vandag by Routeify aan</string>
+    <string name="register_email">E-pos</string>
+    <string name="register_username">Gebruikersnaam</string>
+    <string name="register_password">Wagwoord</string>
+    <string name="register_confirm_password">Bevestig Wagwoord</string>
+    <string name="register_already_have_account">Het jy reeds \'n rekening?</string>
+    <string name="register_google">Gaan voort met Google</string>
+
+    <!-- Profile Screen -->
+    <string name="profile_saved_routes">Gestoorde Roetes</string>
+    <string name="profile_account">Rekening</string>
+    <string name="profile_home_to_work">Huis na Werk</string>
+    <string name="profile_home_to_work_subtitle">Rondebosch na Claremont</string>
+    <string name="profile_university_route">Universiteit Roete</string>
+    <string name="profile_university_subtitle">UCT Hoofkampus</string>
+    <string name="profile_weekend_shopping">Naweek Inkopies</string>
+    <string name="profile_weekend_subtitle">V&amp;A Waterfront</string>
+    <string name="profile_guest">Gas</string>
+
+    <!-- Map Screen -->
+    <string name="map_cape_town_network">Kaapstad Vervoer Netwerk</string>
+    <string name="map_start">Begin</string>
+    <string name="map_end">Einde</string>
+    <string name="map_hide_transit">Versteek vervoer lyne</string>
+    <string name="map_show_transit">Wys vervoer lyne</string>
+
+    <!-- Google Features Screen -->
+    <string name="google_features_title">Google Dienste</string>
+    <string name="google_route_planner">🗺 Roetebeplanner</string>
+    <string name="google_route_planner_desc">Beplan jou reis met intydse reistye en veelvuldige vervoer opsies</string>
+    <string name="google_nearby_transit">🚌 Nabygeleë Vervoer</string>
+    <string name="google_nearby_transit_desc">Vind vervoer stilhoupunte, busstasies, en treinstasies naby jou</string>
+    <string name="google_smart_suggestions">💡 Slim Voorstelle</string>
+    <string name="google_smart_suggestions_desc">Kry gepersonaliseerde roete aanbevelings gebaseer op jou reis patrone</string>
+    <string name="google_privacy_notice">Jou privaatheid is beskerm. Liggingsdata word slegs gebruik vir vervoer beplanning.</string>
+
+    <!-- Nearby Transit Screen -->
+    <string name="nearby_transit_title">🚌 Nabygeleë Vervoer</string>
+    <string name="back">Terug</string>
+    <string name="search_radius">Soek Radius: %1$dm</string>
+    <string name="expand_search">Brei soekopsies uit</string>
+    <string name="search_within">Soek binne %1$dm</string>
+    <string name="searching">Besig om te soek...</string>
+    <string name="find_nearby_transit">Vind Nabygeleë Vervoer</string>
+    <string name="found_transit_stops">%1$d vervoer stopplekke gevind</string>
+    <string name="tap_stop_details">Tik op enige stopplek vir besonderhede</string>
+    <string name="no_results_yet">Nog geen resultate</string>
+    <string name="search_nearby_prompt">Soek nabygeleë vervoer stopplekke om te begin</string>
+    <string name="view_details">Bekyk besonderhede</string>
+
+    <!-- Route Planner Screen -->
+    <string name="route_planner_title">🗺 Roete Beplanner</string>
+    <string name="from_label">Van</string>
+    <string name="to_label">Na</string>
+    <string name="enter_starting_location">Voer beginpunt in</string>
+    <string name="enter_destination">Voer bestemming in</string>
+    <string name="voice_input">Stem invoer</string>
+    <string name="clear">Maak skoon</string>
+    <string name="swap_locations">Ruil liggings</string>
+    <string name="use_exact_address">Gebruik hierdie presiese adres</string>
+
+    <!-- Preset Locations -->
+    <string name="home">Tuis</string>
+    <string name="work">Werk</string>
+    <string name="your_home_address">Jou tuis adres</string>
+    <string name="your_workplace">Jou werkplek</string>
+
+    <!-- Time Selection -->
+    <string name="when_travel">Wanneer wil jy reis?</string>
+    <string name="leave_now">Vertrek nou</string>
+    <string name="depart_at">Vertrek om</string>
+    <string name="arrive_by">Arriveer teen</string>
+    <string name="select_date_time">Kies Datum &amp; Tyd</string>
+    <string name="date_label">Datum:</string>
+    <string name="time_label">Tyd:</string>
+
+    <!-- Route Options -->
+    <string name="route_options">Roete Opsies</string>
+    <string name="show">Wys</string>
+    <string name="hide">Versteek</string>
+    <string name="transport_modes">Vervoer modusse:</string>
+    <string name="route_preference">Roete voorkeur:</string>
+    <string name="wheelchair_accessible">Rolstoel toeganklike roetes</string>
+
+    <!-- Transit Modes -->
+    <string name="bus">Bus</string>
+    <string name="train">Trein</string>
+    <string name="tram">Trem</string>
+    <string name="walk">Loop</string>
+
+    <!-- Route Preferences -->
+    <string name="fastest">Vinnigste</string>
+    <string name="fewest_transfers">Minste oordragte</string>
+    <string name="least_walking">Minste loop</string>
+
+    <!-- Search -->
+    <string name="find_transit_routes">Vind Vervoer Roetes</string>
+    <string name="finding_routes">Soek roetes...</string>
+
+    <!-- Validation Messages -->
+    <string name="ready_find_routes">Gereed om roetes te vind!</string>
+    <string name="enter_both_locations">Voer jou beginpunt en bestemming in om roetes te vind</string>
+    <string name="enter_starting_location_msg">Voer jou beginpunt in</string>
+    <string name="enter_destination_msg">Voer jou bestemming in</string>
+    <string name="locations_must_differ">Beginpunt en bestemming moet verskillend wees</string>
+
+    <!-- Route Results -->
+    <string name="available_routes">Beskikbare Roetes (%1$d)</string>
+    <string name="stops_duration">%1$d stopplekke • %2$s</string>
+    <string name="distance_duration">%1$s • %2$s</string>
+    <string name="from_stop">Van: %1$s</string>
+    <string name="to_stop">Na: %1$s</string>
+    <string name="view_on_map">Bekyk op Kaart</string>
+    <string name="open_google_maps">Google Kaarte</string>
+
+    <!-- Voice Input Prompts -->
+    <string name="voice_prompt_from">Waar begin jy?</string>
+    <string name="voice_prompt_to">Waarheen wil jy gaan?</string>
+
+    <!-- Common -->
+    <string name="ok">OK</string>
+    <string name="cancel">Kanselleer</string>
+    <string name="search">Soek</string>
+
+    <!-- Place Details Screen -->
+    <string name="place_details_transit_stop">Vervoer Stilhoupunt</string>
+    <string name="place_details_loading">Laai plek besonderhede...</string>
+    <string name="place_details_location">📍 Ligging Besonderhede</string>
+    <string name="place_details_coordinates">Koördinate</string>
+    <string name="place_details_stop_type">Stilhoupunt Tipe</string>
+    <string name="place_details_actions">🚀 Vinnige Aksies</string>
+
+    <!-- Travel Time Card -->
+    <string name="travel_time_info">🚗 Reis Inligting</string>
+    <string name="travel_time_duration">Tydsduur</string>
+    <string name="travel_time_distance">Afstand</string>
+    <string name="travel_time_available">Beskikbaar</string>
+
+    <!-- Splash Screen -->
+    <string name="splash_tagline">Slimmer Openbare Vervoer</string>
+
+    <!-- Common Strings -->
+    <string name="content_description_menu">Kieslys</string>
+    <string name="content_description_back">Terug</string>
+    <string name="content_description_navigate">Navigeer</string>
+    <string name="content_description_open_feature">Maak kenmerk oop</string>
+    <string name="error_generic">\'n Fout het voorgekom. Probeer asseblief weer.</string>
+    <string name="loading">Laai...</string>
+</resources>

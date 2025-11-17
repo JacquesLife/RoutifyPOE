@@ -6,6 +6,8 @@
  * Compose screen showcasing Google Maps Platform capabilities.
  * Provides UI for distance calculations, geocoding, and place operations.
  * 
+ * UPDATED: All hardcoded strings replaced with string resources
+ *
  * ============================================================================
  */
 
@@ -23,9 +25,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.routeify.R
 import com.example.routeify.data.model.TransitStop
 import com.example.routeify.presentation.viewmodel.GoogleFeaturesViewModel
 
@@ -125,11 +129,11 @@ private fun MainGoogleFeaturesScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = onBackClick) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.content_description_back))
             }
-            
+
             Text(
-                text = " Google Services",
+                text = stringResource(R.string.google_features_title),
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(start = 8.dp)
@@ -140,8 +144,8 @@ private fun MainGoogleFeaturesScreen(
 
         // Feature Cards
         FeatureCard(
-            title = "🗺 Route Planner",
-            description = "Plan your journey with real-time travel times and multiple transport options",
+            title = stringResource(R.string.google_route_planner),
+            description = stringResource(R.string.google_route_planner_desc),
             icon = Icons.Default.Directions,
             onClick = { onFeatureClick("route_planner") }
         )
@@ -151,29 +155,29 @@ private fun MainGoogleFeaturesScreen(
 
         // Nearby Transit
         FeatureCard(
-            title = " Nearby Transit",
-            description = "Find transit stops, bus stations, and train stations near you",
+            title = stringResource(R.string.google_nearby_transit),
+            description = stringResource(R.string.google_nearby_transit_desc),
             icon = Icons.Default.DirectionsBus,
             onClick = { onFeatureClick("nearby_transit") }
         )
-        
+
         // Smart Suggestions
         Spacer(modifier = Modifier.height(12.dp))
-        
+
         // Smart Suggestions
         FeatureCard(
-            title = " Smart Suggestions",
-            description = "Get personalized route recommendations based on your travel patterns",
+            title = stringResource(R.string.google_smart_suggestions),
+            description = stringResource(R.string.google_smart_suggestions_desc),
             icon = Icons.Default.Psychology,
             onClick = { /* Navigate to smart suggestions */ }
         )
-        
-        Spacer(modifier = Modifier.height(24.dp))
-        
 
-        
+        Spacer(modifier = Modifier.height(24.dp))
+
+
+
         Spacer(modifier = Modifier.height(16.dp))
-        
+
         // Privacy Notice
         Card(
             modifier = Modifier.fillMaxWidth(),
@@ -196,7 +200,7 @@ private fun MainGoogleFeaturesScreen(
                 )
                 // Privacy text
                 Text(
-                    text = "Your privacy is protected. Location data is only used for transit planning.",
+                    text = stringResource(R.string.google_privacy_notice),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -235,16 +239,16 @@ private fun FeatureCard(
                 )
             ) {
                 // Icon
-                Icon( 
+                Icon(
                     icon,
                     contentDescription = null,
                     modifier = Modifier.padding(16.dp),
                     tint = MaterialTheme.colorScheme.onSecondaryContainer
                 )
             }
-            
+
             Spacer(modifier = Modifier.width(16.dp))
-            
+
             Column(
                 modifier = Modifier.weight(1f)
             ) {
@@ -254,7 +258,7 @@ private fun FeatureCard(
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
-                
+
                 Spacer(modifier = Modifier.height(4.dp))
 
                 // Description
@@ -264,11 +268,11 @@ private fun FeatureCard(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-            
+
             Icon(
                 // Expand icon
                 Icons.Default.ChevronRight,
-                contentDescription = "Open feature",
+                contentDescription = stringResource(R.string.content_description_open_feature),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }

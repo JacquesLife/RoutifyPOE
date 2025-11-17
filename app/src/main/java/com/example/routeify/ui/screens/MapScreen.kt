@@ -6,34 +6,8 @@
  * Sophisticated map screen providing interactive Google Maps integration
  * with comprehensive transit information and advanced user interactions.
  * 
- * KEY FEATURES:
- * - Google Maps integration with custom styling and controls
- * - Real-time transit stop discovery and clustering
- * - Interactive bottom sheet with transit information
- * - Location-based services with permission handling
- * - Custom map markers and overlays for transit stops
- * - Search functionality with place autocomplete
- * - Map gesture handling and camera controls
- * - Transport legend with expandable information
- * 
- * TECHNICAL IMPLEMENTATION:
- * - Bottom Sheet Scaffold for layered UI architecture
- * - Advanced Compose state management for map interactions
- * - Custom clustering renderer for performance optimization
- * - Location permission management with user-friendly prompts
- * - Integration with MapViewModel for reactive state updates
- * - Custom map styling and marker icon management
- * 
- * UI COMPONENTS:
- * - GoogleMap with custom configuration and styling
- * - BottomSheetScaffold for transit information overlay
- * - TransportLegend for user guidance and information
- * - Custom FAB for location services and map controls
- * - Loading states and error handling UI
- * 
- * This screen represents one of the most complex UI implementations
- * in the app, combining native Google Maps with Jetpack Compose.
- * 
+ * UPDATED: All hardcoded strings replaced with string resources
+ *
  * ============================================================================
  */
 
@@ -76,9 +50,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.routeify.R
 import com.example.routeify.data.model.TransitStopType
 import com.example.routeify.ui.components.TransportLegend
 import com.example.routeify.ui.viewmodel.MapUiState
@@ -104,7 +80,7 @@ fun MapScreen() {
     LocalContext.current
     val viewModel: MapViewModel = viewModel()
     val uiState by viewModel.uiState.collectAsState()
-    
+
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -125,7 +101,7 @@ fun MapScreen() {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Cape Town Transport Network",
+                    text = stringResource(R.string.map_cape_town_network),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onPrimaryContainer
@@ -145,7 +121,7 @@ fun MapScreen() {
 
         // Track current zoom level and load data accordingly
         val currentZoom by remember { derivedStateOf { cameraPositionState.position.zoom } }
-        
+
         // Update zoom level for display purposes
         LaunchedEffect(currentZoom) {
             viewModel.updateZoom(currentZoom)
@@ -202,7 +178,7 @@ fun MapScreen() {
                 .padding(horizontal = 16.dp, vertical = 8.dp),
             cameraPositionState = cameraPositionState,
 
-        ) {
+            ) {
             MapEffect(Unit) { googleMap ->
                 map = googleMap
             }
@@ -218,15 +194,15 @@ fun MapScreen() {
 
                 selectedArgs?.origin?.let { start ->
                     Marker(
-                        state = MarkerState(start), 
-                        title = "Start",
+                        state = MarkerState(start),
+                        title = stringResource(R.string.map_start),
                         icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)
                     )
                 }
                 selectedArgs?.destination?.let { end ->
                     Marker(
-                        state = MarkerState(end), 
-                        title = "End",
+                        state = MarkerState(end),
+                        title = stringResource(R.string.map_end),
                         icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)
                     )
                 }
@@ -246,7 +222,7 @@ fun MapScreen() {
                 }
             }
         }
-        
+
         // Update cluster items when data changes
         ClusterManagerEffect(clusterManager, clusterItems)
 
@@ -256,7 +232,7 @@ fun MapScreen() {
                 .fillMaxWidth()
                 .padding(16.dp),
             busStationCount = if (uiState.isLoading) 0 else uiState.transitStops.count { it.stopType == TransitStopType.BUS_STATION },
-            trainStationCount = if (uiState.isLoading) 0 else uiState.transitStops.count { 
+            trainStationCount = if (uiState.isLoading) 0 else uiState.transitStops.count {
                 it.stopType in listOf(
                     TransitStopType.TRAIN_STATION,
                     TransitStopType.SUBWAY_STATION,
@@ -267,11 +243,11 @@ fun MapScreen() {
             currentZoom = currentZoom,
             isLoading = uiState.isLoading
         )
-        }
-        
-        // Controls Cluster (FAB Group)
-        ControlsCluster(viewModel, uiState)
     }
+
+    // Controls Cluster (FAB Group)
+    ControlsCluster(viewModel, uiState)
+}
 
 
 
@@ -282,7 +258,7 @@ private fun ControlsCluster(
     uiState: MapUiState
 ) {
     var showTransitLines by remember { mutableStateOf(true) }
-    
+
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -295,7 +271,7 @@ private fun ControlsCluster(
         ) {
             // Layers toggle
             FloatingActionButton(
-                onClick = { 
+                onClick = {
                     showTransitLines = !showTransitLines
                 },
                 modifier = Modifier.size(56.dp),
@@ -303,7 +279,10 @@ private fun ControlsCluster(
             ) {
                 Icon(
                     Icons.Default.Layers,
-                    contentDescription = if (showTransitLines) "Hide transit lines" else "Show transit lines",
+                    contentDescription = if (showTransitLines)
+                        stringResource(R.string.map_hide_transit)
+                    else
+                        stringResource(R.string.map_show_transit),
                     tint = if (showTransitLines) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
                 )
             }

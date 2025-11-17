@@ -148,6 +148,8 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import androidx.core.net.toUri
+import com.example.routeify.R
+import androidx.compose.ui.res.stringResource
 
 // Determine icon type based on description keywords
 data class PresetLocation(
@@ -282,8 +284,18 @@ fun RoutePlannerScreen(
     // Preset locations
     val presetLocations = remember {
         listOf(
-            PresetLocation("home", "Home", "Your home address", Icons.Default.Home),
-            PresetLocation("work", "Work", "Your workplace", Icons.Default.Work)
+            PresetLocation(
+                "home",
+                context.getString(R.string.home),
+                context.getString(R.string.your_home_address),
+                Icons.Default.Home
+            ),
+            PresetLocation(
+                "work",
+                context.getString(R.string.work),
+                context.getString(R.string.your_workplace),
+                Icons.Default.Work
+            )
         )
     }
 
@@ -292,32 +304,32 @@ fun RoutePlannerScreen(
         when {
             isLoadingRoutes -> ValidationResult(
                 isValid = false,
-                message = "Finding routes...",
+                message = context.getString(R.string.finding_routes),
                 icon = Icons.Default.Search
             )
             fromLocation.isEmpty() && toLocation.isEmpty() -> ValidationResult(
                 isValid = false,
-                message = "Enter your starting location and destination to find routes",
+                message = context.getString(R.string.enter_both_locations),
                 icon = Icons.Default.Info
             )
             fromLocation.isEmpty() -> ValidationResult(
                 isValid = false,
-                message = "Enter your starting location",
+                message = context.getString(R.string.enter_starting_location_msg),
                 icon = Icons.Default.MyLocation
             )
             toLocation.isEmpty() -> ValidationResult(
                 isValid = false,
-                message = "Enter your destination",
+                message = context.getString(R.string.enter_destination_msg),
                 icon = Icons.Default.Place
             )
             fromLocation == toLocation -> ValidationResult(
                 isValid = false,
-                message = "Starting location and destination must be different",
+                message = context.getString(R.string.locations_must_differ),
                 icon = Icons.Default.Warning
             )
             else -> ValidationResult(
                 isValid = true,
-                message = "Ready to find routes!",
+                message = context.getString(R.string.ready_find_routes),
                 icon = Icons.Default.CheckCircle
             )
         }
@@ -340,9 +352,7 @@ fun RoutePlannerScreen(
     }
 
     // Main UI
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
+    Column(modifier = Modifier.fillMaxSize()) {
         Surface(
             tonalElevation = 2.dp,
             modifier = Modifier.fillMaxWidth()
@@ -354,11 +364,13 @@ fun RoutePlannerScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(onClick = onBackClick) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    Icon(
+                        Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = stringResource(R.string.back)
+                    )
                 }
-
                 Text(
-                    text = "🗺️ Route Planner",
+                    text = stringResource(R.string.route_planner_title),
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(start = 8.dp)
@@ -387,25 +399,27 @@ fun RoutePlannerScreen(
                         fromLocation = it
                         selectedFromPlace = null
                     },
-                    label = { Text("From") },
-                    placeholder = { Text("Enter starting location") },
+                    label = { Text(stringResource(R.string.from_label)) },
+                    placeholder = { Text(stringResource(R.string.enter_starting_location)) },
                     leadingIcon = {
-                        Icon(Icons.Default.MyLocation, contentDescription = "From")
+                        Icon(
+                            Icons.Default.MyLocation,
+                            contentDescription = stringResource(R.string.from_label)
+                        )
                     },
                     trailingIcon = {
                         Row {
                             // Voice input button
                             IconButton(onClick = {
-                                val intent = createVoiceInputIntent("Where are you starting from?")
+                                val intent = createVoiceInputIntent(context.getString(R.string.voice_prompt_from))
                                 fromVoiceLauncher.launch(intent)
                             }) {
                                 Icon(
                                     Icons.Default.Mic,
-                                    contentDescription = "Voice input",
+                                    contentDescription = stringResource(R.string.voice_input),
                                     tint = MaterialTheme.colorScheme.primary
                                 )
                             }
-
                             if (isLoadingFromSuggestions) {
                                 CircularProgressIndicator(
                                     modifier = Modifier.size(20.dp),
@@ -418,7 +432,10 @@ fun RoutePlannerScreen(
                                     selectedFromPlace = null
                                     viewModel.clearFromSuggestions()
                                 }) {
-                                    Icon(Icons.Default.Clear, contentDescription = "Clear")
+                                    Icon(
+                                        Icons.Default.Clear,
+                                        contentDescription = stringResource(R.string.clear)
+                                    )
                                 }
                             }
                         }
@@ -440,9 +457,7 @@ fun RoutePlannerScreen(
                             .padding(top = 4.dp),
                         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                     ) {
-                        LazyColumn(
-                            modifier = Modifier.heightIn(max = 200.dp)
-                        ) {
+                        LazyColumn(modifier = Modifier.heightIn(max = 200.dp)) {
                             items(fromSuggestions) { suggestion ->
                                 SuggestionItem(
                                     suggestion = suggestion,
@@ -510,7 +525,7 @@ fun RoutePlannerScreen(
                 ) {
                     Icon(
                         Icons.Default.SwapVert,
-                        contentDescription = "Swap locations",
+                        contentDescription = stringResource(R.string.swap_locations),
                         tint = MaterialTheme.colorScheme.primary
                     )
                 }
@@ -526,21 +541,24 @@ fun RoutePlannerScreen(
                         toLocation = it
                         selectedToPlace = null
                     },
-                    label = { Text("To") },
-                    placeholder = { Text("Enter destination") },
+                    label = { Text(stringResource(R.string.to_label)) },
+                    placeholder = { Text(stringResource(R.string.enter_destination)) },
                     leadingIcon = {
-                        Icon(Icons.Default.Place, contentDescription = "To")
+                        Icon(
+                            Icons.Default.Place,
+                            contentDescription = stringResource(R.string.to_label)
+                        )
                     },
                     trailingIcon = {
                         Row {
                             // Voice input button
                             IconButton(onClick = {
-                                val intent = createVoiceInputIntent("Where do you want to go?")
+                                val intent = createVoiceInputIntent(context.getString(R.string.voice_prompt_to))
                                 toVoiceLauncher.launch(intent)
                             }) {
                                 Icon(
                                     Icons.Default.Mic,
-                                    contentDescription = "Voice input",
+                                    contentDescription = stringResource(R.string.voice_input),
                                     tint = MaterialTheme.colorScheme.primary
                                 )
                             }
@@ -557,7 +575,10 @@ fun RoutePlannerScreen(
                                     selectedToPlace = null
                                     viewModel.clearToSuggestions()
                                 }) {
-                                    Icon(Icons.Default.Clear, contentDescription = "Clear")
+                                    Icon(
+                                        Icons.Default.Clear,
+                                        contentDescription = stringResource(R.string.clear)
+                                    )
                                 }
                             }
                         }
@@ -581,9 +602,7 @@ fun RoutePlannerScreen(
                         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                     ) {
                         // Suggestions list
-                        LazyColumn(
-                            modifier = Modifier.heightIn(max = 200.dp)
-                        ) {
+                        LazyColumn(modifier = Modifier.heightIn(max = 200.dp)) {
                             items(toSuggestions) { suggestion ->
                                 SuggestionItem(
                                     suggestion = suggestion,
@@ -706,7 +725,7 @@ fun RoutePlannerScreen(
                             strokeWidth = 2.dp,
                             color = MaterialTheme.colorScheme.onPrimary
                         )
-                        Text("Finding routes...")
+                        Text(stringResource(R.string.finding_routes))
                     }
                 } else {
                     // Button content
@@ -716,7 +735,7 @@ fun RoutePlannerScreen(
                     ) {
                         // Icon
                         Icon(Icons.Default.Search, contentDescription = null)
-                        Text("Find Transit Routes")
+                        Text(stringResource(R.string.find_transit_routes))
                     }
                 }
             }
@@ -761,7 +780,7 @@ fun RoutePlannerScreen(
             // Transit routes list
             if (transitRoutes.isNotEmpty()) {
                 Text(
-                    text = "Available Routes (${transitRoutes.size})",
+                    text = stringResource(R.string.available_routes, transitRoutes.size),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(bottom = 12.dp)
@@ -775,7 +794,7 @@ fun RoutePlannerScreen(
                         fromLocation = fromLocation,
                         toLocation = toLocation,
                         context = context,
-                        onViewOnMap = { 
+                        onViewOnMap = {
                             // Save destinations to recent destinations store
                             selectedToPlace?.let { toPlace ->
                                 route.endLocation?.let { endLocation ->
@@ -787,7 +806,7 @@ fun RoutePlannerScreen(
                                     )
                                 }
                             }
-                            onRouteSelected(route) 
+                            onRouteSelected(route)
                         }
                     )
                     Spacer(modifier = Modifier.height(12.dp))
@@ -935,7 +954,7 @@ private fun ExactAddressItem(
         // Address text
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = "Use this exact address",
+                text = stringResource(R.string.use_exact_address),
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Medium,
                 color = MaterialTheme.colorScheme.primary
@@ -1007,9 +1026,7 @@ private fun TransitRouteCard(
             containerColor = MaterialTheme.colorScheme.surfaceVariant
         )
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
+        Column(modifier = Modifier.padding(16.dp)) {
             Row(
                 // Route header with number, mode, duration, and distance
                 modifier = Modifier.fillMaxWidth(),
@@ -1097,7 +1114,7 @@ private fun TransitRouteCard(
                             contentDescription = null,
                             modifier = Modifier.size(18.dp)
                         )
-                        Text("View on Map")
+                        Text(stringResource(R.string.view_on_map))
                     }
                 }
 
@@ -1117,7 +1134,7 @@ private fun TransitRouteCard(
                             contentDescription = null,
                             modifier = Modifier.size(18.dp)
                         )
-                        Text("Google Maps")
+                        Text(stringResource(R.string.open_google_maps))
                     }
                 }
             }
@@ -1207,20 +1224,20 @@ private fun RouteSegmentItem(
 
                 // Additional details
                 Text(
-                    text = "From: ${info.departureStop}",
+                    text = stringResource(R.string.from_stop, info.departureStop),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 // Arrival stop
                 Text(
-                    text = "To: ${info.arrivalStop}",
+                    text = stringResource(R.string.to_stop, info.arrivalStop),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 // Number of stops and duration
                 Text(
-                    text = "${info.numStops} stops • ${segment.duration}",
+                    text = stringResource(R.string.stops_duration, info.numStops, segment.duration),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Medium
@@ -1242,7 +1259,7 @@ private fun RouteSegmentItem(
                     style = MaterialTheme.typography.bodyMedium
                 )
                 Text(
-                    text = "${segment.distance} • ${segment.duration}",
+                    text = stringResource(R.string.distance_duration, segment.distance, segment.duration),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -1316,7 +1333,7 @@ private fun FiltersSection(
         ) {
             // Section title
             Text(
-                text = "Route Options",
+                text = stringResource(R.string.route_options),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Medium
             )
@@ -1325,7 +1342,7 @@ private fun FiltersSection(
             TextButton(
                 onClick = { onShowFiltersChange(!showFilters) }
             ) {
-                Text(if (showFilters) "Hide" else "Show")
+                Text(if (showFilters) stringResource(R.string.hide) else stringResource(R.string.show))
                 Icon(
                     if (showFilters) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
                     contentDescription = null,
@@ -1339,7 +1356,7 @@ private fun FiltersSection(
 
             // Transit mode chips
             Text(
-                text = "Transport modes:",
+                text = stringResource(R.string.transport_modes),
                 style = MaterialTheme.typography.titleSmall,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
@@ -1383,7 +1400,7 @@ private fun FiltersSection(
 
             // Route preference chips
             Text(
-                text = "Route preference:",
+                text = stringResource(R.string.route_preference),
                 style = MaterialTheme.typography.titleSmall,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
@@ -1424,13 +1441,13 @@ private fun FiltersSection(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Wheelchair accessible routes",
+                    text = stringResource(R.string.wheelchair_accessible),
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
         }
     }
-}  
+}
 
 // Get icon for transit mode
 @Composable
@@ -1444,21 +1461,23 @@ private fun getTransitModeIcon(mode: TransitMode): androidx.compose.ui.graphics.
 }
 
 // Get name for transit mode
+@Composable
 private fun getTransitModeName(mode: TransitMode): String {
     return when (mode) {
-        TransitMode.BUS -> "Bus"
-        TransitMode.TRAIN -> "Train"
-        TransitMode.TRAM -> "Tram"
-        TransitMode.WALK -> "Walk"
+        TransitMode.BUS -> stringResource(R.string.bus)
+        TransitMode.TRAIN -> stringResource(R.string.train)
+        TransitMode.TRAM -> stringResource(R.string.tram)
+        TransitMode.WALK -> stringResource(R.string.walk)
     }
 }
 
 // Get name for route preference
+@Composable
 private fun getRoutePreferenceName(preference: RoutePreference): String {
     return when (preference) {
-        RoutePreference.FASTEST -> "Fastest"
-        RoutePreference.FEWEST_TRANSFERS -> "Fewest transfers"
-        RoutePreference.LEAST_WALKING -> "Least walking"
+        RoutePreference.FASTEST -> stringResource(R.string.fastest)
+        RoutePreference.FEWEST_TRANSFERS -> stringResource(R.string.fewest_transfers)
+        RoutePreference.LEAST_WALKING -> stringResource(R.string.least_walking)
     }
 }
 
@@ -1473,7 +1492,7 @@ private fun TimeSelectionSection(
 ) {
     Column {
         Text(
-            text = "When do you want to travel?",
+            text = stringResource(R.string.when_travel),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Medium,
             modifier = Modifier.padding(bottom = 8.dp)
@@ -1490,9 +1509,9 @@ private fun TimeSelectionSection(
                     label = {
                         Text(
                             when (mode) {
-                                TimeSelectionMode.LEAVE_NOW -> "Leave now"
-                                TimeSelectionMode.DEPART_AT -> "Depart at"
-                                TimeSelectionMode.ARRIVE_BY -> "Arrive by"
+                                TimeSelectionMode.LEAVE_NOW -> stringResource(R.string.leave_now)
+                                TimeSelectionMode.DEPART_AT -> stringResource(R.string.depart_at)
+                                TimeSelectionMode.ARRIVE_BY -> stringResource(R.string.arrive_by)
                             }
                         )
                     },
@@ -1543,11 +1562,11 @@ private fun TimePickerDialog(
     // Dialog for date and time selection
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Select Date & Time") },
+        title = { Text(stringResource(R.string.select_date_time)) },
         text = {
             Column {
                 Text(
-                    text = "Date:",
+                    text = stringResource(R.string.date_label),
                     style = MaterialTheme.typography.titleSmall,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
@@ -1576,7 +1595,7 @@ private fun TimePickerDialog(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
-                    text = "Time:",
+                    text = stringResource(R.string.time_label),
                     style = MaterialTheme.typography.titleSmall,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
@@ -1615,12 +1634,12 @@ private fun TimePickerDialog(
                     onDateTimeSelected(newDateTime)
                 }
             ) {
-                Text("OK")
+                Text(stringResource(R.string.ok))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text(stringResource(R.string.cancel))
             }
         }
     )
