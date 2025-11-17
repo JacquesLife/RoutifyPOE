@@ -13,6 +13,8 @@
 
 package com.example.routeify.ui.screens
 
+import android.content.Context
+import android.content.ContextWrapper
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -21,6 +23,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.NearMe
 import androidx.compose.material3.*
@@ -30,14 +33,35 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.routeify.R
 import com.example.routeify.ui.viewmodel.AuthViewModel
 import com.example.routeify.ui.theme.RouteifyBlue500
 import com.example.routeify.ui.theme.RouteifyGreen500
+import com.example.routeify.utils.BiometricAuthManager
+
+/**
+ * Helper function to find FragmentActivity from Context
+ * Handles ContextWrapper cases in Compose
+ */
+private fun Context.findActivity(): FragmentActivity? {
+    var context = this
+    // Check if the context itself is already a FragmentActivity
+    if (context is FragmentActivity) return context
+    
+    // Unwrap ContextWrappers to find the activity
+    while (context is ContextWrapper) {
+        context = context.baseContext
+        if (context is FragmentActivity) return context
+    }
+    return null
+}
 
 // Login screen composable
 @Composable
@@ -48,9 +72,50 @@ fun LoginScreen(
     authViewModel: AuthViewModel = viewModel()
 ) {
     val authState by authViewModel.authState.collectAsState()
+    val context = LocalContext.current
+    val view = LocalView.current
+    val activity = remember(view) { 
+        val viewContext = view.context
+        when {
+            viewContext is FragmentActivity -> viewContext
+            else -> viewContext.findActivity()
+        }
+    }
 
     var emailOrUsername by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var showBiometricError by remember { mutableStateOf(false) }
+    var biometricErrorMessage by remember { mutableStateOf("") }
+    var biometricPromptShown by remember { mutableStateOf(false) }
+    
+    // Initialize biometric manager
+    val biometricManager = remember(activity) {
+        activity?.let { BiometricAuthManager(it) }
+    }
+    
+    // Show biometric prompt on screen load if enabled and available
+    LaunchedEffect(authState.biometricEnabled) {
+        // Only show if biometric is enabled, available, and we haven't shown it yet
+        if (authState.biometricEnabled && 
+            biometricManager?.canAuthenticate() == true && 
+            !biometricPromptShown &&
+            !authState.isAuthenticated) {
+            biometricPromptShown = true
+            biometricManager.authenticate(
+                title = "Sign in to Routeify",
+                subtitle = "Use biometric to continue",
+                description = "Authenticate to access your account",
+                onSuccess = {
+                    authViewModel.loginWithBiometric()
+                },
+                onError = { _, message ->
+                    showBiometricError = true
+                    biometricErrorMessage = message
+                    biometricPromptShown = false // Allow retry
+                }
+            )
+        }
+    }
 
     LaunchedEffect(authState.isAuthenticated) {
         if (authState.isAuthenticated) onLoginSuccess()
@@ -173,7 +238,61 @@ fun LoginScreen(
             ) {
                 Text(stringResource(R.string.button_sign_in), style = MaterialTheme.typography.titleMedium)
             }
-
+            
+            // Biometric login button (if available)
+            if (biometricManager?.canAuthenticate() == true) {
+                Spacer(modifier = Modifier.height(12.dp))
+                OutlinedButton(
+                    onClick = {
+                        biometricManager.authenticate(
+                            title = "Sign in to Routeify",
+                            subtitle = "Use biometric to continue",
+                            description = "Authenticate to access your account",
+                            onSuccess = {
+                                authViewModel.loginWithBiometric()
+                            },
+                            onError = { _, message ->
+                                showBiometricError = true
+                                biometricErrorMessage = message
+                            }
+                        )
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = RouteifyGreen500
+                    )
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Icon(Icons.Default.Fingerprint, contentDescription = null)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Sign in with Biometric", style = MaterialTheme.typography.titleMedium)
+                    }
+                }
+            }
+            
+            // Show biometric error if any
+            if (showBiometricError) {
+                Spacer(modifier = Modifier.height(12.dp))
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.errorContainer
+                    ),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text(
+                        text = biometricErrorMessage,
+                        color = MaterialTheme.colorScheme.onErrorContainer,
+                        modifier = Modifier.padding(12.dp)
+                    )
+                }
+            }
+            
             // Create Account button
             Spacer(modifier = Modifier.height(12.dp))
 

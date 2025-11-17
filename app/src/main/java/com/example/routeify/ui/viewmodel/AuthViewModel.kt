@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 
@@ -29,7 +30,8 @@ data class AuthState(
     val isAuthenticated: Boolean = false,
     val email: String? = null,
     val username: String? = null,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val biometricEnabled: Boolean = false
 )
 
 // ViewModel to manage authentication state and actions (login, register, logout, SSO
@@ -54,9 +56,17 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
             authStore.isAuthenticatedFlow
                 .combine(authStore.emailFlow) { isAuth, email -> isAuth to email }
                 .combine(authStore.usernameFlow) { (isAuth, email), username -> Triple(isAuth, email, username) }
-                .collect { (isAuth, email, username) ->
-                    if (isAuth && email != null && username != null) {
-                        _authState.value = AuthState(isAuthenticated = true, email = email, username = username)
+                .combine(authStore.biometricEnabledFlow) { (isAuth, email, username), biometric -> 
+                    AuthState(
+                        isAuthenticated = isAuth && email != null && username != null,
+                        email = email,
+                        username = username,
+                        biometricEnabled = biometric
+                    )
+                }
+                .collect { state ->
+                    if (state.isAuthenticated) {
+                        _authState.value = state
                     }
                 }
         }
@@ -135,6 +145,42 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
                 .onFailure {
                     _authState.value = AuthState(isAuthenticated = false, email = null, errorMessage = it.message)
                 }
+        }
+    }
+    
+    // Enable/disable biometric authentication
+    fun setBiometricEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            authStore.setBiometricEnabled(enabled)
+            _authState.value = _authState.value.copy(biometricEnabled = enabled)
+        }
+    }
+    
+    // Quick login with biometric (skips password check)
+    fun loginWithBiometric() {
+        viewModelScope.launch {
+            // Biometric authentication already verified by BiometricPrompt
+            // Retrieve stored user data and restore the session
+            val email = authStore.emailFlow.first()
+            val username = authStore.usernameFlow.first()
+            
+            if (email != null && username != null) {
+                // Re-authenticate with stored credentials
+                authStore.setAuthenticated(email, username)
+                
+                // Update the auth state
+                _authState.value = AuthState(
+                    isAuthenticated = true,
+                    email = email,
+                    username = username,
+                    biometricEnabled = true
+                )
+            } else {
+                // No stored credentials - biometric can't work
+                _authState.value = _authState.value.copy(
+                    errorMessage = "No stored credentials found. Please login with email and password first."
+                )
+            }
         }
     }
 }

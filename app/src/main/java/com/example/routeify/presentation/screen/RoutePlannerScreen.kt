@@ -121,6 +121,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -142,6 +143,7 @@ import com.example.routeify.domain.model.TransitRoute
 import com.example.routeify.presentation.viewmodel.GoogleFeaturesViewModel
 import com.example.routeify.shared.DestinationIconType
 import com.example.routeify.shared.RecentDestinationsStore
+import com.example.routeify.ui.components.OfflineBanner
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -239,6 +241,11 @@ fun RoutePlannerScreen(
     val isLoadingFromSuggestions by viewModel.isLoadingFromSuggestions
     val isLoadingToSuggestions by viewModel.isLoadingToSuggestions
     val errorMessage by viewModel.errorMessage
+    
+    // Offline mode state
+    val syncManager = RecentDestinationsStore.getSyncManager()
+    val isOnline by syncManager.isOnline.collectAsState()
+    val syncStatus by syncManager.syncStatus.collectAsState()
 
     var fromLocation by remember { mutableStateOf("") }
     var toLocation by remember { mutableStateOf(initialDestination ?: "") }
@@ -370,6 +377,12 @@ fun RoutePlannerScreen(
                 )
             }
         }
+        
+        // Offline mode banner
+        OfflineBanner(
+            isOnline = isOnline,
+            syncStatus = syncStatus
+        )
 
         // Filters
         Column(

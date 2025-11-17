@@ -111,6 +111,9 @@ dependencies {
 
     // Add this line for Material Icons Extended
     implementation("androidx.compose.material:material-icons-extended:1.7.5")
+    
+    // Biometric Authentication
+    implementation("androidx.biometric:biometric:1.1.0")
 
     testImplementation(libs.junit)
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")

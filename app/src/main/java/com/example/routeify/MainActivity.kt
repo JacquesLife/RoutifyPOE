@@ -3,7 +3,7 @@ package com.example.routeify
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.ComponentActivity
+import androidx.fragment.app.FragmentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.*
@@ -43,8 +43,8 @@ import android.os.Build
 import android.os.Build.VERSION_CODES
 import com.example.routeify.data.preferences.LanguageManager
 
-class MainActivity : ComponentActivity() {
-
+// Main activity hosting the entire app - extends FragmentActivity for biometric support
+class MainActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
