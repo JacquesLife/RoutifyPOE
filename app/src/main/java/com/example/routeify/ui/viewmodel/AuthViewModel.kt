@@ -31,7 +31,8 @@ data class AuthState(
     val email: String? = null,
     val username: String? = null,
     val errorMessage: String? = null,
-    val biometricEnabled: Boolean = false
+    val biometricEnabled: Boolean = false,
+    val darkModeEnabled: Boolean = false
 )
 
 // ViewModel to manage authentication state and actions (login, register, logout, SSO
@@ -57,16 +58,24 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
                 .combine(authStore.emailFlow) { isAuth, email -> isAuth to email }
                 .combine(authStore.usernameFlow) { (isAuth, email), username -> Triple(isAuth, email, username) }
                 .combine(authStore.biometricEnabledFlow) { (isAuth, email, username), biometric -> 
+                    listOf(isAuth, email, username, biometric)
+                }
+                .combine(authStore.darkModeEnabledFlow) { list, darkMode ->
+                    val (isAuth, email, username, biometric) = list
                     AuthState(
-                        isAuthenticated = isAuth && email != null && username != null,
-                        email = email,
-                        username = username,
-                        biometricEnabled = biometric
+                        isAuthenticated = isAuth as Boolean && email != null && username != null,
+                        email = email as String?,
+                        username = username as String?,
+                        biometricEnabled = biometric as Boolean,
+                        darkModeEnabled = darkMode
                     )
                 }
                 .collect { state ->
                     if (state.isAuthenticated) {
                         _authState.value = state
+                    } else {
+                        // Update dark mode even when not authenticated
+                        _authState.value = _authState.value.copy(darkModeEnabled = state.darkModeEnabled)
                     }
                 }
         }
@@ -153,6 +162,14 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             authStore.setBiometricEnabled(enabled)
             _authState.value = _authState.value.copy(biometricEnabled = enabled)
+        }
+    }
+    
+    // Enable/disable dark mode
+    fun setDarkModeEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            authStore.setDarkModeEnabled(enabled)
+            _authState.value = _authState.value.copy(darkModeEnabled = enabled)
         }
     }
     

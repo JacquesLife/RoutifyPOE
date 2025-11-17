@@ -86,7 +86,6 @@ fun SettingsScreen( authViewModel: AuthViewModel = viewModel()
     val lifecycleOwner = LocalLifecycleOwner.current
     val languageManager = remember { LanguageManager.getInstance(context) }
 
-    var darkModeEnabled by remember { mutableStateOf(false) }
     var autoSyncEnabled by remember { mutableStateOf(true) }
     var showLanguageDialog by remember { mutableStateOf(false) }
 
@@ -242,8 +241,8 @@ fun SettingsScreen( authViewModel: AuthViewModel = viewModel()
                     icon = Icons.Default.DarkMode,
                     title = stringResource(R.string.settings_dark_mode),
                     subtitle = stringResource(R.string.settings_dark_mode_subtitle),
-                    checked = darkModeEnabled,
-                    onCheckedChange = { darkModeEnabled = it }
+                    checked = authState.darkModeEnabled,
+                    onCheckedChange = { authViewModel.setDarkModeEnabled(it) }
                 )
             }
         }
