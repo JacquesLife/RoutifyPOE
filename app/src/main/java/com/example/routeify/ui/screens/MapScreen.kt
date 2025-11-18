@@ -164,11 +164,28 @@ fun MapScreen() {
         val polylinePoints = remember(selectedArgs) {
             selectedArgs?.encodedPolyline?.let { encoded ->
                 try {
-                    com.google.maps.android.PolyUtil.decode(encoded)
+                    val decoded = com.google.maps.android.PolyUtil.decode(encoded)
+                    android.util.Log.d("MapScreen", "Decoded polyline: ${decoded.size} points")
+                    decoded
                 } catch (e: Exception) {
+                    android.util.Log.e("MapScreen", "Failed to decode polyline: ${e.message}")
                     emptyList()
                 }
             } ?: emptyList()
+        }
+        
+        // Single location rendering for recent destinations
+        val singleLocationArgs = remember { viewModel.getSingleLocationArgs() }
+        
+        // Debug logging
+        LaunchedEffect(selectedArgs, singleLocationArgs) {
+            android.util.Log.d("MapScreen", "selectedArgs: ${selectedArgs != null}")
+            android.util.Log.d("MapScreen", "singleLocationArgs: ${singleLocationArgs != null}")
+            android.util.Log.d("MapScreen", "polylinePoints: ${polylinePoints.size}")
+            if (selectedArgs != null) {
+                android.util.Log.d("MapScreen", "Origin: ${selectedArgs.origin}")
+                android.util.Log.d("MapScreen", "Destination: ${selectedArgs.destination}")
+            }
         }
 
         GoogleMap(
@@ -183,6 +200,7 @@ fun MapScreen() {
                 map = googleMap
             }
 
+            // Show route polyline if available
             if (polylinePoints.isNotEmpty()) {
                 // Enhanced polyline with thicker width and primary color
                 Polyline(
@@ -191,33 +209,67 @@ fun MapScreen() {
                     width = 10f,
                     geodesic = true
                 )
-
-                selectedArgs?.origin?.let { start ->
-                    Marker(
-                        state = MarkerState(start),
-                        title = stringResource(R.string.map_start),
-                        icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)
-                    )
-                }
-                selectedArgs?.destination?.let { end ->
-                    Marker(
-                        state = MarkerState(end),
-                        title = stringResource(R.string.map_end),
-                        icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)
-                    )
-                }
+            }
+            
+            // Show origin and destination markers if available
+            selectedArgs?.origin?.let { start ->
+                Marker(
+                    state = MarkerState(start),
+                    title = selectedArgs.originName ?: stringResource(R.string.map_start),
+                    icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)
+                )
+            }
+            selectedArgs?.destination?.let { end ->
+                Marker(
+                    state = MarkerState(end),
+                    title = selectedArgs.destinationName ?: stringResource(R.string.map_end),
+                    icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)
+                )
+            }
+            
+            // Show single location marker for recent destinations
+            singleLocationArgs?.let { locationArgs ->
+                Marker(
+                    state = MarkerState(locationArgs.location),
+                    title = locationArgs.name ?: stringResource(R.string.home_recent_destinations),
+                    snippet = locationArgs.address,
+                    icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)
+                )
             }
         }
 
         // Move camera to fit route when available
-        LaunchedEffect(polylinePoints) {
+        LaunchedEffect(polylinePoints, selectedArgs) {
             if (polylinePoints.isNotEmpty()) {
+                // If we have polyline points, fit them all in view
                 map?.let { gMap ->
                     val builder = com.google.android.gms.maps.model.LatLngBounds.Builder()
                     polylinePoints.forEach { builder.include(it) }
                     val bounds = builder.build()
                     gMap.animateCamera(
                         com.google.android.gms.maps.CameraUpdateFactory.newLatLngBounds(bounds, 80)
+                    )
+                }
+            } else if (selectedArgs != null) {
+                // If we have origin/destination but no polyline, fit both points
+                map?.let { gMap ->
+                    val builder = com.google.android.gms.maps.model.LatLngBounds.Builder()
+                    builder.include(selectedArgs.origin)
+                    builder.include(selectedArgs.destination)
+                    val bounds = builder.build()
+                    gMap.animateCamera(
+                        com.google.android.gms.maps.CameraUpdateFactory.newLatLngBounds(bounds, 150)
+                    )
+                }
+            }
+        }
+        
+        // Move camera to single location when available
+        LaunchedEffect(singleLocationArgs) {
+            singleLocationArgs?.let { locationArgs ->
+                map?.let { gMap ->
+                    gMap.animateCamera(
+                        com.google.android.gms.maps.CameraUpdateFactory.newLatLngZoom(locationArgs.location, 15f)
                     )
                 }
             }

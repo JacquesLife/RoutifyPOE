@@ -231,7 +231,7 @@ fun PlaceDetailsScreen(
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
-            // Location Details
+            // Location Details card
             Card(
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -246,6 +246,7 @@ fun PlaceDetailsScreen(
 
                     Spacer(modifier = Modifier.height(12.dp))
 
+                    //Details row
                     DetailRow(
                         icon = Icons.Default.LocationOn,
                         label = stringResource(R.string.place_details_coordinates),

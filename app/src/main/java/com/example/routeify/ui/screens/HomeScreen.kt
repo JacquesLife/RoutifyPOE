@@ -34,12 +34,12 @@ import androidx.compose.ui.unit.dp
 import com.example.routeify.R
 import com.example.routeify.ui.theme.RouteifyBlue500
 import com.example.routeify.ui.theme.RouteifyGreen500
-import com.example.routeify.shared.RecentDestinationsStore
-import com.example.routeify.shared.RecentDestination
+import com.example.routeify.shared.RecentRoutesStore
+import com.example.routeify.shared.RecentRoute
 
 @Composable
 fun HomeScreen(
-    onDestinationClick: (RecentDestination) -> Unit = {}
+    onRouteClick: (RecentRoute) -> Unit = {}
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         // Header with gradient, app name, search, and location shortcut
@@ -77,7 +77,7 @@ fun HomeScreen(
         ) {
             // Section title and subtitle
             Text(
-                stringResource(R.string.home_recent_destinations),
+                "Recent Routes",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onBackground
@@ -87,17 +87,17 @@ fun HomeScreen(
 
             // Section subtitle
             Text(
-                stringResource(R.string.home_recent_destinations_subtitle),
+                "Your frequently traveled routes",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Dynamic list of recent destinations
-            val recentDestinations by RecentDestinationsStore.recentDestinations.collectAsState()
+            // Dynamic list of recent routes
+            val recentRoutes by RecentRoutesStore.recentRoutes.collectAsState()
 
-            if (recentDestinations.isEmpty()) {
+            if (recentRoutes.isEmpty()) {
                 // Show empty state
                 Card(
                     modifier = Modifier.fillMaxWidth(),
@@ -119,28 +119,28 @@ fun HomeScreen(
                         // Empty state text
                         Spacer(modifier = Modifier.height(12.dp))
                         Text(
-                            stringResource(R.string.home_no_destinations),
+                            "No recent routes",
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         // Empty state description
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            stringResource(R.string.home_no_destinations_desc),
+                            "Start planning routes to see them here",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
             } else {
-                // List of recent destinations
+                // List of recent routes
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    items(recentDestinations) { destination ->
-                        DestinationCard(
-                            destination = destination,
-                            onClick = { onDestinationClick(destination) }
+                    items(recentRoutes) { route ->
+                        RouteCard(
+                            route = route,
+                            onClick = { onRouteClick(route) }
                         )
                     }
                 }
@@ -149,15 +149,12 @@ fun HomeScreen(
     }
 }
 
-// Card for individual recent destination
+// Card for individual recent route
 @Composable
-private fun DestinationCard(
-    destination: RecentDestination,
+private fun RouteCard(
+    route: RecentRoute,
     onClick: () -> Unit
 ) {
-    // Get appropriate icon based on destination type
-    val icon = RecentDestinationsStore.getIconForType(destination.iconType)
-
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -179,7 +176,7 @@ private fun DestinationCard(
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         Icon(
-                            icon,
+                            Icons.Default.Route,
                             contentDescription = null,
                             tint = RouteifyBlue500,
                             modifier = Modifier.size(24.dp)
@@ -187,26 +184,28 @@ private fun DestinationCard(
                     }
                 }
             },
-            // Destination name, address, and visit count
+            // Route description
             headlineContent = {
                 Text(
-                    destination.name,
+                    route.getRouteDescription(),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Medium
                 )
             },
-            // Address and visit count
+            // Duration and distance
             supportingContent = {
                 Column {
-                    Text(
-                        destination.address,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    // Show visit count if more than once
-                    if (destination.visitCount > 1) {
+                    if (route.duration != null) {
                         Text(
-                            stringResource(R.string.home_visited_times, destination.visitCount),
+                            "${route.duration}${if (route.distance != null) " • ${route.distance}" else ""}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    // Show use count if more than once
+                    if (route.useCount > 1) {
+                        Text(
+                            stringResource(R.string.home_visited_times, route.useCount),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                         )
